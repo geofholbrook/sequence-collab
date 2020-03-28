@@ -1,10 +1,12 @@
 import React from 'react';
+import './App.css'
 
 function App() {
   return (
-    <div style={{fontSize: 36}}>
-      app boilerplate {Date.now() % 1000}
-    </div>
+		<div className="App">
+			<header>TITLE</header>
+			<div id="main">content</div>
+		</div>
   );
 }
 
