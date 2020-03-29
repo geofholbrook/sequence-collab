@@ -1,18 +1,18 @@
 {
 	"name": "app-boilerplate",
 	"version": "0.1.0",
-  "private": true,
-  "homepage": "./",
-  "build": {
-    "appId": "com.electron.electron-with-create-react-app",
-    "win": {
-      "iconUrl": "https://cdn2.iconfinder.com/data/icons/designer-skills/128/react-256.png"
-    },
-    "directories": {
-      "buildResources": "public"
-    }
-  },
-  "main": "src/start.js",
+	"private": true,
+	"homepage": "./",
+	"build": {
+		"appId": "com.electron.electron-with-create-react-app",
+		"win": {
+			"iconUrl": "https://cdn2.iconfinder.com/data/icons/designer-skills/128/react-256.png"
+		},
+		"directories": {
+			"buildResources": "public"
+		}
+	},
+	"main": "src/start.js",
 	"dependencies": {
 		"electron": "^8.2.0",
 		"react": "^16.13.1",
