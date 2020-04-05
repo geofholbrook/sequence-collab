@@ -4,14 +4,17 @@ import { EventEmitter } from "events";
 const lookahead = 0.1
 const timerInterval = 25
 
+export type Seconds = number
+export type PropTime = number; // proportional time (0 - 1)
+
 export interface ILoopNote<T = number> {
     data: T;
-    loopTime: number;
+    loopTime: PropTime;
 }
 
 export interface IScheduledNote<T = number> {
     data: T;
-    audioContextTime: number;
+    audioContextTime: Seconds;
 }
 
 export class Scheduler<T> {
@@ -34,7 +37,9 @@ export class Scheduler<T> {
     }
 
     start() {
-        this.timer = setInterval(() => this.lookAhead(), timerInterval)
+        if (!this.timer) {
+            this.timer = setInterval(() => this.lookAhead(), timerInterval)
+        }
     }
 
     emitSchedule(notes: IScheduledNote<T>[]) {
@@ -54,8 +59,13 @@ export class Scheduler<T> {
         const windowSize = horizon - start
 
         const newScheduledNotes = this.loop.filter(note => (note.loopTime - startInLoop + 1) % 1 < windowSize)
-            .map(note => ({data: note.data, audioContextTime: (note.loopTime - startInLoop + 1) % 1 + start}))
+            .map(note => ({data: note.data, audioContextTime: (note.loopTime - startInLoop + 1) % 1 * this.loopLength + start}))
+
+        if (newScheduledNotes.length > 0) {
+            console.log(newScheduledNotes.map(note => note.audioContextTime))
+        }
 
         this.emitSchedule(newScheduledNotes)
     }
 }
+

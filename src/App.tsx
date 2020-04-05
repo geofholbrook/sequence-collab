@@ -4,7 +4,7 @@ import './App.css';
 import { MultiNoteLanes } from '@musicenviro/ui-elements';
 import { kick } from './drumSynth';
 import { render } from 'react-dom';
-import { Scheduler } from './Scheduler';
+import { Scheduler } from './Scheduler/Scheduler';
 
 let ac: AudioContext;
 
