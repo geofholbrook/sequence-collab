@@ -23,6 +23,9 @@ header {
   line-height: 30px;
   background-color: lightgray;
   position: absolute;
+
+  width: 800px;
+
   top: 50px;
   bottom: 50px;
   left: 0px;

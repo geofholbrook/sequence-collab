@@ -14,6 +14,7 @@
   },
   "main": "src/start.js",
   "dependencies": {
+    "@geof/socket-messaging": "^0.1.4",
     "@musicenviro/base": "file:../musicenviro__base",
     "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
     "electron": "^8.2.0",
