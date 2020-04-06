@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/sequence-collab/static/css/main.42d1c148.chunk.css",
+    "main.js": "/sequence-collab/static/js/main.f18d5907.chunk.js",
+    "main.js.map": "/sequence-collab/static/js/main.f18d5907.chunk.js.map",
+    "runtime-main.js": "/sequence-collab/static/js/runtime-main.06cbb84e.js",
+    "runtime-main.js.map": "/sequence-collab/static/js/runtime-main.06cbb84e.js.map",
+    "static/js/2.09f14343.chunk.js": "/sequence-collab/static/js/2.09f14343.chunk.js",
+    "static/js/2.09f14343.chunk.js.map": "/sequence-collab/static/js/2.09f14343.chunk.js.map",
+    "index.html": "/sequence-collab/index.html",
+    "precache-manifest.930adff1b9827806832e9f6de182e0db.js": "/sequence-collab/precache-manifest.930adff1b9827806832e9f6de182e0db.js",
+    "service-worker.js": "/sequence-collab/service-worker.js",
+    "static/css/main.42d1c148.chunk.css.map": "/sequence-collab/static/css/main.42d1c148.chunk.css.map",
+    "static/js/2.09f14343.chunk.js.LICENSE.txt": "/sequence-collab/static/js/2.09f14343.chunk.js.LICENSE.txt",
+    "static/media/cursor_PNG99.png": "/sequence-collab/static/media/cursor_PNG99.be56600f.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.06cbb84e.js",
+    "static/js/2.09f14343.chunk.js",
+    "static/css/main.42d1c148.chunk.css",
+    "static/js/main.f18d5907.chunk.js"
+  ]
+}
