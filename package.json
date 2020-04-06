@@ -2,7 +2,7 @@
   "name": "sequence-collab",
   "version": "0.0.0",
   "private": true,
-  "homepage": "http://geofholbrook.github.io/sequence-collab",
+  "homepage": "http://geofholbrook.com/programming/music-enviro/sequence-collab/build",
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
     "win": {
