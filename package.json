@@ -15,7 +15,7 @@
   "main": "src/start.js",
   "dependencies": {
     "@musicenviro/base": "file:../musicenviro__base",
-    "@musicenviro/ui-elements": "^0.4.3",
+    "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
     "electron": "^8.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

@@ -2,14 +2,14 @@ import { ILoopNote, Seconds, IScheduledNote } from './Scheduler';
 import { IRange } from '@musicenviro/base';
 import { windowPosition } from './windowPosition';
 
-export function getNewScheduledNotes(
-	loop: ILoopNote[],
+export function getNewScheduledNotes<T>(
+	loop: ILoopNote<T>[],
 	acTime: Seconds,
 	lookAhead: Seconds,
 	prevHorizon: Seconds,
 	loopLength: Seconds,
 ): {
-	schedule: IScheduledNote[];
+	schedule: IScheduledNote<T>[];
 	horizon: Seconds;
 } {
 	const win: IRange<Seconds> = {
@@ -36,7 +36,7 @@ export function getNewScheduledNotes(
 				audioContextTime: (pos - translation) * loopLength,
 			};
 		})
-		.filter(Boolean) as IScheduledNote<number>[];
+		.filter(Boolean) as IScheduledNote<T>[];
 
 	return {
 		schedule,
