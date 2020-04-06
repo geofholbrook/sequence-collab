@@ -47,7 +47,7 @@
     "do-electron-start": "node src/start-react",
     "pack": "build --dir",
     "dist": "npm run build && build",
-    "postinstall": "install-app-deps"
+    "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/server/index.ts"
   },
   "eslintConfig": {
     "extends": "react-app"
