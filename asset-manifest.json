@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/sequence-collab/static/css/main.d10aaceb.chunk.css",
+    "main.js": "/sequence-collab/static/js/main.ec448a72.chunk.js",
+    "main.js.map": "/sequence-collab/static/js/main.ec448a72.chunk.js.map",
+    "runtime-main.js": "/sequence-collab/static/js/runtime-main.06cbb84e.js",
+    "runtime-main.js.map": "/sequence-collab/static/js/runtime-main.06cbb84e.js.map",
+    "static/js/2.1876e775.chunk.js": "/sequence-collab/static/js/2.1876e775.chunk.js",
+    "static/js/2.1876e775.chunk.js.map": "/sequence-collab/static/js/2.1876e775.chunk.js.map",
+    "index.html": "/sequence-collab/index.html",
+    "precache-manifest.381feb410d23b66073049b454009b9b4.js": "/sequence-collab/precache-manifest.381feb410d23b66073049b454009b9b4.js",
+    "service-worker.js": "/sequence-collab/service-worker.js",
+    "static/css/main.d10aaceb.chunk.css.map": "/sequence-collab/static/css/main.d10aaceb.chunk.css.map",
+    "static/js/2.1876e775.chunk.js.LICENSE.txt": "/sequence-collab/static/js/2.1876e775.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.06cbb84e.js",
+    "static/js/2.1876e775.chunk.js",
+    "static/css/main.d10aaceb.chunk.css",
+    "static/js/main.ec448a72.chunk.js"
+  ]
+}
