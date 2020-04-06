@@ -50,21 +50,17 @@ export class Scheduler<T> {
 	}
 
 	iterate() {
-        console.log(this.ac.currentTime)
-        
-		const {schedule, horizon} = getNewScheduledNotes(
+        const {schedule, horizon} = getNewScheduledNotes(
             this.loop,
             this.ac.currentTime,
             lookahead,
 			this.prevHorizon,
 			this.loopLength,
             );
-            console.log(this.ac.currentTime)
         
         this.prevHorizon = horizon
 
 		if (schedule.length > 0) {
-		    console.log(schedule.map(note => note.audioContextTime))
 		    this.emitSchedule(schedule)
 		}
 	}

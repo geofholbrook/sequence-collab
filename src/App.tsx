@@ -8,7 +8,7 @@ import { MessageClient } from '@geof/socket-messaging';
 import { IMessage, INoteContent } from './@types';
 import { IPoint } from '@musicenviro/base';
 
-import Cursor from './resources/cursor_PNG99.png'
+import Cursor from './resources/cursor_PNG99.png';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -54,7 +54,7 @@ class App extends React.Component<{}, IState> {
 
 		this.client.onConnected(() => {
 			setInterval(() => this.reportMousePosition(), 100);
-		})
+		});
 	}
 
 	startAudio() {
@@ -71,32 +71,40 @@ class App extends React.Component<{}, IState> {
 		this.ac && this.ac.suspend();
 	}
 
-	handleNoteChange(instr: number, notes: number[]) {
-		const diff = getDiff(this.subLoops[instr].map(note => note.loopTime), notes)
+	handleNoteChange(instr: number, notes: number[], broadcast: boolean = true) {
+		if (broadcast) {
+			const diff = getDiff(
+				this.subLoops[instr].map((note) => note.loopTime),
+				notes,
+			);
 
-		diff.add.forEach(n => this.client.send({
-			user: this.user,
-			type: 'NoteChange',
-			content: {
-				sequence: 0, // not implemented
-				action: 'Add',
-				instrument: instr,
-				loopTime: n
-			}
-		}))
+			diff.add.forEach((n) =>
+				this.client.send({
+					user: this.user,
+					type: 'NoteChange',
+					content: {
+						sequence: 0, // not implemented
+						action: 'Add',
+						instrument: instr,
+						loopTime: n,
+					},
+				}),
+			);
 
-		diff.delete.forEach(n => this.client.send({
-			user: this.user,
-			type: 'NoteChange',
-			content: {
-				sequence: 0, // not implemented
-				action: 'Delete',
-				instrument: instr,
-				loopTime: n
-			}
-		}))
+			diff.delete.forEach((n) =>
+				this.client.send({
+					user: this.user,
+					type: 'NoteChange',
+					content: {
+						sequence: 0, // not implemented
+						action: 'Delete',
+						instrument: instr,
+						loopTime: n,
+					},
+				}),
+			);
+		}
 
-		
 		this.subLoops[instr] = notes.map((note) => ({
 			data: instr,
 			loopTime: note,
@@ -110,21 +118,30 @@ class App extends React.Component<{}, IState> {
 			switch (message.type) {
 				case 'MousePosition':
 					this.setState({
-						otherMouse: message.content
-					})
+						otherMouse: message.content,
+					});
 					break;
 
 				case 'NoteChange':
-					const change = message.content as INoteContent
+					const change = message.content as INoteContent;
 
-					const newLoopTimes = applyDiff(this.subLoops[change.instrument].map(note => note.loopTime), {
-						add: change.action === 'Add' ? [change.loopTime] : [],
-						delete: change.action === 'Delete' ? [change.loopTime] : []
-					})
+					const newLoopTimes = applyDiff(
+						this.subLoops[change.instrument].map((note) => note.loopTime),
+						{
+							add: change.action === 'Add' ? [change.loopTime] : [],
+							delete: change.action === 'Delete' ? [change.loopTime] : [],
+						},
+					);
 
-					this.multiLane.current?.setNotes(change.instrument, newLoopTimes)
+					this.multiLane.current?.setNotes(change.instrument, newLoopTimes);
 
-					this.subLoops[change.instrument] = newLoopTimes.map(loopTime => ({data: change.instrument, loopTime}))
+					this.subLoops[change.instrument] = newLoopTimes.map((loopTime) => ({
+						data: change.instrument,
+						loopTime,
+					}));
+
+					this.scheduler.setLoop(([] as ILoopNote[]).concat(...this.subLoops));
+					
 					break;
 
 				default:
@@ -132,7 +149,7 @@ class App extends React.Component<{}, IState> {
 		}
 	}
 
-	mousePosition: IPoint = {x: -10, y: -10};
+	mousePosition: IPoint = { x: -10, y: -10 };
 
 	reportMousePosition() {
 		this.client.send({
@@ -160,7 +177,8 @@ class App extends React.Component<{}, IState> {
 					<button onClick={() => this.startAudio()}>play</button>
 					<button onClick={() => this.stopAudio()}>pause</button>
 				</div>
-				<img src={Cursor}
+				<img
+					src={Cursor}
 					id="otherguy"
 					alt=""
 					style={{
@@ -181,19 +199,19 @@ class App extends React.Component<{}, IState> {
 export default App;
 
 function getDiff(prev: number[], curr: number[]) {
-	const addedNotes = curr.filter(n => !prev.includes(n))
-	const deletedNotes = prev.filter(n => !curr.includes(n))
+	const addedNotes = curr.filter((n) => !prev.includes(n));
+	const deletedNotes = prev.filter((n) => !curr.includes(n));
 
 	return {
 		add: addedNotes,
-		delete: deletedNotes
-	}
+		delete: deletedNotes,
+	};
 }
 
-function applyDiff(orig: number[], diff: {add: number[], delete: number[]}): number[] {
-	let copy = orig.slice()
-	copy.push(...diff.add)
-	copy = copy.filter(n => !diff.delete.includes(n))
-	
-	return copy
+function applyDiff(orig: number[], diff: { add: number[]; delete: number[] }): number[] {
+	let copy = orig.slice();
+	copy.push(...diff.add);
+	copy = copy.filter((n) => !diff.delete.includes(n));
+
+	return copy;
 }
