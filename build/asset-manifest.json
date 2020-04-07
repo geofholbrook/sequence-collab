@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/programming/music-enviro/sequence-collab/build/static/css/main.42d1c148.chunk.css",
-    "main.js": "/programming/music-enviro/sequence-collab/build/static/js/main.f18d5907.chunk.js",
-    "main.js.map": "/programming/music-enviro/sequence-collab/build/static/js/main.f18d5907.chunk.js.map",
+    "main.css": "/programming/music-enviro/sequence-collab/build/static/css/main.55b6383f.chunk.css",
+    "main.js": "/programming/music-enviro/sequence-collab/build/static/js/main.3eb7ee09.chunk.js",
+    "main.js.map": "/programming/music-enviro/sequence-collab/build/static/js/main.3eb7ee09.chunk.js.map",
     "runtime-main.js": "/programming/music-enviro/sequence-collab/build/static/js/runtime-main.e207aba7.js",
     "runtime-main.js.map": "/programming/music-enviro/sequence-collab/build/static/js/runtime-main.e207aba7.js.map",
-    "static/js/2.09f14343.chunk.js": "/programming/music-enviro/sequence-collab/build/static/js/2.09f14343.chunk.js",
-    "static/js/2.09f14343.chunk.js.map": "/programming/music-enviro/sequence-collab/build/static/js/2.09f14343.chunk.js.map",
+    "static/js/2.7cb891c6.chunk.js": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js",
+    "static/js/2.7cb891c6.chunk.js.map": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js.map",
     "index.html": "/programming/music-enviro/sequence-collab/build/index.html",
-    "precache-manifest.1e63c2af91f1a21fb65a2dc8076e512e.js": "/programming/music-enviro/sequence-collab/build/precache-manifest.1e63c2af91f1a21fb65a2dc8076e512e.js",
+    "precache-manifest.68ff29e0b4754aa5f213a1f359a66d91.js": "/programming/music-enviro/sequence-collab/build/precache-manifest.68ff29e0b4754aa5f213a1f359a66d91.js",
     "service-worker.js": "/programming/music-enviro/sequence-collab/build/service-worker.js",
-    "static/css/main.42d1c148.chunk.css.map": "/programming/music-enviro/sequence-collab/build/static/css/main.42d1c148.chunk.css.map",
-    "static/js/2.09f14343.chunk.js.LICENSE.txt": "/programming/music-enviro/sequence-collab/build/static/js/2.09f14343.chunk.js.LICENSE.txt",
+    "static/css/main.55b6383f.chunk.css.map": "/programming/music-enviro/sequence-collab/build/static/css/main.55b6383f.chunk.css.map",
+    "static/js/2.7cb891c6.chunk.js.LICENSE.txt": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js.LICENSE.txt",
     "static/media/cursor_PNG99.png": "/programming/music-enviro/sequence-collab/build/static/media/cursor_PNG99.be56600f.png"
   },
   "entrypoints": [
     "static/js/runtime-main.e207aba7.js",
-    "static/js/2.09f14343.chunk.js",
-    "static/css/main.42d1c148.chunk.css",
-    "static/js/main.f18d5907.chunk.js"
+    "static/js/2.7cb891c6.chunk.js",
+    "static/css/main.55b6383f.chunk.css",
+    "static/js/main.3eb7ee09.chunk.js"
   ]
 }

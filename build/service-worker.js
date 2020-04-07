@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/programming/music-enviro/sequence-collab/build/precache-manifest.1e63c2af91f1a21fb65a2dc8076e512e.js"
+  "/programming/music-enviro/sequence-collab/build/precache-manifest.68ff29e0b4754aa5f213a1f359a66d91.js"
 );
 
 self.addEventListener('message', (event) => {
