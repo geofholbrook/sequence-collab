@@ -9,6 +9,7 @@ import { IMessage, INoteContent } from './@types';
 import { IPoint } from '@musicenviro/base';
 
 import Cursor from './resources/cursor_PNG99.png';
+import { ReactFacebookLoginInfo } from 'react-facebook-login';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -24,7 +25,8 @@ interface IState {
 	otherMouse: IPoint;
 }
 
-class App extends React.Component<{}, IState> {
+class App extends React.Component<{userInfo: ReactFacebookLoginInfo}, IState> {
+	
 	scheduler = new Scheduler<number>();
 	ac!: AudioContext;
 	user = 'user' + Math.floor(Math.random() * 10000);
@@ -34,7 +36,7 @@ class App extends React.Component<{}, IState> {
 
 	client = new MessageClient<IMessage>(serverURL);
 
-	constructor(props: {}) {
+	constructor(props: {userInfo: ReactFacebookLoginInfo}) {
 		super(props);
 
 		this.state = {
@@ -166,7 +168,7 @@ class App extends React.Component<{}, IState> {
 	render() {
 		return (
 			<div className="App" onMouseMove={(event) => this.handleMouseMove(event)}>
-				><header>sequence collab</header>
+				><header>sequence collab: welcome {this.props.userInfo.name}</header>
 				<div id="main">
 					<MultiNoteLanes
 						ref={this.multiLane}

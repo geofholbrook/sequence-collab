@@ -17,9 +17,11 @@
     "@geof/socket-messaging": "^0.1.4",
     "@musicenviro/base": "^0.2.1",
     "@musicenviro/ui-elements": "^0.4.5",
+    "@types/react-facebook-login": "^4.1.1",
     "electron": "^8.2.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-facebook-login": "^4.1.1",
     "react-scripts": "3.4.1",
     "ts-node": "^8.8.2",
     "typescript": "^3.7.5"
