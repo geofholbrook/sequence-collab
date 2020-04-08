@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/programming/music-enviro/sequence-collab/build/static/css/main.55b6383f.chunk.css",
-    "main.js": "/programming/music-enviro/sequence-collab/build/static/js/main.3eb7ee09.chunk.js",
-    "main.js.map": "/programming/music-enviro/sequence-collab/build/static/js/main.3eb7ee09.chunk.js.map",
-    "runtime-main.js": "/programming/music-enviro/sequence-collab/build/static/js/runtime-main.e207aba7.js",
-    "runtime-main.js.map": "/programming/music-enviro/sequence-collab/build/static/js/runtime-main.e207aba7.js.map",
-    "static/js/2.7cb891c6.chunk.js": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js",
-    "static/js/2.7cb891c6.chunk.js.map": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js.map",
-    "index.html": "/programming/music-enviro/sequence-collab/build/index.html",
-    "precache-manifest.68ff29e0b4754aa5f213a1f359a66d91.js": "/programming/music-enviro/sequence-collab/build/precache-manifest.68ff29e0b4754aa5f213a1f359a66d91.js",
-    "service-worker.js": "/programming/music-enviro/sequence-collab/build/service-worker.js",
-    "static/css/main.55b6383f.chunk.css.map": "/programming/music-enviro/sequence-collab/build/static/css/main.55b6383f.chunk.css.map",
-    "static/js/2.7cb891c6.chunk.js.LICENSE.txt": "/programming/music-enviro/sequence-collab/build/static/js/2.7cb891c6.chunk.js.LICENSE.txt",
-    "static/media/cursor_PNG99.png": "/programming/music-enviro/sequence-collab/build/static/media/cursor_PNG99.be56600f.png"
+    "main.css": "/sequence-collab/build/static/css/main.55b6383f.chunk.css",
+    "main.js": "/sequence-collab/build/static/js/main.3eb7ee09.chunk.js",
+    "main.js.map": "/sequence-collab/build/static/js/main.3eb7ee09.chunk.js.map",
+    "runtime-main.js": "/sequence-collab/build/static/js/runtime-main.eace52d4.js",
+    "runtime-main.js.map": "/sequence-collab/build/static/js/runtime-main.eace52d4.js.map",
+    "static/js/2.7cb891c6.chunk.js": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js",
+    "static/js/2.7cb891c6.chunk.js.map": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js.map",
+    "index.html": "/sequence-collab/build/index.html",
+    "precache-manifest.1d50949e7cb6e93b845be7e84245b97a.js": "/sequence-collab/build/precache-manifest.1d50949e7cb6e93b845be7e84245b97a.js",
+    "service-worker.js": "/sequence-collab/build/service-worker.js",
+    "static/css/main.55b6383f.chunk.css.map": "/sequence-collab/build/static/css/main.55b6383f.chunk.css.map",
+    "static/js/2.7cb891c6.chunk.js.LICENSE.txt": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js.LICENSE.txt",
+    "static/media/cursor_PNG99.png": "/sequence-collab/build/static/media/cursor_PNG99.be56600f.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.e207aba7.js",
+    "static/js/runtime-main.eace52d4.js",
     "static/js/2.7cb891c6.chunk.js",
     "static/css/main.55b6383f.chunk.css",
     "static/js/main.3eb7ee09.chunk.js"
