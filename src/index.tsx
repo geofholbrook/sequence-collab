@@ -4,16 +4,20 @@ import App from './App';
 import { ReactFacebookLoginInfo } from 'react-facebook-login';
 import { FacebookLoginButton } from './users/LoginButton';
 
-let userInfo: ReactFacebookLoginInfo | null = null;
+
+
+let userInfo: {name: string} | null = {
+	name: "<login disabled>"
+};
 
 ReactDOM.render(
-	<div>
-		<FacebookLoginButton
-			callback={(info: ReactFacebookLoginInfo) => {
-				userInfo = info;
-				ReactDOM.render(<App userInfo={userInfo} />, document.getElementById('root'));
-			}}
-		/>
-	</div>,
+	<App userInfo={{name: userInfo.name as string}} />,
+	// <div>
+	// 	<FacebookLoginButton
+	// 		callback={(info: ReactFacebookLoginInfo) => {
+	// 			ReactDOM.render(<App userInfo={{name: info.name as string}} />, document.getElementById('root'));
+	// 		}}
+	// 	/>
+	// </div>,
 	document.getElementById('root'),
 );

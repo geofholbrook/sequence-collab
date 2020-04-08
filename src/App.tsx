@@ -25,7 +25,7 @@ interface IState {
 	otherMouse: IPoint;
 }
 
-class App extends React.Component<{userInfo: ReactFacebookLoginInfo}, IState> {
+class App extends React.Component<{userInfo: {name: string}}, IState> {
 	
 	scheduler = new Scheduler<number>();
 	ac!: AudioContext;
@@ -36,7 +36,7 @@ class App extends React.Component<{userInfo: ReactFacebookLoginInfo}, IState> {
 
 	client = new MessageClient<IMessage>(serverURL);
 
-	constructor(props: {userInfo: ReactFacebookLoginInfo}) {
+	constructor(props: {userInfo: {name: string}}) {
 		super(props);
 
 		this.state = {
@@ -168,7 +168,7 @@ class App extends React.Component<{userInfo: ReactFacebookLoginInfo}, IState> {
 	render() {
 		return (
 			<div className="App" onMouseMove={(event) => this.handleMouseMove(event)}>
-				><header>sequence collab: welcome {this.props.userInfo.name}</header>
+				><header>SYNCROJAM {this.props.userInfo.name}</header>
 				<div id="main">
 					<MultiNoteLanes
 						ref={this.multiLane}

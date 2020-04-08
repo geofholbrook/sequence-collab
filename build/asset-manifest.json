@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/sequence-collab/build/static/css/main.55b6383f.chunk.css",
-    "main.js": "/sequence-collab/build/static/js/main.3eb7ee09.chunk.js",
-    "main.js.map": "/sequence-collab/build/static/js/main.3eb7ee09.chunk.js.map",
-    "runtime-main.js": "/sequence-collab/build/static/js/runtime-main.eace52d4.js",
-    "runtime-main.js.map": "/sequence-collab/build/static/js/runtime-main.eace52d4.js.map",
-    "static/js/2.7cb891c6.chunk.js": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js",
-    "static/js/2.7cb891c6.chunk.js.map": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js.map",
-    "index.html": "/sequence-collab/build/index.html",
-    "precache-manifest.1d50949e7cb6e93b845be7e84245b97a.js": "/sequence-collab/build/precache-manifest.1d50949e7cb6e93b845be7e84245b97a.js",
-    "service-worker.js": "/sequence-collab/build/service-worker.js",
-    "static/css/main.55b6383f.chunk.css.map": "/sequence-collab/build/static/css/main.55b6383f.chunk.css.map",
-    "static/js/2.7cb891c6.chunk.js.LICENSE.txt": "/sequence-collab/build/static/js/2.7cb891c6.chunk.js.LICENSE.txt",
-    "static/media/cursor_PNG99.png": "/sequence-collab/build/static/media/cursor_PNG99.be56600f.png"
+    "main.css": "/static/css/main.42d1c148.chunk.css",
+    "main.js": "/static/js/main.60c3be51.chunk.js",
+    "main.js.map": "/static/js/main.60c3be51.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.c4f92e67.js",
+    "runtime-main.js.map": "/static/js/runtime-main.c4f92e67.js.map",
+    "static/js/2.09f14343.chunk.js": "/static/js/2.09f14343.chunk.js",
+    "static/js/2.09f14343.chunk.js.map": "/static/js/2.09f14343.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.ce735dd151634869dc95e91ad24fd648.js": "/precache-manifest.ce735dd151634869dc95e91ad24fd648.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.42d1c148.chunk.css.map": "/static/css/main.42d1c148.chunk.css.map",
+    "static/js/2.09f14343.chunk.js.LICENSE.txt": "/static/js/2.09f14343.chunk.js.LICENSE.txt",
+    "static/media/cursor_PNG99.png": "/static/media/cursor_PNG99.be56600f.png"
   },
   "entrypoints": [
-    "static/js/runtime-main.eace52d4.js",
-    "static/js/2.7cb891c6.chunk.js",
-    "static/css/main.55b6383f.chunk.css",
-    "static/js/main.3eb7ee09.chunk.js"
+    "static/js/runtime-main.c4f92e67.js",
+    "static/js/2.09f14343.chunk.js",
+    "static/css/main.42d1c148.chunk.css",
+    "static/js/main.60c3be51.chunk.js"
   ]
 }
