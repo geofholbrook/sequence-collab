@@ -19,7 +19,7 @@ import { ReactFacebookLoginInfo } from 'react-facebook-login';
 
 const nodeDropletIP = '167.172.3.7';
 const local = false;
-const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}`;
+const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
 interface IState {
 	otherMouse: IPoint;
