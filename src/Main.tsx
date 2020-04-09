@@ -1,13 +1,13 @@
 import React from 'react';
 
 import { MultiNoteLanes } from '@musicenviro/ui-elements';
-import { kick, snare, hihat } from './sound-generation/drumSynth';
 import { Scheduler, ILoopNote } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
 import { IMessage, INoteContent } from './@types';
 import { IPoint } from '@musicenviro/base';
-
+import * as Tone from 'tone'
 import Cursor from './resources/cursor_PNG99.png';
+import { callSynth, synths } from './sound-generation/synths';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -41,8 +41,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
-				const fn = [hihat, hihat, snare, kick][note.data];
-				fn(this.ac, note.audioContextTime);
+				// const fn = [hihat, hihat, snare, kick][note.data];
+				// fn(this.ac, note.audioContextTime);
+
+				const synthIndex = [28, 15, 1, 0][note.data]
+				callSynth(this.ac, synths[synthIndex], note.audioContextTime)
 			}),
 		);
 
@@ -57,7 +60,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		if (this.ac) {
 			this.ac.resume();
 		} else {
-			this.ac = new AudioContext();
+			this.ac = Tone.context.rawContext as AudioContext;
 			this.scheduler.setAudioContext(this.ac);
 			this.scheduler.start();
 		}
@@ -166,7 +169,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					SYNCROJAM – logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
 				</header>
-				<div id="main">
+				<div className="content">
 					<MultiNoteLanes
 						ref={this.multiLane}
 						onChange={(instr, notes) => {

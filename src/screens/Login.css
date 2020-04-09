@@ -23,7 +23,7 @@ input[type=text], input[type=password] {
   box-sizing: border-box;
 }
 
-.login-button {
+.LoginScreen button {
   background-color: #4CAF50;
   color: white;
   padding: 14px 20px;
@@ -33,15 +33,17 @@ input[type=text], input[type=password] {
   width: 100%;
 }
 
+button:hover {
+  opacity: 0.8;
+}
+
+
 .required {
   color: red;
   font-size: 14px;
   text-align: right;
 }
 
-button:hover {
-  opacity: 0.8;
-}
 
 
 .container {

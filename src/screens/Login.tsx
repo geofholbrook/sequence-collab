@@ -26,7 +26,7 @@ export function Login(props: { onSuccess: (username: string, password: string) =
 	}
 
 	return (
-		<div className="Screen">
+		<div className="Screen LoginScreen">
 			<header>login screen</header>
 			<div id="main">
 				<div className="not-actually-a-form">
@@ -53,7 +53,7 @@ export function Login(props: { onSuccess: (username: string, password: string) =
 							onChange={handlePasswordChange}
 						/>
 					</div>
-					<button className="login-button" onClick={handleSubmit}>
+					<button onClick={handleSubmit}>
 						Login
 					</button>
 				</div>

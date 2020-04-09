@@ -1,24 +1,23 @@
 import * as React from 'react';
 import { Main } from './Main';
 import { Login } from './screens/Login';
+import { Test } from './screens/Test';
 
-type Screen = 'Login' | 'Main';
+type Screen = 'Login' | 'Main' | 'Test';
 
-let userInfo: { name: string } | null = {
+let userInfo: { name: string } = {
 	name: '<login disabled>',
 };
 
+const initialScreen = 'Main'
+
 export function App() {
-	const [screen, setScreen] = React.useState<Screen>('Login');
-	const [username, setUserName] = React.useState<string>('')
+	const [screen, setScreen] = React.useState<Screen>(initialScreen);
+	const [username, setUserName] = React.useState<string>('<none>')
 
 	switch (screen) {
 		case 'Main':
-			return !!userInfo ? (
-				<Main userInfo={{ name: username }} />
-			) : (
-				<div>missing user info</div>
-            );
+			return <Main userInfo={{ name: username }} />
         
         case 'Login':
             return <Login 
@@ -26,5 +25,8 @@ export function App() {
 					setUserName(uname)
 					setScreen('Main')}}
             />
+
+		case 'Test':
+			return <Test />
 	}
 }

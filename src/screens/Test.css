@@ -1,0 +1,15 @@
+.TestScreen button {
+	background-color: #4caf50;
+	font-size: 14px;
+	color: white;
+	padding: 14px 20px;
+	margin: 8px;
+	border: none;
+	cursor: pointer;
+    width: 25%;
+    
+}
+
+.TextScreen button:hover {
+	opacity: 0.8;
+}
