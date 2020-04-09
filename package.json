@@ -50,7 +50,7 @@
     "pack": "build --dir",
     "dist": "npm run build && build",
     "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/server/index.ts",
-    "deploy-client": "scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
+    "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },
   "eslintConfig": {
     "extends": "react-app"
