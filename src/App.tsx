@@ -9,7 +9,7 @@ let userInfo: { name: string } = {
 	name: '<login disabled>',
 };
 
-const initialScreen = 'Main'
+const initialScreen = 'Login'
 
 export function App() {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);

@@ -2,7 +2,7 @@
   "name": "sequence-collab",
   "version": "0.0.0",
   "private": true,
-  "homepage": "/./",
+  "homepage": "http://syncrojam.com/",
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
     "win": {
