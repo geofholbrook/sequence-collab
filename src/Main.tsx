@@ -8,6 +8,7 @@ import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
 import { callSynth, synths } from './sound-generation/synths';
 import { SJDrumLane } from './components/SJDrumLane';
+import { getDiff, applyDiff } from './diffs';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -237,22 +238,4 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 }
 
-function getDiff(prev: number[], curr: number[]) {
-	console.log({ prev, curr });
 
-	const addedNotes = curr.filter((n) => !prev.includes(n));
-	const deletedNotes = prev.filter((n) => !curr.includes(n));
-
-	return {
-		add: addedNotes,
-		delete: deletedNotes,
-	};
-}
-
-function applyDiff(orig: number[], diff: { add: number[]; delete: number[] }): number[] {
-	let copy = orig.slice();
-	copy.push(...diff.add);
-	copy = copy.filter((n) => !diff.delete.includes(n));
-
-	return copy;
-}
