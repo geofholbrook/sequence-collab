@@ -1,12 +1,10 @@
 import { PropTime } from "../Scheduler/Scheduler";
-
-
-
+import { IPoint } from "@musicenviro/base";
 
 export interface INoteContent {
     sequence: number;
     action: 'Add' | 'Delete'
-    instrument: number;
+    laneIndex: number;
     loopTime: PropTime
 }
 

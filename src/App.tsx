@@ -5,15 +5,11 @@ import { Test } from './screens/Test';
 
 type Screen = 'Login' | 'Main' | 'Test';
 
-let userInfo: { name: string } = {
-	name: '<login disabled>',
-};
-
-const initialScreen = 'Login'
+const initialScreen = 'Main'
 
 export function App() {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
-	const [username, setUserName] = React.useState<string>('<none>')
+	const [username, setUserName] = React.useState<string>('user' + Math.floor(Math.random() * 10000))
 
 	switch (screen) {
 		case 'Main':

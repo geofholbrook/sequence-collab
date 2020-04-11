@@ -1,13 +1,13 @@
 import React from 'react';
-
-import { MultiNoteLanes } from '@musicenviro/ui-elements';
-import { Scheduler, ILoopNote } from './Scheduler/Scheduler';
+import _ from 'lodash';
+import { Scheduler, ILoopNote, PropTime } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
 import { IMessage, INoteContent } from './@types';
 import { IPoint } from '@musicenviro/base';
-import * as Tone from 'tone'
+import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
 import { callSynth, synths } from './sound-generation/synths';
+import { SJDrumLane } from './components/SJDrumLane';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -16,19 +16,23 @@ import { callSynth, synths } from './sound-generation/synths';
 // ];
 
 const nodeDropletIP = '167.172.3.7';
-const local = false;
+const local = true;
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
+interface ILane {
+	instrument: number;
+	loopTimes: PropTime[];
+}
+
 interface IState {
+	lanes: ILane[];
 	otherMouse: IPoint;
 }
 
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
 	scheduler = new Scheduler<number>();
 	ac!: AudioContext;
-	multiLane = React.createRef<MultiNoteLanes>();
-
-	subLoops: ILoopNote<number>[][] = [[], [], [], []];
+	// multiLane = React.createRef<MultiNoteLanes>();
 
 	client = new MessageClient<IMessage>(serverURL);
 
@@ -37,15 +41,18 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
+			lanes: [
+				{
+					instrument: 0,
+					loopTimes: [],
+				},
+			],
 		};
 
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
-				// const fn = [hihat, hihat, snare, kick][note.data];
-				// fn(this.ac, note.audioContextTime);
-
-				const synthIndex = [28, 15, 1, 0][note.data]
-				callSynth(this.ac, synths[synthIndex], note.audioContextTime)
+				const synthIndex = [28, 15, 1, 0][note.data];
+				callSynth(this.ac, synths[synthIndex], note.audioContextTime);
 			}),
 		);
 
@@ -70,46 +77,72 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.ac && this.ac.suspend();
 	}
 
-	handleNoteChange(instr: number, notes: number[], broadcast: boolean = true) {
-		if (broadcast) {
-			const diff = getDiff(
-				this.subLoops[instr].map((note) => note.loopTime),
-				notes,
-			);
+	handleManualNoteChange(laneIndex: number, notes: number[]) {
+		const diff = getDiff(this.state.lanes[laneIndex].loopTimes, notes);
+		this.broadcastDiff(diff, laneIndex);
+		this.setLaneLoopTimes(laneIndex, notes);
+	}
 
-			diff.add.forEach((n) =>
-				this.client.send({
-					user: this.props.userInfo.name,
-					type: 'NoteChange',
-					content: {
-						sequence: 0, // not implemented
-						action: 'Add',
-						instrument: instr,
-						loopTime: n,
-					},
-				}),
-			);
+	setLaneLoopTimes(laneIndex: number, loopTimes: number[]) {
 
-			diff.delete.forEach((n) =>
-				this.client.send({
-					user: this.props.userInfo.name,
-					type: 'NoteChange',
-					content: {
-						sequence: 0, // not implemented
-						action: 'Delete',
-						instrument: instr,
-						loopTime: n,
-					},
-				}),
-			);
-		}
+		const newLanes = this.state.lanes.slice();
+		
+		newLanes.splice(laneIndex, 1, {
+			instrument: this.state.lanes[laneIndex].instrument,
+			loopTimes,
+		});
+		
+		this.setState(
+			{
+				lanes: newLanes,
+			},
+			() => {
+				this.updateSchedule()
+			}
+		);
+	}
 
-		this.subLoops[instr] = notes.map((note) => ({
-			data: instr,
-			loopTime: note,
-		}));
+	private broadcastDiff(diff: { add: number[]; delete: number[] }, laneIndex: number) {
+		diff.add.forEach((n) =>
+			this.client.send({
+				user: this.props.userInfo.name,
+				type: 'NoteChange',
+				content: {
+					sequence: 0,
+					action: 'Add',
+					laneIndex,
+					loopTime: n,
+				},
+			}),
+		);
+		diff.delete.forEach((n) =>
+			this.client.send({
+				user: this.props.userInfo.name,
+				type: 'NoteChange',
+				content: {
+					sequence: 0,
+					action: 'Delete',
+					laneIndex,
+					loopTime: n,
+				},
+			}),
+		);
+	}
 
-		this.scheduler.setLoop(([] as ILoopNote[]).concat(...this.subLoops));
+
+
+	updateSchedule() {
+		const newLoop = _.concat(
+			[],
+			...this.state.lanes.map((lane) =>
+				lane.loopTimes.map((loopTime) => ({
+					data: lane.instrument,
+					loopTime,
+				})),
+			),
+		);
+
+		this.scheduler.setLoop(newLoop);
 	}
 
 	handleServerMessage(message: IMessage) {
@@ -117,30 +150,20 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			switch (message.type) {
 				case 'MousePosition':
 					this.setState({
-						otherMouse: message.content,
+						otherMouse: message.content as IPoint,
 					});
 					break;
-
+					
 				case 'NoteChange':
+					console.log(message)
 					const change = message.content as INoteContent;
 
-					const newLoopTimes = applyDiff(
-						this.subLoops[change.instrument].map((note) => note.loopTime),
-						{
-							add: change.action === 'Add' ? [change.loopTime] : [],
-							delete: change.action === 'Delete' ? [change.loopTime] : [],
-						},
-					);
+					const newLoopTimes = applyDiff(this.state.lanes[change.laneIndex].loopTimes, {
+						add: change.action === 'Add' ? [change.loopTime] : [],
+						delete: change.action === 'Delete' ? [change.loopTime] : [],
+					});
 
-					this.multiLane.current?.setNotes(change.instrument, newLoopTimes);
-
-					this.subLoops[change.instrument] = newLoopTimes.map((loopTime) => ({
-						data: change.instrument,
-						loopTime,
-					}));
-
-					this.scheduler.setLoop(([] as ILoopNote[]).concat(...this.subLoops));
-
+					this.setLaneLoopTimes(change.laneIndex, newLoopTimes);
 					break;
 
 				default:
@@ -170,12 +193,15 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
 				</header>
 				<div className="content">
-					<MultiNoteLanes
-						ref={this.multiLane}
-						onChange={(instr, notes) => {
-							this.handleNoteChange(instr, notes);
-						}}
-					/>
+					{this.state.lanes.slice().map((lane, i) => (
+						<SJDrumLane
+							instrument={lane.instrument}
+							notes={lane.loopTimes}
+							key={'lane' + i}
+							onChange={(notes) => this.handleManualNoteChange(i, notes)}
+						/>
+					))}
+
 					<button onClick={() => this.startAudio()}>play</button>
 					<button onClick={() => this.stopAudio()}>pause</button>
 				</div>
@@ -199,6 +225,9 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 }
 
 function getDiff(prev: number[], curr: number[]) {
+
+	console.log({prev, curr})
+
 	const addedNotes = curr.filter((n) => !prev.includes(n));
 	const deletedNotes = prev.filter((n) => !curr.includes(n));
 

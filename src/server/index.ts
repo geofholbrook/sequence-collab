@@ -3,7 +3,11 @@ import { IMessage } from "../@types";
 
 const server = new MessageServer<IMessage>(true)
 
-server.onMessage(str => {
-	// console.log(`Spraying message => ${str}`);
-	server.sendToAll(str)
+server.onMessage(msg => {
+	
+	if (msg.type === 'NoteChange') {
+		console.log(msg.content);
+	}
+
+	server.sendToAll(msg)
 })

@@ -50,9 +50,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@geof/socket-messaging": "^0.1.4",
+    "@geof/socket-messaging": "^0.3.0",
     "@musicenviro/base": "^0.2.1",
     "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
+    "@types/lodash": "^4.14.149",
     "@types/react-facebook-login": "^4.1.1",
     "electron": "^8.2.0",
     "react": "^16.13.1",
