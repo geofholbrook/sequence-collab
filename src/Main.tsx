@@ -155,7 +155,6 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					break;
 					
 				case 'NoteChange':
-					console.log(message)
 					const change = message.content as INoteContent;
 
 					const newLoopTimes = applyDiff(this.state.lanes[change.laneIndex].loopTimes, {
@@ -195,6 +194,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				<div className="content">
 					{this.state.lanes.slice().map((lane, i) => (
 						<SJDrumLane
+							index={i}
+							availableInstruments={synths.map(synth => synth.name)}
 							instrument={lane.instrument}
 							notes={lane.loopTimes}
 							key={'lane' + i}

@@ -3,7 +3,9 @@ import { SingleNoteLane } from '@musicenviro/ui-elements';
 import * as React from 'react';
 
 interface ISJDrumLane extends ISingleNoteLaneProps {
+	index: number;
 	instrument: number;
+	availableInstruments: string[]
 }
 
 export function SJDrumLane(props: ISJDrumLane) {
@@ -16,7 +18,7 @@ export function SJDrumLane(props: ISJDrumLane) {
 				color: '#777',
 			}}
 		>
-			<span>{props.instrument}</span>
+			<span>{props.index}</span>
 
 			<SingleNoteLane
 				notes={props.notes}
