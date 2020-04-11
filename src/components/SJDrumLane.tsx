@@ -63,12 +63,11 @@ export function SJDrumLane(props: ISJDrumLane) {
 					<SingleNoteLane
 						notes={props.notes}
 						onChange={props.onChange}
-						width={700}
+						width={650}
 						height={30}
 					/>
 				)}
 			</div>
-			
 		</div>
 	);
 }
