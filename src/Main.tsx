@@ -100,12 +100,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
-		const newLanes = this.state.lanes.slice();
-		newLanes.splice(laneIndex, 1, {
-			...newLanes[laneIndex],
-			synthName,
-		});
-		this.setLanes(newLanes);
+		this.setLaneProperty(laneIndex, "synthName", synthName)
 	}
 
 	handleManualAddLane() {
@@ -126,12 +121,10 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	handleManualDeleteLane = (laneIndex: number) => {
 		const newLanes = this.state.lanes.slice();
 		newLanes.splice(laneIndex, 1);
-		console.log(newLanes.map((lane) => lane.synthName));
 		this.setLanes(newLanes);
 	};
 
 	toggleMute = (laneIndex:number) => {
-		console.log('mute')
 		this.setLaneProperty(laneIndex, 'muted', !this.state.lanes[laneIndex].muted)
 	}
 

@@ -9,7 +9,7 @@ interface ISJDrumLane extends ISingleNoteLaneProps {
 	synthName?: string;
 	availableInstruments?: string[];
 	onInstrumentChange?: (name: string) => void;
-
+	
 	isPlaceHolder?: boolean;
 	onAddLane?: () => void;
 	onDeleteLane?: (laneIndex: number) => void;
@@ -20,31 +20,23 @@ interface ISJDrumLane extends ISingleNoteLaneProps {
 
 export function SJDrumLane(props: ISJDrumLane) {
 	return (
-		<div className={'sj-drum-lane' + (props.isPlaceHolder ? ' placeholder' : '')}>
+		<div className={"sj-drum-lane" + (props.isPlaceHolder ? " placeholder" : "")}>
 			<div className="section button-section">
-				{props.isPlaceHolder ? (
-					<Button
-						icon="add circle"
-						color="blue"
-						onClick={(e) => props.onAddLane && props.onAddLane()}
-					></Button>
-				) : (
-					<Button
-						icon="trash"
-						onClick={(e) => props.onDeleteLane && props.onDeleteLane(props.index)}
-					></Button>
-				)}
+			{props.isPlaceHolder 
+				? <Button icon= 'add circle' color='blue' onClick={e => props.onAddLane && props.onAddLane()}></Button>
+				: <Button icon='trash' onClick={e => props.onDeleteLane && props.onDeleteLane(props.index)}></Button>}
+
 			</div>
 
 			<div className="section more-buttons-section">
 				{!props.isPlaceHolder && (
-					<Button
-						className='tiny'
-						// icon={props.isMuted ? 'volume off' : 'volume up'}
-						color={props.isMuted ? 'yellow' : undefined}
-						onClick={props.onMuteButton}
-					>M</Button>
-				)}
+					
+					<Button icon={props.isMuted 
+						? 'volume off' : 'volume up'} 
+							color={props.isMuted 
+								? 'yellow' : undefined}
+						onClick={props.onMuteButton}></Button>)}
+					
 			</div>
 
 			<div className="section selector-section">
@@ -76,6 +68,7 @@ export function SJDrumLane(props: ISJDrumLane) {
 					/>
 				)}
 			</div>
+			
 		</div>
 	);
 }
