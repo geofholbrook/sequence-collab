@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Scheduler, ILoopNote, PropTime } from './Scheduler/Scheduler';
+import { Scheduler, PropTime } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
 import { IMessage, INoteContent } from './@types';
 import { IPoint } from '@musicenviro/base';
@@ -9,6 +9,8 @@ import Cursor from './resources/cursor_PNG99.png';
 import { callSynth, synths } from './sound-generation/synths';
 import { SJDrumLane } from './components/SJDrumLane';
 import { getDiff, applyDiff } from './diffs';
+
+import { Button, Icon } from 'semantic-ui-react';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -42,10 +44,10 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
-			lanes: synths.slice(0, 6).map((synth) => ({
-				synthName: synth.name,
+			lanes: [{
+				synthName: synths[0].name,
 				loopTimes: [],
-			})),
+			}],
 		};
 
 		this.scheduler.onSchedule((notes) =>
@@ -62,7 +64,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		});
 	}
 
-	startAudio() {
+	startAudio = () => {
 		if (this.ac) {
 			this.ac.resume();
 		} else {
@@ -72,7 +74,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		}
 	}
 
-	stopAudio() {
+	stopAudio = () => {
 		this.ac && this.ac.suspend();
 	}
 
@@ -100,6 +102,24 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			loopTimes: newLanes[laneIndex].loopTimes,
 		});
 		this.setLanes(newLanes);
+	}
+
+	handleManualAddLane() {
+		const prevSynthIndex = synths.map(synth => synth.name).indexOf(_.last(this.state.lanes)?.synthName || "")
+		
+		this.setLanes([...this.state.lanes, {
+			synthName: synths[(prevSynthIndex + 1) % synths.length].name,
+			loopTimes: []
+		}])
+	}
+
+	handleManualDeleteLane = (laneIndex: number) => {
+		console.log(this.state.lanes.map(lane => lane.synthName))
+		console.log(laneIndex)
+		const newLanes = this.state.lanes.slice();
+		newLanes.splice(laneIndex, 1)
+		console.log(newLanes.map(lane => lane.synthName))
+		this.setLanes(newLanes)
 	}
 
 	setLanes(newLanes: ILane[]) {
@@ -202,6 +222,21 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				</header>
 
 				<div className="content">
+					<Button.Group basic icon>
+						<Button onClick={this.stopAudio}>
+							<Icon name="stop" />
+						</Button>
+						<Button onClick={this.startAudio}>
+							<Icon name="play" color="green"/>
+						</Button>
+					</Button.Group>
+
+					<SJDrumLane
+						index={this.state.lanes.length}
+						isPlaceHolder={true}
+						onAddLane={() => this.handleManualAddLane()}
+					></SJDrumLane>
+
 					{this.state.lanes.slice().map((lane, i) => (
 						<SJDrumLane
 							index={i}
@@ -213,12 +248,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 							onInstrumentChange={(name) =>
 								this.handleManualInstrumentChange(i, name)
 							}
+							onDeleteLane={this.handleManualDeleteLane}
+
 						/>
 					))}
 
-					<button onClick={() => this.startAudio()}>play</button>
-					<button onClick={() => this.stopAudio()}>pause</button>
 				</div>
+
 				<img
 					src={Cursor}
 					id="otherguy"
@@ -237,5 +273,3 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		);
 	}
 }
-
-

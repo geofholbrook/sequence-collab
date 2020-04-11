@@ -1,0 +1,23 @@
+.sj-drum-lane {
+    width: 100%;
+    min-height: 50px;
+    display: table
+}
+
+.section {
+    display: table-cell;
+    /* border: solid 1px; */
+    vertical-align: middle;
+}
+
+.button-section {
+    width: 35px;
+}
+
+.selector-section select {
+    width: 120px;
+}
+
+.main-section {
+    padding-top: 10px
+}

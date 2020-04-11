@@ -6,16 +6,16 @@ import { sampleFiles } from './samples-dir-listing';
 const players: Array<Tone.Player> = [];
 
 (async function () {
-	while (sampleFiles.length > 0) {
-		const filename = sampleFiles.shift();
-		
+	let index = 0
+	while (index < sampleFiles.length) {
+		const filename = sampleFiles[index++];
 		try {
 			await new Promise((resolve, reject) => {
 				const audioFile = require('./samples/' + filename);
 				setTimeout(reject, 1000);
-
+				const newIndex = players.length
 				players.push(new Tone.Player(audioFile, () => {
-					// console.log('loaded', filename);
+					console.log(newIndex, 'loaded', filename);
 					resolve();
 				}).toDestination());
 			});
@@ -26,5 +26,6 @@ const players: Array<Tone.Player> = [];
 })();
 
 export function playSample(ac: AudioContext, startTime: Seconds, sampleIndex: number) {
+
     players[sampleIndex].start(startTime)
 }
