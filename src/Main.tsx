@@ -19,7 +19,7 @@ import { Button, Icon } from 'semantic-ui-react';
 // ];
 
 const nodeDropletIP = '167.172.3.7';
-const local = true;
+const local = false;
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
 interface ILane {
