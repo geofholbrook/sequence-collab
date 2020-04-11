@@ -25,6 +25,7 @@ const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 interface ILane {
 	synthName: string;
 	loopTimes: PropTime[];
+	muted: boolean;
 }
 
 interface IState {
@@ -44,10 +45,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
-			lanes: [{
-				synthName: synths[0].name,
-				loopTimes: [],
-			}],
+			lanes: [
+				{
+					synthName: synths[0].name,
+					loopTimes: [],
+					muted: false,
+				},
+			],
 		};
 
 		this.scheduler.onSchedule((notes) =>
@@ -72,11 +76,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			this.scheduler.setAudioContext(this.ac);
 			this.scheduler.start();
 		}
-	}
+	};
 
 	stopAudio = () => {
 		this.ac && this.ac.suspend();
-	}
+	};
 
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
 		const diff = getDiff(this.state.lanes[laneIndex].loopTimes, notes);
@@ -88,7 +92,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		const newLanes = this.state.lanes.slice();
 
 		newLanes.splice(laneIndex, 1, {
-			synthName: this.state.lanes[laneIndex].synthName,
+			...newLanes[laneIndex],
 			loopTimes,
 		});
 
@@ -98,28 +102,46 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
 		const newLanes = this.state.lanes.slice();
 		newLanes.splice(laneIndex, 1, {
+			...newLanes[laneIndex],
 			synthName,
-			loopTimes: newLanes[laneIndex].loopTimes,
 		});
 		this.setLanes(newLanes);
 	}
 
 	handleManualAddLane() {
-		const prevSynthIndex = synths.map(synth => synth.name).indexOf(_.last(this.state.lanes)?.synthName || "")
-		
-		this.setLanes([...this.state.lanes, {
-			synthName: synths[(prevSynthIndex + 1) % synths.length].name,
-			loopTimes: []
-		}])
+		const prevSynthIndex = synths
+			.map((synth) => synth.name)
+			.indexOf(_.last(this.state.lanes)?.synthName || '');
+
+		this.setLanes([
+			...this.state.lanes,
+			{
+				synthName: synths[(prevSynthIndex + 1) % synths.length].name,
+				loopTimes: [],
+				muted: false,
+			},
+		]);
 	}
 
 	handleManualDeleteLane = (laneIndex: number) => {
-		console.log(this.state.lanes.map(lane => lane.synthName))
-		console.log(laneIndex)
 		const newLanes = this.state.lanes.slice();
-		newLanes.splice(laneIndex, 1)
-		console.log(newLanes.map(lane => lane.synthName))
-		this.setLanes(newLanes)
+		newLanes.splice(laneIndex, 1);
+		console.log(newLanes.map((lane) => lane.synthName));
+		this.setLanes(newLanes);
+	};
+
+	toggleMute = (laneIndex:number) => {
+		console.log('mute')
+		this.setLaneProperty(laneIndex, 'muted', !this.state.lanes[laneIndex].muted)
+	}
+
+	setLaneProperty(laneIndex: number, property: 'synthName' | 'loopTimes' | 'muted', value: any) {
+		const newLanes = this.state.lanes.slice();
+		newLanes.splice(laneIndex, 1, {
+			...newLanes[laneIndex],
+			[property]: value,
+		});
+		this.setLanes(newLanes);
 	}
 
 	setLanes(newLanes: ILane[]) {
@@ -163,7 +185,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	updateSchedule() {
 		const newLoop = _.concat(
 			[],
-			...this.state.lanes.map((lane) =>
+			...this.state.lanes.filter(lane => !lane.muted).map((lane) =>
 				lane.loopTimes.map((loopTime) => ({
 					data: lane.synthName,
 					loopTime,
@@ -227,7 +249,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 							<Icon name="stop" />
 						</Button>
 						<Button onClick={this.startAudio}>
-							<Icon name="play" color="green"/>
+							<Icon name="play" color="green" />
 						</Button>
 					</Button.Group>
 
@@ -249,10 +271,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 								this.handleManualInstrumentChange(i, name)
 							}
 							onDeleteLane={this.handleManualDeleteLane}
-
+							
+							isMuted={lane.muted}
+							onMuteButton={() => this.toggleMute(i)}
 						/>
 					))}
-
 				</div>
 
 				<img

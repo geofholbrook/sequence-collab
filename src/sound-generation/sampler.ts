@@ -13,9 +13,7 @@ const players: Array<Tone.Player> = [];
 			await new Promise((resolve, reject) => {
 				const audioFile = require('./samples/' + filename);
 				setTimeout(reject, 1000);
-				const newIndex = players.length
 				players.push(new Tone.Player(audioFile, () => {
-					console.log(newIndex, 'loaded', filename);
 					resolve();
 				}).toDestination());
 			});

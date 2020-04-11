@@ -16,9 +16,6 @@ export const synths: ISynth[] = [
 	})),
 ];
 
-sampleFiles.forEach(file => console.log(file))
-synths.forEach(synth => console.log(synth.name))
-
 export function callSynth(ac: AudioContext, synth: ISynth, time?: Seconds) {
 	synth.fn(ac, time || ac.currentTime, ...(synth.extraArguments || []));
 }
