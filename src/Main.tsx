@@ -20,7 +20,7 @@ const local = true;
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
 interface ILane {
-	instrument: number;
+	synthName: string;
 	loopTimes: PropTime[];
 }
 
@@ -30,7 +30,7 @@ interface IState {
 }
 
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
-	scheduler = new Scheduler<number>();
+	scheduler = new Scheduler<string>();
 	ac!: AudioContext;
 	// multiLane = React.createRef<MultiNoteLanes>();
 
@@ -41,18 +41,16 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
-			lanes: [
-				{
-					instrument: 0,
-					loopTimes: [],
-				},
-			],
+			lanes: synths.slice(0, 6).map((synth) => ({
+				synthName: synth.name,
+				loopTimes: [],
+			})),
 		};
 
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
-				const synthIndex = [28, 15, 1, 0][note.data];
-				callSynth(this.ac, synths[synthIndex], note.audioContextTime);
+				const synth = synths.find((s) => s.name === note.data);
+				synth && callSynth(this.ac, synth, note.audioContextTime);
 			}),
 		);
 
@@ -84,21 +82,33 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	setLaneLoopTimes(laneIndex: number, loopTimes: number[]) {
-
 		const newLanes = this.state.lanes.slice();
-		
+
 		newLanes.splice(laneIndex, 1, {
-			instrument: this.state.lanes[laneIndex].instrument,
+			synthName: this.state.lanes[laneIndex].synthName,
 			loopTimes,
 		});
-		
+
+		this.setLanes(newLanes);
+	}
+
+	handleManualInstrumentChange(laneIndex: number, synthName: string) {
+		const newLanes = this.state.lanes.slice();
+		newLanes.splice(laneIndex, 1, {
+			synthName,
+			loopTimes: newLanes[laneIndex].loopTimes,
+		});
+		this.setLanes(newLanes);
+	}
+
+	setLanes(newLanes: ILane[]) {
 		this.setState(
 			{
 				lanes: newLanes,
 			},
 			() => {
-				this.updateSchedule()
-			}
+				this.updateSchedule();
+			},
 		);
 	}
 
@@ -129,14 +139,12 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		);
 	}
 
-
-
 	updateSchedule() {
 		const newLoop = _.concat(
 			[],
 			...this.state.lanes.map((lane) =>
 				lane.loopTimes.map((loopTime) => ({
-					data: lane.instrument,
+					data: lane.synthName,
 					loopTime,
 				})),
 			),
@@ -153,7 +161,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						otherMouse: message.content as IPoint,
 					});
 					break;
-					
+
 				case 'NoteChange':
 					const change = message.content as INoteContent;
 
@@ -191,15 +199,19 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					SYNCROJAM – logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
 				</header>
+
 				<div className="content">
 					{this.state.lanes.slice().map((lane, i) => (
 						<SJDrumLane
 							index={i}
-							availableInstruments={synths.map(synth => synth.name)}
-							instrument={lane.instrument}
+							availableInstruments={synths.map((synth) => synth.name)}
+							synthName={lane.synthName}
 							notes={lane.loopTimes}
 							key={'lane' + i}
 							onChange={(notes) => this.handleManualNoteChange(i, notes)}
+							onInstrumentChange={(name) =>
+								this.handleManualInstrumentChange(i, name)
+							}
 						/>
 					))}
 
@@ -226,8 +238,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 }
 
 function getDiff(prev: number[], curr: number[]) {
-
-	console.log({prev, curr})
+	console.log({ prev, curr });
 
 	const addedNotes = curr.filter((n) => !prev.includes(n));
 	const deletedNotes = prev.filter((n) => !curr.includes(n));
