@@ -2,7 +2,13 @@ import React from 'react';
 import _ from 'lodash';
 import { Scheduler, PropTime } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
-import { IMessage, INoteContent } from './@types';
+import {
+	IMessage,
+	INoteContent,
+	ILaneChangeContent,
+	IInstrumentChangeContent,
+	INewLaneContent,
+} from './@types';
 import { IPoint } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
@@ -100,7 +106,16 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
-		this.setLaneProperty(laneIndex, "synthName", synthName)
+		this.setLaneProperty(laneIndex, 'synthName', synthName);
+
+		this.client.send({
+			user: this.props.userInfo.name,
+			type: 'InstrumentChange',
+			content: {
+				laneIndex,
+				synthName,
+			} as IInstrumentChangeContent,
+		});
 	}
 
 	handleManualAddLane() {
@@ -108,32 +123,98 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			.map((synth) => synth.name)
 			.indexOf(_.last(this.state.lanes)?.synthName || '');
 
+		const newSynth = synths[(prevSynthIndex + 1) % synths.length].name;
+
+		this.doAddLaneWithSynth(newSynth);
+
+		this.client.send({
+			user: this.props.userInfo.name,
+			type: 'NewLane',
+			content: {
+				synthName: newSynth,
+			} as INewLaneContent,
+		});
+	}
+
+	handleManualDeleteLane = (laneIndex: number) => {
+		this.doDeleteLane(laneIndex);
+
+		this.client.send({
+			user: this.props.userInfo.name,
+			type: 'LaneChange',
+			content: {
+				action: 'Delete',
+				laneIndex,
+			} as ILaneChangeContent,
+		});
+	};
+
+	toggleMute = (laneIndex: number) => {
+		const prevMuteState = this.state.lanes[laneIndex].muted;
+		this.setLaneProperty(laneIndex, 'muted', !prevMuteState);
+		this.client.send({
+			user: this.props.userInfo.name,
+			type: 'LaneChange',
+			content: {
+				action: prevMuteState ? 'Unmute' : 'Mute',
+				laneIndex,
+			} as ILaneChangeContent,
+		});
+	};
+
+	private doAddLaneWithSynth(newSynth: string) {
 		this.setLanes([
 			...this.state.lanes,
 			{
-				synthName: synths[(prevSynthIndex + 1) % synths.length].name,
+				synthName: newSynth,
 				loopTimes: [],
 				muted: false,
 			},
 		]);
 	}
 
-	handleManualDeleteLane = (laneIndex: number) => {
-		const newLanes = this.state.lanes.slice();
-		newLanes.splice(laneIndex, 1);
-		this.setLanes(newLanes);
-	};
+	updateSchedule() {
+		const newLoop = _.concat(
+			[],
+			...this.state.lanes
+				.filter((lane) => !lane.muted)
+				.map((lane) =>
+					lane.loopTimes.map((loopTime) => ({
+						data: lane.synthName,
+						loopTime,
+					})),
+				),
+		);
 
-	toggleMute = (laneIndex:number) => {
-		this.setLaneProperty(laneIndex, 'muted', !this.state.lanes[laneIndex].muted)
+		this.scheduler.setLoop(newLoop);
 	}
 
+	// -----------------------------------------------------------------------------
+	// state change helpers
+	// -----------------------------------------------------------------------------
+
+	/**
+	 * change the state to alter a property of a lane
+	 * @param laneIndex
+	 * @param property
+	 * @param value
+	 */
 	setLaneProperty(laneIndex: number, property: 'synthName' | 'loopTimes' | 'muted', value: any) {
 		const newLanes = this.state.lanes.slice();
 		newLanes.splice(laneIndex, 1, {
 			...newLanes[laneIndex],
 			[property]: value,
 		});
+		this.setLanes(newLanes);
+	}
+
+	/**
+	 * change the state to remove a lane
+	 * @param laneIndex
+	 */
+	doDeleteLane(laneIndex: number) {
+		const newLanes = this.state.lanes.slice();
+		newLanes.splice(laneIndex, 1);
 		this.setLanes(newLanes);
 	}
 
@@ -148,7 +229,16 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		);
 	}
 
-	private broadcastDiff(diff: { add: number[]; delete: number[] }, laneIndex: number) {
+	// ----------------------------------------------------------------------------
+	// sending and receiving via socket client
+	// ----------------------------------------------------------------------------
+
+	/**
+	 * broadcast a change or set of changes to loop times for a lane
+	 * @param diff a format that includes additions and deletions
+	 * @param laneIndex 
+	 */
+	private broadcastDiff(diff: { add: PropTime[]; delete: PropTime[] }, laneIndex: number) {
 		diff.add.forEach((n) =>
 			this.client.send({
 				user: this.props.userInfo.name,
@@ -175,20 +265,6 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		);
 	}
 
-	updateSchedule() {
-		const newLoop = _.concat(
-			[],
-			...this.state.lanes.filter(lane => !lane.muted).map((lane) =>
-				lane.loopTimes.map((loopTime) => ({
-					data: lane.synthName,
-					loopTime,
-				})),
-			),
-		);
-
-		this.scheduler.setLoop(newLoop);
-	}
-
 	handleServerMessage(message: IMessage) {
 		if (message.user !== this.props.userInfo.name) {
 			switch (message.type) {
@@ -199,15 +275,52 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					break;
 
 				case 'NoteChange':
-					const change = message.content as INoteContent;
+					{
+						const change = message.content as INoteContent;
 
-					const newLoopTimes = applyDiff(this.state.lanes[change.laneIndex].loopTimes, {
-						add: change.action === 'Add' ? [change.loopTime] : [],
-						delete: change.action === 'Delete' ? [change.loopTime] : [],
-					});
+						const newLoopTimes = applyDiff(
+							this.state.lanes[change.laneIndex].loopTimes,
+							{
+								add: change.action === 'Add' ? [change.loopTime] : [],
+								delete: change.action === 'Delete' ? [change.loopTime] : [],
+							},
+						);
 
-					this.setLaneLoopTimes(change.laneIndex, newLoopTimes);
+						this.setLaneLoopTimes(change.laneIndex, newLoopTimes);
+					}
 					break;
+
+				case 'InstrumentChange':
+					{
+						const change = message.content as IInstrumentChangeContent;
+						this.setLaneProperty(change.laneIndex, 'synthName', change.synthName);
+					}
+					break;
+
+				case 'LaneChange': {
+					const change = message.content as ILaneChangeContent;
+					switch (change.action) {
+						case 'Delete': 
+							this.doDeleteLane(change.laneIndex)
+							break;
+						case 'Mute':
+							this.setLaneProperty(change.laneIndex, 'muted', true)
+							break;
+						case 'Unmute':
+							this.setLaneProperty(change.laneIndex, 'muted', false)
+							break
+						case 'ToggleMute':
+							// unused for now
+							this.setLaneProperty(change.laneIndex, 'muted', !this.state.lanes[change.laneIndex].muted)
+							break;
+					}
+					break;
+				}
+
+				case 'NewLane': {
+					const change = message.content as INewLaneContent;
+					this.doAddLaneWithSynth(change.synthName)
+				}
 
 				default:
 			}
@@ -264,7 +377,6 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 								this.handleManualInstrumentChange(i, name)
 							}
 							onDeleteLane={this.handleManualDeleteLane}
-							
 							isMuted={lane.muted}
 							onMuteButton={() => this.toggleMute(i)}
 						/>

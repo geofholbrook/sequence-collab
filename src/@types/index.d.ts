@@ -8,8 +8,22 @@ export interface INoteContent {
     loopTime: PropTime
 }
 
+export interface ILaneChangeContent {
+    action: 'Delete' | 'Mute' | 'Unmute' | 'ToggleMute'
+    laneIndex: number; 
+}
+
+export interface INewLaneContent {
+    synthName: string
+}
+
+export interface IInstrumentChangeContent {
+    synthName: string,
+    laneIndex: number
+}
+
 export interface IMessage {
     user: string;
-    type: 'MousePosition' | 'NoteChange';
-    content: IPoint | INoteContent
+    type: 'MousePosition' | 'NoteChange' | 'LaneChange' | 'NewLane' | 'InstrumentChange';
+    content: IPoint | INoteContent | ILaneChangeContent | INewLaneContent | IInstrumentChangeContent
 }
