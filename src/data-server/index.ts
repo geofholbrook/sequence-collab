@@ -1,0 +1,17 @@
+export const foo = 0 // all files must be modules?
+
+import fs from 'fs'
+
+const homedir = require('os').homedir();
+
+const dataPath = homedir + '/.server-data'
+
+if (!fs.existsSync(dataPath)) {
+    fs.mkdirSync(dataPath)
+} else {
+    console.log(dataPath + ' exists √')
+}
+
+const dir = fs.readdirSync(dataPath)
+console.log(dir)
+

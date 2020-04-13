@@ -3,6 +3,8 @@ import { IMessage } from "../@types";
 
 const server = new MessageServer<IMessage>(true)
 
+console.log(__dirname)
+
 server.onMessage(msg => {
 	
 	// if (msg.type === 'NoteChange') {

@@ -25,6 +25,7 @@
     "pack": "build --dir",
     "dist": "npm run build && build",
     "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/server/index.ts",
+    "data-server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/data-server/index.ts",
     "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },
   "eslintConfig": {
