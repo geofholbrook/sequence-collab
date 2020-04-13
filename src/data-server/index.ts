@@ -8,6 +8,7 @@ const dataPath = homedir + '/.syncrojam-data'
 
 if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath)
+    console.log(dataPath + ' created √')
 } else {
     console.log(dataPath + ' exists √')
 }
