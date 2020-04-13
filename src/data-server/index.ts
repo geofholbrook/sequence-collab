@@ -4,7 +4,7 @@ import fs from 'fs'
 
 const homedir = require('os').homedir();
 
-const dataPath = homedir + '/.server-data'
+const dataPath = homedir + '/.syncrojam-data'
 
 if (!fs.existsSync(dataPath)) {
     fs.mkdirSync(dataPath)
