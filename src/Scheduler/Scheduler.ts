@@ -1,11 +1,10 @@
 import { EventEmitter } from 'events';
 import { getNewScheduledNotes } from './getNewScheduledNotes';
+import { PropTime } from '../data-server/@types';
+import { Seconds } from 'tone/build/esm/core/type/Units';
 
 const lookahead = 0.1;
 const timerInterval = 25;
-
-export type Seconds = number;
-export type PropTime = number; // proportional time (0 - 1)
 
 export interface ILoopNote<T = number> {
 	data: T;

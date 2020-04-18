@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Scheduler, PropTime } from './Scheduler/Scheduler';
+import { Scheduler } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
 import {
 	IMessage,
@@ -9,6 +9,7 @@ import {
 	IInstrumentChangeContent,
 	INewLaneContent,
 } from './@types';
+
 import { IPoint } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
@@ -17,6 +18,7 @@ import { SJDrumLane } from './components/SJDrumLane';
 import { getDiff, applyDiff } from './diffs';
 
 import { Button, Icon } from 'semantic-ui-react';
+import { ILane, PropTime } from './data-server/@types';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },
@@ -28,11 +30,7 @@ const nodeDropletIP = '167.172.3.7';
 const local = false;
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
-interface ILane {
-	synthName: string;
-	loopTimes: PropTime[];
-	muted: boolean;
-}
+
 
 interface IState {
 	lanes: ILane[];
