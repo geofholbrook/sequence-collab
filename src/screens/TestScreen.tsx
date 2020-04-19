@@ -2,9 +2,6 @@ import superagent from 'superagent';
 import * as React from 'react'
 import { doJsonPost } from '../client/requests';
 
-
-
-
 export function TestRequests() {
 	async function createUser() {
         const res = await doJsonPost('/create-user', { name: 'anonymous' })

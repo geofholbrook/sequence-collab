@@ -3,10 +3,10 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { ICreateUserParams } from './@types';
 import Debug from 'debug';
 import { createNewUser, getUsers } from './users';
 import { dataPath } from './dataPath';
+import { ICreateUserParams } from '../@types';
 
 const debug = Debug('sj:data-server');
 

@@ -9,6 +9,7 @@ import {
 	IInstrumentChangeContent,
 	INewLaneContent,
 	PropTime,
+	ILane,
 } from './@types';
 
 import { IPoint } from '@musicenviro/base';
@@ -19,7 +20,6 @@ import { SJDrumLane } from './components/SJDrumLane';
 import { getDiff, applyDiff } from './diffs';
 
 import { Button, Icon } from 'semantic-ui-react';
-import { ILane } from './data-server/@types';
 
 // const testLoop = [
 // 	{ data: 1, loopTime: 0 },

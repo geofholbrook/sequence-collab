@@ -3,6 +3,7 @@ import { Main } from './Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
+import { doJsonPost, requestLogin } from './client/requests';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
@@ -18,7 +19,8 @@ export function App() {
         
         case 'Login':
             return <Login 
-                onSuccess={(uname: string) => {
+                onSuccess={async (uname: string) => {
+					const loginResponse = requestLogin(uname)
 					setUserName(uname)
 					setScreen('Main')}}
             />

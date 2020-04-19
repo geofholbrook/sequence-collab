@@ -6,11 +6,11 @@ export function Login(props: { onSuccess: (username: string, password: string) =
 	let password = '';
 
 	const [usernameRequired, setUsernameRequired] = React.useState<boolean>(false);
+	const [unknownUser, setUnknownUser] = React.useState<boolean>(false);
 
 	function handleSubmit(event: React.FormEvent) {
 		const trimmed = username.trimEnd().trimStart();
 		if (trimmed === '') {
-			console.log('alsdkfj');
 			setUsernameRequired(true);
 		} else {
 			props.onSuccess(username, password);
@@ -41,6 +41,7 @@ export function Login(props: { onSuccess: (username: string, password: string) =
 							onChange={handleUsernameChange}
 						/>
 						{usernameRequired && <div className="required">required</div>}
+						{unknownUser && <div className="required">unknown user</div>}
 					</div>
 					<div className="input-container">
 						<label htmlFor="password">
