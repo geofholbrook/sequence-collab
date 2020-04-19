@@ -1,8 +1,12 @@
-export type Seconds = number;
-export type PropTime = number; // proportional time (0 - 1)
+import { PropTime } from "../../@types";
 
-export interface ICreateUserRequestBody {
+export interface ICreateUserParams {
     name: string;
+}
+
+export interface ICreateUserResponse {
+    success: boolean;
+    message: string;
 }
 
 export interface ILane {

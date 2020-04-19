@@ -1,5 +1,7 @@
-import { PropTime } from "../Scheduler/Scheduler";
 import { IPoint } from "@musicenviro/base";
+
+export type PropTime = number
+export type Seconds = number
 
 export interface INoteContent {
     sequence: number;

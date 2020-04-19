@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import { getNewScheduledNotes } from './getNewScheduledNotes';
-import { PropTime } from '../data-server/@types';
-import { Seconds } from 'tone/build/esm/core/type/Units';
+import { PropTime, Seconds } from '../@types';
 
 const lookahead = 0.1;
 const timerInterval = 25;

@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
-import { Seconds } from '../Scheduler/Scheduler';
 
 import { sampleFiles } from './samples-dir-listing';
+import { Seconds } from '../@types';
 
 const players: Array<Tone.Player> = [];
 

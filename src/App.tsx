@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Main } from './Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
+import { TestRequests } from './screens/TestScreen';
 
-type Screen = 'Login' | 'Main' | 'Test';
+type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
-const initialScreen = 'Main'
+const initialScreen: Screen = 'TestScreen'
 
 export function App() {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
@@ -23,6 +24,9 @@ export function App() {
             />
 
 		case 'Test':
-			return <Test />
+			return <Test />;
+
+		case 'TestScreen':
+			return <TestRequests />;
 	}
 }

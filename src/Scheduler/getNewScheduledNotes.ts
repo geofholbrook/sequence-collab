@@ -1,6 +1,7 @@
-import { ILoopNote, Seconds, IScheduledNote } from './Scheduler';
+import { ILoopNote, IScheduledNote } from './Scheduler';
 import { IRange } from '@musicenviro/base';
 import { windowPosition } from './windowPosition';
+import { Seconds } from '../@types';
 
 export function getNewScheduledNotes<T>(
 	loop: ILoopNote<T>[],

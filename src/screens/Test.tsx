@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Seconds } from '../Scheduler/Scheduler';
 import './Test.css';
 import * as Tone from 'tone';
 import { synths, callSynth } from '../sound-generation/synths';
+import { Seconds } from '../@types';
 
 let ac = Tone.context.rawContext as AudioContext;
 

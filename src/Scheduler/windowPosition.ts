@@ -1,5 +1,5 @@
-import { PropTime } from './Scheduler';
 import { IRange } from '@musicenviro/base';
+import { PropTime } from '../@types';
 /**
  *
  * @param loopTime

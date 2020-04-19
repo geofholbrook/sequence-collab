@@ -3,7 +3,7 @@ import { playSample } from './sampler';
 import { ISynth } from '../screens/Test';
 
 import { sampleFiles } from './samples-dir-listing';
-import { Seconds } from '../Scheduler/Scheduler';
+import { Seconds } from '../@types';
 
 export const synths: ISynth[] = [
 	{ name: 'kick', fn: kick },
