@@ -10,6 +10,10 @@ import { maxUsers } from './config';
 import Debug from 'debug'
 const debug = Debug('sj:server:users')
 
+import { promisify } from 'util'
+const readdir = promisify(fs.readdir)
+const mkdir = promisify(fs.mkdir)
+
 export const onlineUsers: { [index: string]: IOnlineUser } = {};
 
 /**
@@ -23,7 +27,7 @@ export function getUsersSync() {
 }
 
 export async function getUsers() {
-	const dir = await fs.promises.readdir(storageRoot + '/users', { withFileTypes: true });
+	const dir = await readdir(storageRoot + '/users', { withFileTypes: true });
 	return dir.filter((dirent) => dirent.isDirectory()).map((dirent) => dirent.name);
 }
 
@@ -81,6 +85,6 @@ export async function signupUser(params: ISignupParams): Promise<ISignupResponse
 }
 
 async function doSignup(params: ISignupParams) {
-	await fs.promises.mkdir(storageRoot + '/users/' + params.name)
-	await fs.promises.mkdir(storageRoot + '/users/' + params.name + '/scenes')
+	await mkdir(storageRoot + '/users/' + params.name)
+	await mkdir(storageRoot + '/users/' + params.name + '/scenes')
 }

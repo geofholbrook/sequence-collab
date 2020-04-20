@@ -2,10 +2,15 @@ import * as fs from 'fs';
 import { ISaveSceneParams, ISaveSceneResponse, ILoadSceneParams, ILoadSceneResponse } from '../@types';
 import { storageRoot } from './dataPath';
 
+
+import { promisify } from 'util'
+const writeFile = promisify(fs.writeFile)
+const readFile = promisify(fs.readFile)
+
 export async function saveScene(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
 	const path = `/users/${params.user}/scenes/${params.scene.name}.scene`;
 	try {
-		fs.promises.writeFile(storageRoot + path, JSON.stringify(params.scene, null, 4));
+		writeFile(storageRoot + path, JSON.stringify(params.scene, null, 4));
 		return {
 			success: true,
 			status: 'Saved',
@@ -23,7 +28,7 @@ export async function saveScene(params: ISaveSceneParams): Promise<ISaveSceneRes
 export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneResponse> {
 	const path = `/users/${params.user}/scenes/${params.sceneName}.scene`;
 	try {
-		const buffer = await fs.promises.readFile(storageRoot + path)
+		const buffer = await readFile(storageRoot + path)
 		const scene = JSON.parse(buffer.toString())
 
 		return {
