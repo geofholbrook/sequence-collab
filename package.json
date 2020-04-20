@@ -2,7 +2,7 @@
   "name": "sequence-collab",
   "version": "0.0.0",
   "private": true,
-  "homepage": "http://syncrojam.com/",
+  "homepage": "http://telepromptu.com/",
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
     "win": {
@@ -25,7 +25,7 @@
     "pack": "build --dir",
     "dist": "npm run build && build",
     "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/server/index.ts",
-    "data-server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' DEBUG=sj ts-node-dev src/data-server/index.ts",
+    "data-server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' DEBUG=sj:* ts-node-dev src/data-server/index.ts",
     "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },
   "eslintConfig": {
@@ -61,6 +61,7 @@
     "@types/superagent": "^4.1.7",
     "cors": "^2.8.5",
     "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
     "electron": "^8.2.0",
     "express": "^4.17.1",
     "react": "^16.13.1",

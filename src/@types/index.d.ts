@@ -40,8 +40,23 @@ export interface ICreateUserResponse {
     message: string;
 }
 
+export interface ILoginParams {
+    name: string;
+}
+
 export interface ILoginResponse {
     success: boolean;
+    status: 'LoggedIn' | 'UnknownUser' | 'LoginRefused'
+    message: string;
+}
+
+export interface ISignupParams {
+    name: string;
+}
+
+export interface ISignupResponse {
+    success: boolean;
+    status: 'SignedUp' | 'UserExists' | 'SignupRefused',
     message: string;
 }
 

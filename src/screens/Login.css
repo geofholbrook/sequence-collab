@@ -1,5 +1,5 @@
 .not-actually-a-form {
-    border: 3px solid #f1f1f1;
+    /* border: 3px solid #f1f1f1; */
     padding: 20px;
     width: 300px;
     text-align: left;
@@ -11,7 +11,6 @@ label {
 
 .input-container {
   margin-bottom: 20px;
-
 }
 
 input[type=text], input[type=password] {
@@ -33,21 +32,34 @@ input[type=text], input[type=password] {
   width: 100%;
 }
 
+.LoginScreen .signup-button {
+  background-color: blue
+}
+
 button:hover {
   opacity: 0.8;
 }
 
 
-.required {
+.error {
   color: red;
   font-size: 14px;
   text-align: right;
 }
 
-
-
 .LoginScreen .container {
   padding: 16px;
+}
+
+.LoginScreen #main {
+  background-color: lightblue
+}
+
+.LoginScreen .not-actually-a-form {
+  background-color: white;
+  text-align: center;
+  margin: 50px auto;
+  /* background-color: blue; */
 }
 
 span.psw {

@@ -1,46 +1,59 @@
-html, body, #root {
-  height: 100%;
-  margin: 0px;
-  /* background-color: #555; */
-}  
+html,
+body,
+#root {
+	height: 100%;
+	margin: 0px;
+	/* background-color: #555; */
+}
+
+.logo-header {
+	font: 300 18px/1.5 'Berkshire Swash', Helvetica, sans-serif;
+	color: #2b2b2b;
+	/* text-shadow: 1px 1px 0px #ededed, 4px 4px 0px rgba(0, 0, 0, 0.15); */
+	background-color: darkblue;
+	color: white;
+	height: 25px;
+	line-height: 25px;
+	margin: auto;
+  width: 900px;
+  padding-left: 5px;
+}
 
 .Screen {
-  text-align: center;
-  font-family: Arial, Helvetica, sans-serif;
-  
+	text-align: center;
+	font-family: Arial, Helvetica, sans-serif;
 
-  width: 900px;
-  margin: auto;
+	width: 900px;
+	margin: auto;
 }
 
 header {
-  background-color:darkslategray;
-  color: white;
-  height: 50px;
-  line-height: 50px;
-  margin: auto;
-  font-weight: bold;
-  padding-left: 10px;
+	color: white;
+	background-color: darkslategray;
+	height: 25px;
+	line-height: 25px;
+	text-align: left;
+	padding-left: 15px;
 }
 
 .content {
-  line-height: 30px;
-  background-color: lightgray;
-  position: absolute;
-  margin: auto;
-  width: 900px;
-  padding: 25px;
+	line-height: 30px;
+	background-color: lightgray;
+	position: absolute;
+	margin: auto;
+	width: 900px;
+	padding: 25px;
 
-  top: 50px;
-  bottom: 0px;
-  overflow: hidden;
+	top: 50px;
+	bottom: 0px;
+	overflow: hidden;
 }
 
 footer {
-  background-color: cornflowerblue;
-  position: absolute;
-  bottom: 0px;
-  height: 50px;
-  left: 0px;
-  right: 0px;
+	background-color: cornflowerblue;
+	position: absolute;
+	bottom: 0px;
+	height: 50px;
+	left: 0px;
+	right: 0px;
 }

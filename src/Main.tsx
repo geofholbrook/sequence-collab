@@ -320,6 +320,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					const change = message.content as INewLaneContent;
 					this.doAddLaneWithSynth(change.synthName)
 				}
+				break;
 
 				default:
 			}
@@ -344,7 +345,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		return (
 			<div className="Screen" onMouseMove={(event) => this.handleMouseMove(event)}>
 				<header>
-					SYNCROJAM – logged in as{' '}
+					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
 				</header>
 
