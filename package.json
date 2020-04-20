@@ -51,7 +51,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@geof/socket-messaging": "^0.3.0",
+    "@geof/socket-messaging": "^0.4.1",
     "@musicenviro/base": "^0.2.1",
     "@musicenviro/ui-elements": "^0.4.9",
     "@types/cors": "^2.8.6",

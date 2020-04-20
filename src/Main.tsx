@@ -27,8 +27,7 @@ import { Button, Icon } from 'semantic-ui-react';
 // 	{ data: 1, loopTime: 0.875 },
 // ];
 
-const nodeDropletIP = '167.172.3.7';
-const local = false;
+import { local, nodeDropletIP } from './config'
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
 
