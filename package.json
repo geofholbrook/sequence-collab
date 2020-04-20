@@ -24,8 +24,7 @@
     "do-electron-start": "node src/start-react",
     "pack": "build --dir",
     "dist": "npm run build && build",
-    "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' ts-node src/server/index.ts",
-    "data-server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' DEBUG=sj:* ts-node-dev src/data-server/index.ts",
+    "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' DEBUG=sj:* ts-node-dev src/server/index.ts",
     "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },
   "eslintConfig": {
