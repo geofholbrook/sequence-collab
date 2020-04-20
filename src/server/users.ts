@@ -1,14 +1,9 @@
 import fs from 'fs';
 import {
-	ICreateUserParams,
-	ICreateUserResponse,
 	IOnlineUser,
-	ILoginResponse,
-	ILoginParams,
-	ISignupParams,
-	ISignupResponse,
 } from '../@types';
-import { dataPath } from './dataPath';
+import { ICreateUserParams, ICreateUserResponse, ILoginResponse, ILoginParams, ISignupParams, ISignupResponse } from "../@types";
+import { storageRoot } from './dataPath';
 import { createSession } from './session';
 import { maxUsers } from './config';
 
@@ -22,13 +17,13 @@ export const onlineUsers: { [index: string]: IOnlineUser } = {};
  */
 export function getUsersSync() {
 	return fs
-		.readdirSync(dataPath + '/users', { withFileTypes: true })
+		.readdirSync(storageRoot + '/users', { withFileTypes: true })
 		.filter((dirent) => dirent.isDirectory())
 		.map((dirent) => dirent.name);
 }
 
 export async function getUsers() {
-	const dir = await fs.promises.readdir(dataPath + '/users', { withFileTypes: true });
+	const dir = await fs.promises.readdir(storageRoot + '/users', { withFileTypes: true });
 	return dir.filter((dirent) => dirent.isDirectory()).map((dirent) => dirent.name);
 }
 
@@ -86,5 +81,6 @@ export async function signupUser(params: ISignupParams): Promise<ISignupResponse
 }
 
 async function doSignup(params: ISignupParams) {
-	await fs.promises.mkdir(dataPath + '/users/' + params.name)
+	await fs.promises.mkdir(storageRoot + '/users/' + params.name)
+	await fs.promises.mkdir(storageRoot + '/users/' + params.name + '/scenes')
 }

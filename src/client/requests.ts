@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { ILoginResponse, ISignupResponse } from '../@types';
+import { ILoginResponse, ISignupResponse } from "../@types";
 
 const local = true;
 const apiURL = local ? 'http://localhost:4040/api' : 'http://nodedroplet/api';
@@ -8,11 +8,9 @@ export async function requestLogin(name: string) {
 	return doJsonPost<ILoginResponse>('/login', { name })
 }
 
-
 export async function requestSignup(name: string) {
 	return doJsonPost<ISignupResponse>('/signup', { name })
 }
-
 
 export async function doJsonPost<T>(path: string, payload: object): Promise<T> {
 	return new Promise((resolve, reject) => {
@@ -30,7 +28,7 @@ export async function doJsonPost<T>(path: string, payload: object): Promise<T> {
 	});
 }
 
-export async function doGetWithQuery(path: string, query: object) {
+export async function doJsonGet(path: string, query: object) {
 	return new Promise((resolve, reject) => {
 		superagent
 			.get(apiURL + path)
@@ -39,7 +37,7 @@ export async function doGetWithQuery(path: string, query: object) {
 				if (err) {
 					reject(err);
 				} else {
-					resolve(res);
+					resolve(JSON.parse(res.text));
 				}
 			});
 	});

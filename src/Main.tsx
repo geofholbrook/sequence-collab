@@ -10,6 +10,7 @@ import {
 	INewLaneContent,
 	PropTime,
 	ILane,
+	IScene,
 } from './@types';
 
 import { IPoint } from '@musicenviro/base';
@@ -21,16 +22,9 @@ import { getDiff, applyDiff } from './diffs';
 
 import { Button, Icon } from 'semantic-ui-react';
 
-// const testLoop = [
-// 	{ data: 1, loopTime: 0 },
-// 	{ data: 1, loopTime: 0.5 },
-// 	{ data: 1, loopTime: 0.875 },
-// ];
-
-import { local, nodeDropletIP } from './config'
+import { local, nodeDropletIP, saveInterval } from './config'
+import { saveSceneToServer, loadSceneFromServer } from './client/scene';
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
-
-
 
 interface IState {
 	lanes: ILane[];
@@ -43,6 +37,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	// multiLane = React.createRef<MultiNoteLanes>();
 
 	client = new MessageClient<IMessage>(serverURL);
+
+	saveTimer = setInterval(() => this.saveWorkingScene(), saveInterval)
 
 	constructor(props: { userInfo: { name: string } }) {
 		super(props);
@@ -70,6 +66,32 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.client.onConnected(() => {
 			setInterval(() => this.reportMousePosition(), 100);
 		});
+	}
+
+	componentDidMount() {
+		this.loadWorkingScene().then(() => {
+			this.updateSchedule()
+			this.forceUpdate()
+		})
+	}
+
+	saveWorkingScene() {
+		saveSceneToServer(this.props.userInfo.name, {
+			name: "temp",
+			lanes: this.state.lanes
+		} as IScene)
+	}
+
+	async loadWorkingScene() {
+		const res = await loadSceneFromServer(this.props.userInfo.name, "temp")
+		if (res.success) {
+			const scene = res.scene as IScene
+			this.setState({
+				lanes: scene.lanes
+			})
+		} else {
+			// TODO deal with loading failure.
+		}
 	}
 
 	startAudio = () => {
