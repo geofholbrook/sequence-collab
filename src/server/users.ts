@@ -25,21 +25,12 @@ export const onlineUsers: { [index: string]: IOnlineUser } = {};
  * all existing users.
  */
 export function getUsersSync() {
-	return (
-		fs
-			.readdirSync(storageRoot + '/users', { withFileTypes: true })
-			// .filter((dirent) => dirent.isDirectory()) // TODO replace
-			.map((dirent) => dirent.name)
-	);
+	return fs.readdirSync(storageRoot + '/users');
 }
 
 export async function getUsers() {
-	const dir = await readdir(storageRoot + '/users', { withFileTypes: true });
-	return (
-		dir
-			// .filter((dirent) => dirent.isDirectory()) // TODO replace
-			.map((dirent) => dirent.name)
-	);
+	const dir = await readdir(storageRoot + '/users');
+	return dir
 }
 
 export async function loginUser(params: ILoginParams): Promise<ILoginResponse> {
