@@ -4,6 +4,7 @@ import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
 import { requestLogin } from './rest/requests';
+import { local, skipLoginForLocal } from './config';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
@@ -14,6 +15,17 @@ export function App() {
 	const [username, setUserName] = React.useState<string>(
 		'user' + Math.floor(Math.random() * 10000),
 	);
+
+	React.useEffect(() => {
+		if (local && skipLoginForLocal) {
+			requestLogin('dev').then(res => {
+				if (res.success) {
+					setUserName('dev')
+					setScreen('Main')
+				}
+			})
+		}
+	}, [])
 
 	return (
 		<div>

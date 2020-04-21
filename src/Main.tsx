@@ -32,7 +32,7 @@ interface IState {
 	lanes: ILane[];
 	otherMouse: IPoint;
 }
-
+	
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
 	scheduler = new Scheduler<string>();
 	ac!: AudioContext;
