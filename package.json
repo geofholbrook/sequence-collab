@@ -25,6 +25,7 @@
     "pack": "build --dir",
     "dist": "npm run build && build",
     "server": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' DEBUG=sj:* ts-node-dev src/server/index.ts",
+    "server-pm2": "pm2 stop telepromptu-server && pm2 start npm --no-automation --name telepromptu-server -- run server",
     "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },
   "eslintConfig": {
