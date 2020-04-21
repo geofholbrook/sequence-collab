@@ -1,6 +1,7 @@
 import { IPoint } from "@musicenviro/base";
 
 export * from './api'
+export * from './state'
 
 export type PropTime = number
 export type Seconds = number
@@ -33,16 +34,6 @@ export interface IMessage {
     content: IPoint | INoteContent | ILaneChangeContent | INewLaneContent | IInstrumentChangeContent
 }
 
-export interface ILane {
-	synthName: string;
-	loopTimes: PropTime[];
-	muted: boolean;
-}
-
-export interface IScene {
-    name: string;
-    lanes: ILane[]
-}
 
 export interface ISession {
     users: string[];

@@ -1,4 +1,4 @@
-import { IScene } from ".";
+import { IScene } from "./state";
 
 export interface ICreateUserParams {
     name: string;

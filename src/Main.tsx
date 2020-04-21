@@ -9,9 +9,9 @@ import {
 	IInstrumentChangeContent,
 	INewLaneContent,
 	PropTime,
-	ILane,
-	IScene,
 } from './@types';
+
+import { ILane, IScene } from "./@types";
 
 import { IPoint } from '@musicenviro/base';
 import * as Tone from 'tone';
@@ -23,7 +23,9 @@ import { getDiff, applyDiff } from './diffs';
 import { Button, Icon } from 'semantic-ui-react';
 
 import { local, nodeDropletIP, saveInterval } from './config'
-import { saveSceneToServer, loadSceneFromServer } from './client/scene';
+import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
+import { newLaneForSynth } from './state/newLaneForSynth';
+
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
 interface IState {
@@ -46,11 +48,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
 			lanes: [
-				{
-					synthName: synths[0].name,
-					loopTimes: [],
-					muted: false,
-				},
+				newLaneForSynth(synths[0].name)
 			],
 		};
 
@@ -185,11 +183,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	private doAddLaneWithSynth(newSynth: string) {
 		this.setLanes([
 			...this.state.lanes,
-			{
-				synthName: newSynth,
-				loopTimes: [],
-				muted: false,
-			},
+			newLaneForSynth(newSynth),
 		]);
 	}
 
@@ -422,3 +416,4 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		);
 	}
 }
+

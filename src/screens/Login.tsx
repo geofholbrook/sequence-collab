@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Login.css';
-import { requestLogin, requestSignup } from '../client/requests';
+import { requestLogin, requestSignup } from '../rest/requests';
 
 export function Login(props: { 
 	onLogin: (username: string, password: string) => void;

@@ -3,7 +3,7 @@ import { Main } from './Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
-import { requestLogin } from './client/requests';
+import { requestLogin } from './rest/requests';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 

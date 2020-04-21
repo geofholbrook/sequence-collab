@@ -1,7 +1,7 @@
 import superagent from 'superagent';
 
 import * as React from 'react'
-import { loadSceneFromServer } from '../client/scene';
+import { loadSceneFromServer } from '../rest/scene';
 // import { doJsonPost } from '../client/requests';
 
 export function TestRequests() {
