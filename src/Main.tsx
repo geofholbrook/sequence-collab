@@ -11,7 +11,9 @@ import {
 	PropTime,
 } from './@types';
 
-import { ILane, IScene } from "./@types";
+import { Beforeunload } from 'react-beforeunload';
+
+import { ILane, IScene } from './@types';
 
 import { IPoint } from '@musicenviro/base';
 import * as Tone from 'tone';
@@ -22,7 +24,7 @@ import { getDiff, applyDiff } from './diffs';
 
 import { Button, Icon } from 'semantic-ui-react';
 
-import { local, nodeDropletIP, saveInterval } from './config'
+import { local, nodeDropletIP, saveInterval } from './config';
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { newLaneForSynth } from './state/newLaneForSynth';
 
@@ -31,25 +33,23 @@ const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 interface IState {
 	lanes: ILane[];
 	otherMouse: IPoint;
+	unsavedChanges: boolean;
 }
-	
+
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
 	scheduler = new Scheduler<string>();
 	ac!: AudioContext;
-	// multiLane = React.createRef<MultiNoteLanes>();
-
 	client = new MessageClient<IMessage>(serverURL);
 
-	saveTimer = setInterval(() => this.saveWorkingScene(), saveInterval)
+	saveTimer = setInterval(() => this.saveWorkingScene(), saveInterval);
 
 	constructor(props: { userInfo: { name: string } }) {
 		super(props);
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
-			lanes: [
-				newLaneForSynth(synths[0].name)
-			],
+			lanes: [newLaneForSynth(synths[0].name)],
+			unsavedChanges: false
 		};
 
 		this.scheduler.onSchedule((notes) =>
@@ -68,25 +68,25 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 	componentDidMount() {
 		this.loadWorkingScene().then(() => {
-			this.updateSchedule()
-			this.forceUpdate()
-		})
+			this.updateSchedule();
+			this.forceUpdate();
+		});
 	}
 
 	saveWorkingScene() {
 		saveSceneToServer(this.props.userInfo.name, {
-			name: "temp",
-			lanes: this.state.lanes
-		} as IScene)
+			name: 'temp',
+			lanes: this.state.lanes,
+		} as IScene);
 	}
 
 	async loadWorkingScene() {
-		const res = await loadSceneFromServer(this.props.userInfo.name, "temp")
+		const res = await loadSceneFromServer(this.props.userInfo.name, 'temp');
 		if (res.success) {
-			const scene = res.scene as IScene
+			const scene = res.scene as IScene;
 			this.setState({
-				lanes: scene.lanes
-			})
+				lanes: scene.lanes,
+			});
 		} else {
 			// TODO deal with loading failure.
 		}
@@ -113,14 +113,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	setLaneLoopTimes(laneIndex: number, loopTimes: number[]) {
-		const newLanes = this.state.lanes.slice();
-
-		newLanes.splice(laneIndex, 1, {
-			...newLanes[laneIndex],
-			loopTimes,
-		});
-
-		this.setLanes(newLanes);
+		this.setLaneProperty(laneIndex, 'loopTimes', loopTimes)
 	}
 
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
@@ -181,10 +174,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	};
 
 	private doAddLaneWithSynth(newSynth: string) {
-		this.setLanes([
-			...this.state.lanes,
-			newLaneForSynth(newSynth),
-		]);
+		this.setLanes([...this.state.lanes, newLaneForSynth(newSynth)]);
 	}
 
 	updateSchedule() {
@@ -250,7 +240,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	/**
 	 * broadcast a change or set of changes to loop times for a lane
 	 * @param diff a format that includes additions and deletions
-	 * @param laneIndex 
+	 * @param laneIndex
 	 */
 	private broadcastDiff(diff: { add: PropTime[]; delete: PropTime[] }, laneIndex: number) {
 		diff.add.forEach((n) =>
@@ -314,28 +304,33 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				case 'LaneChange': {
 					const change = message.content as ILaneChangeContent;
 					switch (change.action) {
-						case 'Delete': 
-							this.doDeleteLane(change.laneIndex)
+						case 'Delete':
+							this.doDeleteLane(change.laneIndex);
 							break;
 						case 'Mute':
-							this.setLaneProperty(change.laneIndex, 'muted', true)
+							this.setLaneProperty(change.laneIndex, 'muted', true);
 							break;
 						case 'Unmute':
-							this.setLaneProperty(change.laneIndex, 'muted', false)
-							break
+							this.setLaneProperty(change.laneIndex, 'muted', false);
+							break;
 						case 'ToggleMute':
 							// unused for now
-							this.setLaneProperty(change.laneIndex, 'muted', !this.state.lanes[change.laneIndex].muted)
+							this.setLaneProperty(
+								change.laneIndex,
+								'muted',
+								!this.state.lanes[change.laneIndex].muted,
+							);
 							break;
 					}
 					break;
 				}
 
-				case 'NewLane': {
-					const change = message.content as INewLaneContent;
-					this.doAddLaneWithSynth(change.synthName)
-				}
-				break;
+				case 'NewLane':
+					{
+						const change = message.content as INewLaneContent;
+						this.doAddLaneWithSynth(change.synthName);
+					}
+					break;
 
 				default:
 			}
@@ -413,8 +408,9 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						width: 20,
 					}}
 				/>
+
+				{!local && this.state.unsavedChanges && <Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />}
 			</div>
 		);
 	}
 }
-
