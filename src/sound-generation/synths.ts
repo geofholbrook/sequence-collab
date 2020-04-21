@@ -4,8 +4,9 @@ import { ISynth } from '../screens/Test';
 
 import { sampleFiles } from './samples-dir-listing';
 import { Seconds } from '../@types';
+import { playBass } from './bassSynth';
 
-export const synths: ISynth[] = [
+export const drumSynths: ISynth[] = [
 	{ name: 'kick', fn: kick },
 	{ name: 'snare', fn: snare },
 	{ name: 'hihat', fn: hihat },
@@ -16,6 +17,12 @@ export const synths: ISynth[] = [
 	})),
 ];
 
+export const noteSynths: ISynth[] = [
+	{ name: 'bass', fn: playBass }
+]
+
 export function callSynth(ac: AudioContext, synth: ISynth, time?: Seconds) {
 	synth.fn(ac, time || ac.currentTime, ...(synth.extraArguments || []));
 }
+
+

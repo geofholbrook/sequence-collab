@@ -8,7 +8,7 @@ import { local, skipLoginForLocal } from './config';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
-const initialScreen: Screen = 'Login';
+const initialScreen: Screen = 'Test';
 
 export function App() {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
@@ -17,7 +17,7 @@ export function App() {
 	);
 
 	React.useEffect(() => {
-		if (local && skipLoginForLocal) {
+		if (local && skipLoginForLocal && initialScreen === 'Login') {
 			requestLogin('dev').then(res => {
 				if (res.success) {
 					setUserName('dev')

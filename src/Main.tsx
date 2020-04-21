@@ -21,7 +21,7 @@ import { ILane, IScene } from './@types';
 import { IPoint } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
-import { callSynth, synths } from './sound-generation/synths';
+import { callSynth, drumSynths } from './sound-generation/synths';
 import { SJDrumLane } from './components/SJDrumLane';
 import { getDiff, applyDiff } from './diffs';
 
@@ -30,6 +30,8 @@ import { Button, Icon } from 'semantic-ui-react';
 import { local, nodeDropletIP, saveInterval } from './config';
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { newLaneForSynth } from './state/newLaneForSynth';
+
+import { DiatonicPianoRoll } from '@musicenviro/ui-elements'
 
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
@@ -51,13 +53,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
-			lanes: [newLaneForSynth(synths[0].name)],
+			lanes: [newLaneForSynth(drumSynths[0].name)],
 			saveState: 'Clean',
 		};
 
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
-				const synth = synths.find((s) => s.name === note.data);
+				const synth = drumSynths.find((s) => s.name === note.data);
 				synth && callSynth(this.ac, synth, note.audioContextTime);
 			}),
 		);
@@ -150,11 +152,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	handleManualAddLane() {
-		const prevSynthIndex = synths
+		const prevSynthIndex = drumSynths
 			.map((synth) => synth.name)
 			.indexOf(_.last(this.state.lanes)?.synthName || '');
 
-		const newSynth = synths[(prevSynthIndex + 1) % synths.length].name;
+		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
 		this.doAddLaneWithSynth(newSynth);
 
@@ -397,6 +399,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						</Button>
 					</Button.Group>
 
+					<DiatonicPianoRoll width={600} />
+
 					<SJDrumLane
 						index={this.state.lanes.length}
 						isPlaceHolder={true}
@@ -406,7 +410,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					{this.state.lanes.slice().map((lane, i) => (
 						<SJDrumLane
 							index={i}
-							availableInstruments={synths.map((synth) => synth.name)}
+							availableInstruments={drumSynths.map((synth) => synth.name)}
 							synthName={lane.synthName}
 							notes={lane.loopTimes}
 							key={'lane' + i}
