@@ -1,5 +1,4 @@
 export function getDiff(prev: number[], curr: number[]) {
-	console.log({ prev, curr });
 	const addedNotes = curr.filter((n) => !prev.includes(n));
 	const deletedNotes = prev.filter((n) => !curr.includes(n));
 	return {
@@ -7,6 +6,7 @@ export function getDiff(prev: number[], curr: number[]) {
 		delete: deletedNotes,
 	};
 }
+
 export function applyDiff(orig: number[], diff: {
 	add: number[];
 	delete: number[];
