@@ -2,6 +2,9 @@ import React from 'react';
 import _ from 'lodash';
 import { Scheduler } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
+
+import './Main.css';
+
 import {
 	IMessage,
 	INoteContent,
@@ -33,7 +36,7 @@ const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 interface IState {
 	lanes: ILane[];
 	otherMouse: IPoint;
-	unsavedChanges: boolean;
+	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 }
 
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
@@ -49,7 +52,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.state = {
 			otherMouse: { x: -10, y: -10 },
 			lanes: [newLaneForSynth(synths[0].name)],
-			unsavedChanges: false
+			saveState: 'Clean',
 		};
 
 		this.scheduler.onSchedule((notes) =>
@@ -73,11 +76,28 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		});
 	}
 
-	saveWorkingScene() {
-		saveSceneToServer(this.props.userInfo.name, {
-			name: 'temp',
-			lanes: this.state.lanes,
-		} as IScene);
+	async saveWorkingScene() {
+		this.setState(
+			{
+				saveState: 'WaitingForSave',
+			},
+			async () => {
+				const res = await saveSceneToServer(this.props.userInfo.name, {
+					name: 'temp',
+					lanes: this.state.lanes,
+				} as IScene);
+
+				if (res.success) {
+					this.setState((prev) =>
+						prev.saveState === 'WaitingForSave'
+							? {
+									saveState: 'Clean',
+							  }
+							: { saveState: 'Dirty' },
+					);
+				}
+			},
+		);
 	}
 
 	async loadWorkingScene() {
@@ -113,7 +133,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	setLaneLoopTimes(laneIndex: number, loopTimes: number[]) {
-		this.setLaneProperty(laneIndex, 'loopTimes', loopTimes)
+		this.setLaneProperty(laneIndex, 'loopTimes', loopTimes);
 	}
 
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
@@ -226,6 +246,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.setState(
 			{
 				lanes: newLanes,
+				saveState: 'Dirty',
 			},
 			() => {
 				this.updateSchedule();
@@ -357,6 +378,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				<header>
 					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
+					{this.state.saveState !== 'Clean' && (
+						<span className="unsaved-alert">
+							{this.state.saveState === 'WaitingForSave'
+								? 'SAVING'
+								: 'UNSAVED CHANGES'}
+						</span>
+					)}
 				</header>
 
 				<div className="content">
@@ -409,7 +437,9 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					}}
 				/>
 
-				{!local && this.state.unsavedChanges && <Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />}
+				{!local && this.state.saveState !== 'Clean' && (
+					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
+				)}
 			</div>
 		);
 	}
