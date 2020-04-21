@@ -61,12 +61,11 @@ export function SJDrumLane(props: ISJDrumLane) {
 			<div className="section main-section">
 				{!props.isPlaceHolder && (
 					<SingleNoteLane
-						notes={props.notes}
-						onChange={props.onChange}
+						{...props}
 						width={650}
 						height={30}
 					/>
-				)}
+				)}	
 			</div>
 		</div>
 	);

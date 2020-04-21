@@ -394,6 +394,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 							onDeleteLane={this.handleManualDeleteLane}
 							isMuted={lane.muted}
 							onMuteButton={() => this.toggleMute(i)}
+							noteColor={lane.color}
 						/>
 					))}
 				</div>
