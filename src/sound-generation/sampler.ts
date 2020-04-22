@@ -13,9 +13,17 @@ const players: Array<Tone.Player> = [];
 			await new Promise((resolve, reject) => {
 				const audioFile = require('./samples/' + filename);
 				setTimeout(reject, 1000);
-				players.push(new Tone.Player(audioFile, () => {
+
+
+				const player = new Tone.Player(audioFile, () => {
 					resolve();
-				}).toDestination());
+				}).toDestination();
+
+				player.set({
+					volume: -6
+				})
+
+				players.push(player);
 			});
 		} catch (e) {
 			console.log(filename, 'timed out');

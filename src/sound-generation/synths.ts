@@ -21,8 +21,10 @@ export const noteSynths: ISynth[] = [
 	{ name: 'bass', fn: playBass }
 ]
 
-export function callSynth(ac: AudioContext, synth: ISynth, time?: Seconds) {
-	synth.fn(ac, time || ac.currentTime, ...(synth.args || []));
+export const synths = [...drumSynths, ...noteSynths]
+
+export function callSynth(ac: AudioContext, synth: ISynth, time?: Seconds, ...args: any[]) {
+	synth.fn(ac, time || ac.currentTime, ...(synth.args || []), ...args);
 }
 
 

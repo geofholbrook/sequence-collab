@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import { Scheduler } from './Scheduler/Scheduler';
+import { Scheduler, ILoopNote } from './Scheduler/Scheduler';
 import { MessageClient } from '@geof/socket-messaging';
 
 import './Main.css';
@@ -21,7 +21,7 @@ import { ILane, IScene } from './@types';
 import { IPoint, showJSON } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
-import { callSynth, drumSynths } from './sound-generation/synths';
+import { callSynth, drumSynths, synths } from './sound-generation/synths';
 import { SJDrumLane } from './components/SJDrumLane';
 import { getDiff, applyDiff } from './diffs';
 
@@ -43,8 +43,13 @@ interface IState {
 	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 }
 
+interface ISynthNote {
+	synthName: string;
+	args: any[];
+}
+
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
-	scheduler = new Scheduler<string>();
+	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;
 	client = new MessageClient<IMessage>(serverURL);
 
@@ -61,8 +66,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
-				const synth = drumSynths.find((s) => s.name === note.data);
-				synth && callSynth(this.ac, synth, note.audioContextTime);
+				const synth = synths.find((s) => s.name === note.data.synthName);
+				synth && callSynth(this.ac, synth, note.audioContextTime, ...note.data.args);
 			}),
 		);
 
@@ -80,10 +85,9 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		});
 
 		store.subscribe(() => {
-			// console.log(store.getState())
-
-			this.forceUpdate()
-		}) 
+			this.updateSchedule();
+			this.forceUpdate();
+		});
 	}
 
 	async saveWorkingScene() {
@@ -230,10 +234,27 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				.filter((lane) => !lane.muted)
 				.map((lane) =>
 					lane.loopTimes.map((loopTime) => ({
-						data: lane.synthName,
+						data: {
+							synthName: lane.synthName,
+							args: [],
+						},
 						loopTime,
 					})),
 				),
+			...store.getState().lanes.map((lane, li) =>
+				lane.cells
+					.map(
+						(cell, ci) =>
+							cell.active && {
+								data: {
+									synthName: 'bass',
+									args: [36 + li],
+								},
+								loopTime: (ci * 1) / 16,
+							},
+					)
+					.filter(Boolean) as ILoopNote<ISynthNote>[]
+			),
 		);
 
 		this.scheduler.setLoop(newLoop);

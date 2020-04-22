@@ -1,5 +1,11 @@
 
+
+const kickVolume = 0.25
+const snareVolume = 0.35
+const hihatVolume = 0.25
+
 export function kick(audioContext: AudioContext, start: number) {
+
 
     var osc = audioContext.createOscillator();
     var osc2 = audioContext.createOscillator();
@@ -9,11 +15,10 @@ export function kick(audioContext: AudioContext, start: number) {
     osc.type = "triangle";
     osc2.type = "sine";
 
-    gainOsc.gain.setValueAtTime(1, start);
+    gainOsc.gain.setValueAtTime(kickVolume, start);
     gainOsc.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
     
-
-    gainOsc2.gain.setValueAtTime(1, start);
+    gainOsc2.gain.setValueAtTime(kickVolume, start);
     gainOsc2.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
   
 
@@ -40,12 +45,13 @@ export function kick(audioContext: AudioContext, start: number) {
 
 export function snare(audioContext: AudioContext, start: number) {
 
+
     var osc3 = audioContext.createOscillator();
     var gainOsc3 = audioContext.createGain();
 
     var filterGain = audioContext.createGain();
 
-    filterGain.gain.setValueAtTime(1, start);
+    filterGain.gain.setValueAtTime(snareVolume, start);
     filterGain.gain.exponentialRampToValueAtTime(0.01, start + 0.2);
 
     osc3.type = "triangle";
@@ -112,7 +118,7 @@ export function hihat(audioContext: AudioContext, start: number) {
         
     });
 
-    gainOsc4.gain.setValueAtTime(1, start);
+    gainOsc4.gain.setValueAtTime(hihatVolume, start);
     gainOsc4.gain.exponentialRampToValueAtTime(0.01, start + 0.05);
     
     bandpass.connect(highpass);
