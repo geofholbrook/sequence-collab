@@ -7,7 +7,25 @@
  */
 
 import { PropTime } from "./index";
+import { IReduxState } from "../redux";
 
+export const currentSceneVersion = "0.0.2";
+
+export interface ILane {
+    synthName: string;
+    loopTimes: PropTime[];
+    muted: boolean;
+    color: string;
+}
+
+export interface IScene {
+    version: string;
+    name: string;
+    lanes: ILane[];
+    reduxState: IReduxState;  // of course, very unsatisfactory, to be redesigned
+}
+
+/*
 export const currentSceneVersion = "0.0.1";
 
 export interface ILane {
@@ -22,3 +40,4 @@ export interface IScene {
     name: string;
     lanes: ILane[];
 }
+*/

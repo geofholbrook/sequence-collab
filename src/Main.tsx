@@ -12,6 +12,7 @@ import {
 	IInstrumentChangeContent,
 	INewLaneContent,
 	PropTime,
+	currentSceneVersion,
 } from './@types';
 
 import { Beforeunload } from 'react-beforeunload';
@@ -97,9 +98,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			},
 			async () => {
 				const res = await saveSceneToServer(this.props.userInfo.name, {
+					version: currentSceneVersion,
 					name: 'temp',
 					lanes: this.state.lanes,
-				} as IScene);
+					reduxState: store.getState()
+				});
 
 				if (res.success) {
 					this.setState((prev) =>
@@ -121,6 +124,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			this.setState({
 				lanes: scene.lanes,
 			});
+			
 		} else {
 			// TODO deal with loading failure.
 		}

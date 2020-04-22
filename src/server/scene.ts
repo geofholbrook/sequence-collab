@@ -14,6 +14,7 @@ import { storageRoot } from './dataPath';
 
 import { promisify } from 'util';
 import { getColorFromString } from '../appearance/colors';
+
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
@@ -62,7 +63,8 @@ function backwardCompat(rawScene: any): IScene {
 	return {
 		...rawScene,
 		version: currentSceneVersion,
-		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version))
+		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
+		reduxState: rawScene.reduxState //  || initialState
 	};
 }
 
