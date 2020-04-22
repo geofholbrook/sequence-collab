@@ -18,7 +18,7 @@ import { Beforeunload } from 'react-beforeunload';
 
 import { ILane, IScene } from './@types';
 
-import { IPoint } from '@musicenviro/base';
+import { IPoint, showJSON } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
 import { callSynth, drumSynths } from './sound-generation/synths';
@@ -31,7 +31,9 @@ import { local, nodeDropletIP, saveInterval } from './config';
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { newLaneForSynth } from './state/newLaneForSynth';
 
-import { DiatonicPianoRoll } from '@musicenviro/ui-elements'
+import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
+
+import { store, SET_CELL } from './redux';
 
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
@@ -76,6 +78,12 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			this.updateSchedule();
 			this.forceUpdate();
 		});
+
+		store.subscribe(() => {
+			// console.log(store.getState())
+
+			this.forceUpdate()
+		}) 
 	}
 
 	async saveWorkingScene() {
@@ -128,6 +136,22 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		this.ac && this.ac.suspend();
 	};
 
+	// ----------------------------------------------------------------------------
+	// piano roll
+	// ----------------------------------------------------------------------------
+
+	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
+		store.dispatch({
+			type: SET_CELL,
+			laneIndex,
+			cellIndex,
+			active,
+		});
+	}
+
+	// ----------------------------------------------------------------------------
+	// drums
+	// ----------------------------------------------------------------------------
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
 		const diff = getDiff(this.state.lanes[laneIndex].loopTimes, notes);
 		this.broadcastDiff(diff, laneIndex);
@@ -399,7 +423,15 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						</Button>
 					</Button.Group>
 
-					<DiatonicPianoRoll width={600} />
+					<DiatonicPianoRoll
+						width={600}
+						height={200}
+						stepRange={store.getState().stepRange}
+						initialLanes={store.getState().lanes}
+						onCellChange={(laneIndex, cellIndex, active) =>
+							this.handlePianoRollCellChange(laneIndex, cellIndex, active)
+						}
+					/>
 
 					<SJDrumLane
 						index={this.state.lanes.length}

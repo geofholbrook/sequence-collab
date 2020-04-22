@@ -9,7 +9,7 @@ let ac = Tone.context.rawContext as AudioContext;
 export interface ISynth {
 	name: string;
 	fn: (ac: AudioContext, start: Seconds, ...args: any[]) => void;
-	extraArguments?: any[];
+	args?: any[];
 }
 
 export function Test() {

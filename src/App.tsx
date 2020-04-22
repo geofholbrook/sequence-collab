@@ -8,7 +8,7 @@ import { local, skipLoginForLocal } from './config';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
-const initialScreen: Screen = 'Test';
+const initialScreen: Screen = 'Login';
 
 export function App() {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);

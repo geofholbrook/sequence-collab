@@ -13,7 +13,7 @@ export const drumSynths: ISynth[] = [
 	...sampleFiles.map((filename, n) => ({
 		name: filename.slice(0, -4),
 		fn: playSample,
-		extraArguments: [n],
+		args: [n],
 	})),
 ];
 
@@ -22,7 +22,7 @@ export const noteSynths: ISynth[] = [
 ]
 
 export function callSynth(ac: AudioContext, synth: ISynth, time?: Seconds) {
-	synth.fn(ac, time || ac.currentTime, ...(synth.extraArguments || []));
+	synth.fn(ac, time || ac.currentTime, ...(synth.args || []));
 }
 
 

@@ -24,6 +24,5 @@ const players: Array<Tone.Player> = [];
 })();
 
 export function playSample(ac: AudioContext, startTime: Seconds, sampleIndex: number) {
-
     players[sampleIndex].start(startTime)
 }
