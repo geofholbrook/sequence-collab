@@ -20,7 +20,7 @@ const players: Array<Tone.Player> = [];
 				}).toDestination();
 
 				player.set({
-					volume: -6
+					volume: -9
 				})
 
 				players.push(player);

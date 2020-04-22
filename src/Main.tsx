@@ -34,7 +34,7 @@ import { newLaneForSynth } from './state/newLaneForSynth';
 
 import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 
-import { store, SET_CELL } from './redux';
+import { store, SET_CELL, LOAD_STATE, initialState } from './redux';
 
 const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
 
@@ -101,7 +101,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					version: currentSceneVersion,
 					name: 'temp',
 					lanes: this.state.lanes,
-					reduxState: store.getState()
+					reduxState: store.getState(),
 				});
 
 				if (res.success) {
@@ -124,7 +124,10 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			this.setState({
 				lanes: scene.lanes,
 			});
-			
+			store.dispatch({
+				type: LOAD_STATE,
+				state: scene.reduxState || initialState,
+			});
 		} else {
 			// TODO deal with loading failure.
 		}
@@ -232,6 +235,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 
 	updateSchedule() {
+		const reduxState = store.getState();
+
 		const newLoop = _.concat(
 			[],
 			...this.state.lanes
@@ -245,20 +250,23 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						loopTime,
 					})),
 				),
-			...store.getState().lanes.map((lane, li) =>
-				lane.cells
-					.map(
-						(cell, ci) =>
-							cell.active && {
-								data: {
-									synthName: 'bass',
-									args: [36 + li],
-								},
-								loopTime: (ci * 1) / 16,
-							},
-					)
-					.filter(Boolean) as ILoopNote<ISynthNote>[]
-			),
+			...(reduxState
+				? reduxState.lanes.map(
+						(lane, li) =>
+							lane.cells
+								.map(
+									(cell, ci) =>
+										cell.active && {
+											data: {
+												synthName: 'bass',
+												args: [36 + li],
+											},
+											loopTime: (ci * 1) / 16,
+										},
+								)
+								.filter(Boolean) as ILoopNote<ISynthNote>[],
+				  )
+				: []),
 		);
 
 		this.scheduler.setLoop(newLoop);

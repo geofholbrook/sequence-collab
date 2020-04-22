@@ -11,7 +11,7 @@ bassSynth.set({
         attack: 0,
         decay: 0.2,
         sustain: 0.2,
-        release: 0.5,
+        release: 1,
     }
 })
 

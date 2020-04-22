@@ -1,6 +1,6 @@
 
 import { ILaneData, makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements'
-import { DiatonicStep, IRange, showJSON } from '@musicenviro/base'
+import { DiatonicStep, IRange } from '@musicenviro/base'
 import { createStore } from 'redux'
 
 // doing this gradually, can move other state in here if it works and we like it.

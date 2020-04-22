@@ -1,8 +1,8 @@
 
 
-const kickVolume = 0.25
-const snareVolume = 0.35
-const hihatVolume = 0.25
+const kickVolume = 0.6
+const snareVolume = 0.6
+const hihatVolume = 0.4
 
 export function kick(audioContext: AudioContext, start: number) {
 

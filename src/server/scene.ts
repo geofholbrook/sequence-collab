@@ -64,7 +64,7 @@ function backwardCompat(rawScene: any): IScene {
 		...rawScene,
 		version: currentSceneVersion,
 		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
-		reduxState: rawScene.reduxState //  || initialState
+		reduxState: rawScene.reduxState
 	};
 }
 
