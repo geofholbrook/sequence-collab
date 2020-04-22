@@ -152,6 +152,10 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	// ----------------------------------------------------------------------------
 
 	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
+		this.setState({
+			saveState: 'Dirty'
+		})
+		
 		store.dispatch({
 			type: SET_CELL,
 			laneIndex,
