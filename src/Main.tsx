@@ -1,7 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
 import { Scheduler, ILoopNote } from './Scheduler/Scheduler';
-import { MessageClient } from '@geof/socket-messaging';
 
 import './Main.css';
 
@@ -28,15 +27,15 @@ import { getDiff, applyDiff } from './diffs';
 
 import { Button, Icon } from 'semantic-ui-react';
 
-import { local, nodeDropletIP, saveInterval } from './config';
+import { local, saveInterval } from './config';
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { newLaneForSynth } from './state/newLaneForSynth';
 
 import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 
 import { store, SET_CELL, LOAD_STATE, initialState } from './redux';
-
-const serverURL = local ? 'ws://localhost:8080' : `ws://${nodeDropletIP}/ws`;
+import { socketClient } from './socketClient';
+import { userInfo } from 'os';
 
 interface IState {
 	lanes: ILane[];
@@ -52,7 +51,6 @@ interface ISynthNote {
 export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
 	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;
-	client = new MessageClient<IMessage>(serverURL);
 
 	saveTimer = setInterval(() => this.saveWorkingScene(), saveInterval);
 
@@ -72,11 +70,16 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			}),
 		);
 
-		this.client.onMessage((message) => this.handleServerMessage(message));
+		socketClient.onMessage((message) => this.handleServerMessage(message));
 
-		this.client.onConnected(() => {
+		socketClient.onConnected(() => {
 			setInterval(() => this.reportMousePosition(), 100);
 		});
+
+		store.dispatch({
+			type: 'SET_USER',
+			user: props.userInfo.name
+		})
 	}
 
 	componentDidMount() {
@@ -121,12 +124,17 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		const res = await loadSceneFromServer(this.props.userInfo.name, 'temp');
 		if (res.success) {
 			const scene = res.scene as IScene;
+			
 			this.setState({
 				lanes: scene.lanes,
 			});
+			
 			store.dispatch({
 				type: LOAD_STATE,
-				state: scene.reduxState || initialState,
+				state: {
+					...(scene.reduxState || initialState),
+					user: this.props.userInfo.name
+				}
 			});
 		} else {
 			// TODO deal with loading failure.
@@ -180,7 +188,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {
 		this.setLaneProperty(laneIndex, 'synthName', synthName);
 
-		this.client.send({
+		socketClient.send({
 			user: this.props.userInfo.name,
 			type: 'InstrumentChange',
 			content: {
@@ -199,7 +207,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		this.doAddLaneWithSynth(newSynth);
 
-		this.client.send({
+		socketClient.send({
 			user: this.props.userInfo.name,
 			type: 'NewLane',
 			content: {
@@ -211,7 +219,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	handleManualDeleteLane = (laneIndex: number) => {
 		this.doDeleteLane(laneIndex);
 
-		this.client.send({
+		socketClient.send({
 			user: this.props.userInfo.name,
 			type: 'LaneChange',
 			content: {
@@ -224,7 +232,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	toggleMute = (laneIndex: number) => {
 		const prevMuteState = this.state.lanes[laneIndex].muted;
 		this.setLaneProperty(laneIndex, 'muted', !prevMuteState);
-		this.client.send({
+		socketClient.send({
 			user: this.props.userInfo.name,
 			type: 'LaneChange',
 			content: {
@@ -328,7 +336,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	 */
 	private broadcastDiff(diff: { add: PropTime[]; delete: PropTime[] }, laneIndex: number) {
 		diff.add.forEach((n) =>
-			this.client.send({
+			socketClient.send({
 				user: this.props.userInfo.name,
 				type: 'NoteChange',
 				content: {
@@ -340,7 +348,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			}),
 		);
 		diff.delete.forEach((n) =>
-			this.client.send({
+			socketClient.send({
 				user: this.props.userInfo.name,
 				type: 'NoteChange',
 				content: {
@@ -424,7 +432,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	mousePosition: IPoint = { x: -10, y: -10 };
 
 	reportMousePosition() {
-		this.client.send({
+		socketClient.send({
 			user: this.props.userInfo.name,
 			type: 'MousePosition',
 			content: this.mousePosition,
