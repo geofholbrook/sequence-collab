@@ -1,4 +1,5 @@
 import { IPoint } from "@musicenviro/base";
+import { IReduxAction } from "../redux";
 
 export * from './api'
 export * from './state'
@@ -30,8 +31,8 @@ export interface IInstrumentChangeContent {
 
 export interface IMessage {
     user: string;
-    type: 'MousePosition' | 'NoteChange' | 'LaneChange' | 'NewLane' | 'InstrumentChange';
-    content: IPoint | INoteContent | ILaneChangeContent | INewLaneContent | IInstrumentChangeContent
+    type: 'MousePosition' | 'NoteChange' | 'LaneChange' | 'NewLane' | 'InstrumentChange' | 'ReduxAction';
+    content: IPoint | INoteContent | ILaneChangeContent | INewLaneContent | IInstrumentChangeContent | IReduxAction
 }
 
 
