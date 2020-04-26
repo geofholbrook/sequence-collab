@@ -10,7 +10,7 @@ export interface IReduxState {
     lanes: ILaneData[]
 }
 
-const stepRange = { min: 4, max: 14 }
+const stepRange = { min: 4, max: 21  }
 
 export const initialState = {
     stepRange,
