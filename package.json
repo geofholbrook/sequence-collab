@@ -52,7 +52,7 @@
   "license": "ISC",
   "dependencies": {
     "@geof/socket-messaging": "^0.4.1",
-    "@musicenviro/base": "^0.2.5",
+    "@musicenviro/base": "^0.2.6",
     "@musicenviro/ui-elements": "^0.4.18",
     "@types/cors": "^2.8.6",
     "@types/debug": "^4.1.5",

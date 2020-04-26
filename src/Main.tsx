@@ -19,7 +19,7 @@ import { Beforeunload } from 'react-beforeunload';
 
 import { ILane, IScene } from './@types';
 
-import { IPoint, showJSON } from '@musicenviro/base';
+import { IPoint, showJSON, DiatonicStep, pitchFromStep, IRange } from '@musicenviro/base';
 import * as Tone from 'tone';
 import Cursor from './resources/cursor_PNG99.png';
 import { callSynth, drumSynths, synths } from './sound-generation/synths';
@@ -263,7 +263,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 										cell.active && {
 											data: {
 												synthName: 'bass',
-												args: [36 + li],
+												args: [getPitch(reduxState.stepRange, li)],
 											},
 											loopTime: (ci * 1) / 16,
 										},
@@ -462,7 +462,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 					<DiatonicPianoRoll
 						width={600}
-						height={200}
+						height={300}
 						stepRange={store.getState().stepRange}
 						initialLanes={store.getState().lanes}
 						onCellChange={(laneIndex, cellIndex, active) =>
@@ -516,4 +516,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			</div>
 		);
 	}
+}
+
+
+
+function getPitch(stepRange: IRange<DiatonicStep>, laneIndex: number) {
+	const step = stepRange.min + laneIndex
+	return pitchFromStep(step, 36, 'Dorian')
 }
