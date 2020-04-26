@@ -33,7 +33,7 @@ import { newLaneForSynth } from './state/newLaneForSynth';
 
 import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 
-import { store, SET_CELL, LOAD_STATE, initialState } from './redux';
+import { store, SET_CELL, LOAD_STATE, initialState, IReduxAction } from './redux';
 import { socketClient } from './socketClient';
 import { userInfo } from 'os';
 
@@ -166,6 +166,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		
 		store.dispatch({
 			type: SET_CELL,
+			broadcast: true,
 			laneIndex,
 			cellIndex,
 			active,
@@ -423,6 +424,15 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						this.doAddLaneWithSynth(change.synthName);
 					}
 					break;
+
+				case 'ReduxAction':
+					{
+						const action = message.content as IReduxAction;
+						store.dispatch({
+							...action,
+							broadcast: false   // prevents an infinite loop!
+						})
+					}
 
 				default:
 			}

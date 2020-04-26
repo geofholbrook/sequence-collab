@@ -26,6 +26,7 @@ export const SET_USER = 'SET_USER';
 
 export interface IReduxAction {
 	type: 'SET_CELL' | 'LOAD_STATE' | 'SET_USER';
+	broadcast?: boolean;
 }
 
 export interface IReduxSetCellAction extends IReduxAction {
@@ -91,15 +92,17 @@ export const store = createStore<IReduxState, IReduxAction, unknown, unknown>(
 
 const originalDispatch = store.dispatch;
 store.dispatch = ((action: IReduxAction) => {
-    const payload: IMessage = {
-        user: store.getState().user,
-        type: 'ReduxAction',
-        content: action,
-    };
+	
+	if (action.broadcast) {
 
-    console.log(payload)
-
-	socketClient.send(payload);
+		const payload: IMessage = {
+			user: store.getState().user,
+			type: 'ReduxAction',
+			content: action,
+		};
+		
+		socketClient.send(payload);
+	}
     
     return originalDispatch(action);
     
