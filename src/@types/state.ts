@@ -7,8 +7,32 @@
  */
 
 import { PropTime } from "./index";
-import { IReduxState } from "../redux";
+import { IRange, DiatonicStep } from "@musicenviro/base";
+import { ILaneData } from "@musicenviro/ui-elements";
 
+export const currentSceneVersion = "0.0.3";
+
+export interface IReduxState {
+	user: string;
+	stepRange: IRange<DiatonicStep>;
+	lanes: ILaneData[];
+	drumLanes: ILane[];
+}
+
+export interface ILane {
+    synthName: string;
+    loopTimes: PropTime[];
+    muted: boolean;
+    color: string;
+}
+
+export interface IScene {
+    version: string;
+    name: string;
+    reduxState: IReduxState;  // of course, very unsatisfactory, to be redesigned
+}
+
+/*
 export const currentSceneVersion = "0.0.2";
 
 export interface ILane {
@@ -21,9 +45,10 @@ export interface ILane {
 export interface IScene {
     version: string;
     name: string;
-    lanes: ILane[];
+    drumLanes: ILane[];
     reduxState: IReduxState;  // of course, very unsatisfactory, to be redesigned
 }
+*/
 
 /*
 export const currentSceneVersion = "0.0.1";

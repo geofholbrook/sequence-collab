@@ -2,19 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { App } from './App';
 
+import { Provider } from 'react-redux';
+
 import './App.css';
-
-
+import { store } from './redux';
 
 ReactDOM.render(
-	
-	<App />,
-	// <div>
-	// 	<FacebookLoginButton
-	// 		callback={(info: ReactFacebookLoginInfo) => {
-	// 			ReactDOM.render(<App userInfo={{name: info.name as string}} />, document.getElementById('root'));
-	// 		}}
-	// 	/>
-	// </div>,
+	<Provider store={store}>
+		<App />
+	</Provider>,
 	document.getElementById('root'),
 );

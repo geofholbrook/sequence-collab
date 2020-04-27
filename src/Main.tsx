@@ -33,13 +33,11 @@ import { newLaneForSynth } from './state/newLaneForSynth';
 
 import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 
-import { store, SET_CELL, LOAD_STATE, initialState, IReduxAction } from './redux';
+import { store, initialState, IReduxAction } from './redux';
 import { socketClient } from './socketClient';
-import { userInfo } from 'os';
 
 interface IState {
-	lanes: ILane[];
-	otherMouse: IPoint;
+	remoteMouse: IPoint;
 	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 }
 
@@ -58,8 +56,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		super(props);
 
 		this.state = {
-			otherMouse: { x: -10, y: -10 },
-			lanes: [newLaneForSynth(drumSynths[0].name)],
+			remoteMouse: { x: -10, y: -10 },
 			saveState: 'Clean',
 		};
 
@@ -78,8 +75,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		store.dispatch({
 			type: 'SET_USER',
-			user: props.userInfo.name
-		})
+			user: props.userInfo.name,
+		});
 	}
 
 	componentDidMount() {
@@ -103,7 +100,6 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 				const res = await saveSceneToServer(this.props.userInfo.name, {
 					version: currentSceneVersion,
 					name: 'temp',
-					lanes: this.state.lanes,
 					reduxState: store.getState(),
 				});
 
@@ -124,17 +120,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		const res = await loadSceneFromServer(this.props.userInfo.name, 'temp');
 		if (res.success) {
 			const scene = res.scene as IScene;
-			
-			this.setState({
-				lanes: scene.lanes,
-			});
-			
+
 			store.dispatch({
-				type: LOAD_STATE,
+				type: 'LOAD_STATE',
 				state: {
 					...(scene.reduxState || initialState),
-					user: this.props.userInfo.name
-				}
+					user: this.props.userInfo.name,
+				},
 			});
 		} else {
 			// TODO deal with loading failure.
@@ -161,11 +153,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
 		this.setState({
-			saveState: 'Dirty'
-		})
-		
+			saveState: 'Dirty',
+		});
+
 		store.dispatch({
-			type: SET_CELL,
+			type: 'SET_CELL',
 			broadcast: true,
 			laneIndex,
 			cellIndex,
@@ -177,7 +169,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	// drums
 	// ----------------------------------------------------------------------------
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
-		const diff = getDiff(this.state.lanes[laneIndex].loopTimes, notes);
+		const diff = getDiff(store.getState().drumLanes[laneIndex].loopTimes, notes);
 		this.broadcastDiff(diff, laneIndex);
 		this.setLaneLoopTimes(laneIndex, notes);
 	}
@@ -202,7 +194,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	handleManualAddLane() {
 		const prevSynthIndex = drumSynths
 			.map((synth) => synth.name)
-			.indexOf(_.last(this.state.lanes)?.synthName || '');
+			.indexOf(_.last(store.getState().drumLanes)?.synthName || '');
 
 		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
@@ -231,7 +223,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	};
 
 	toggleMute = (laneIndex: number) => {
-		const prevMuteState = this.state.lanes[laneIndex].muted;
+		const prevMuteState = store.getState().drumLanes[laneIndex].muted;
 		this.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 		socketClient.send({
 			user: this.props.userInfo.name,
@@ -244,7 +236,11 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	};
 
 	private doAddLaneWithSynth(newSynth: string) {
-		this.setLanes([...this.state.lanes, newLaneForSynth(newSynth)]);
+		store.dispatch({
+			type: 'ADD_LANE',
+			broadcast: true,
+			lane: newLaneForSynth(newSynth),
+		});
 	}
 
 	updateSchedule() {
@@ -252,8 +248,9 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 
 		const newLoop = _.concat(
 			[],
-			...this.state.lanes
-				.filter((lane) => !lane.muted)
+			...store
+				.getState()
+				.drumLanes.filter((lane) => !lane.muted)
 				.map((lane) =>
 					lane.loopTimes.map((loopTime) => ({
 						data: {
@@ -296,12 +293,14 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	 * @param value
 	 */
 	setLaneProperty(laneIndex: number, property: 'synthName' | 'loopTimes' | 'muted', value: any) {
-		const newLanes = this.state.lanes.slice();
-		newLanes.splice(laneIndex, 1, {
-			...newLanes[laneIndex],
-			[property]: value,
+		store.dispatch({
+			type: 'SET_LANE_PROPERTY',
+			broadcast: true,
+			laneIndex,
+			property,
+			value,
 		});
-		this.setLanes(newLanes);
+		this.updateSchedule()
 	}
 
 	/**
@@ -309,21 +308,13 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	 * @param laneIndex
 	 */
 	doDeleteLane(laneIndex: number) {
-		const newLanes = this.state.lanes.slice();
-		newLanes.splice(laneIndex, 1);
-		this.setLanes(newLanes);
-	}
+		store.dispatch({
+			type: 'DELETE_LANE',
+			broadcast: true,
+			laneIndex
+		})
 
-	setLanes(newLanes: ILane[]) {
-		this.setState(
-			{
-				lanes: newLanes,
-				saveState: 'Dirty',
-			},
-			() => {
-				this.updateSchedule();
-			},
-		);
+		this.updateSchedule()
 	}
 
 	// ----------------------------------------------------------------------------
@@ -367,72 +358,71 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			switch (message.type) {
 				case 'MousePosition':
 					this.setState({
-						otherMouse: message.content as IPoint,
+						remoteMouse: message.content as IPoint,
 					});
 					break;
 
-				case 'NoteChange':
-					{
-						const change = message.content as INoteContent;
+				// case 'NoteChange':
+				// 	{
+				// 		const change = message.content as INoteContent;
 
-						const newLoopTimes = applyDiff(
-							this.state.lanes[change.laneIndex].loopTimes,
-							{
-								add: change.action === 'Add' ? [change.loopTime] : [],
-								delete: change.action === 'Delete' ? [change.loopTime] : [],
-							},
-						);
+				// 		const newLoopTimes = applyDiff(
+				// 			this.state.drumLanes[change.laneIndex].loopTimes,
+				// 			{
+				// 				add: change.action === 'Add' ? [change.loopTime] : [],
+				// 				delete: change.action === 'Delete' ? [change.loopTime] : [],
+				// 			},
+				// 		);
 
-						this.setLaneLoopTimes(change.laneIndex, newLoopTimes);
-					}
-					break;
+				// 		this.setLaneLoopTimes(change.laneIndex, newLoopTimes);
+				// 	}
+				// 	break;
 
-				case 'InstrumentChange':
-					{
-						const change = message.content as IInstrumentChangeContent;
-						this.setLaneProperty(change.laneIndex, 'synthName', change.synthName);
-					}
-					break;
+				// case 'InstrumentChange':
+				// 	{
+				// 		const change = message.content as IInstrumentChangeContent;
+				// 		this.setLaneProperty(change.laneIndex, 'synthName', change.synthName);
+				// 	}
+				// 	break;
 
-				case 'LaneChange': {
-					const change = message.content as ILaneChangeContent;
-					switch (change.action) {
-						case 'Delete':
-							this.doDeleteLane(change.laneIndex);
-							break;
-						case 'Mute':
-							this.setLaneProperty(change.laneIndex, 'muted', true);
-							break;
-						case 'Unmute':
-							this.setLaneProperty(change.laneIndex, 'muted', false);
-							break;
-						case 'ToggleMute':
-							// unused for now
-							this.setLaneProperty(
-								change.laneIndex,
-								'muted',
-								!this.state.lanes[change.laneIndex].muted,
-							);
-							break;
-					}
-					break;
+				// case 'LaneChange': {
+				// 	const change = message.content as ILaneChangeContent;
+				// 	switch (change.action) {
+				// 		case 'Delete':
+				// 			this.doDeleteLane(change.laneIndex);
+				// 			break;
+				// 		case 'Mute':
+				// 			this.setLaneProperty(change.laneIndex, 'muted', true);
+				// 			break;
+				// 		case 'Unmute':
+				// 			this.setLaneProperty(change.laneIndex, 'muted', false);
+				// 			break;
+				// 		case 'ToggleMute':
+				// 			// unused for now
+				// 			this.setLaneProperty(
+				// 				change.laneIndex,
+				// 				'muted',
+				// 				!this.state.drumLanes[change.laneIndex].muted,
+				// 			);
+				// 			break;
+				// 	}
+				// 	break;
+				// }
+
+				// case 'NewLane':
+				// 	{
+				// 		const change = message.content as INewLaneContent;
+				// 		this.doAddLaneWithSynth(change.synthName);
+				// 	}
+				// 	break;
+
+				case 'ReduxAction': {
+					const action = message.content as IReduxAction;
+					store.dispatch({
+						...action,
+						broadcast: false, // prevents an infinite loop!
+					});
 				}
-
-				case 'NewLane':
-					{
-						const change = message.content as INewLaneContent;
-						this.doAddLaneWithSynth(change.synthName);
-					}
-					break;
-
-				case 'ReduxAction':
-					{
-						const action = message.content as IReduxAction;
-						store.dispatch({
-							...action,
-							broadcast: false   // prevents an infinite loop!
-						})
-					}
 
 				default:
 			}
@@ -489,12 +479,12 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 					/>
 
 					<SJDrumLane
-						index={this.state.lanes.length}
+						index={store.getState().drumLanes.length}
 						isPlaceHolder={true}
 						onAddLane={() => this.handleManualAddLane()}
 					></SJDrumLane>
 
-					{this.state.lanes.slice().map((lane, i) => (
+					{store.getState().drumLanes.slice().map((lane, i) => (
 						<SJDrumLane
 							index={i}
 							availableInstruments={drumSynths.map((synth) => synth.name)}
@@ -521,8 +511,8 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						// backgroundColor: 'blue',
 						opacity: 0.3,
 						position: 'fixed',
-						left: this.state.otherMouse.x,
-						top: this.state.otherMouse.y,
+						left: this.state.remoteMouse.x,
+						top: this.state.remoteMouse.y,
 						height: 20,
 						width: 20,
 					}}
@@ -536,9 +526,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 	}
 }
 
-
-
 function getPitch(stepRange: IRange<DiatonicStep>, laneIndex: number) {
-	const step = stepRange.min + laneIndex
-	return pitchFromStep(step, 36, 'Dorian')
+	const step = stepRange.min + laneIndex;
+	return pitchFromStep(step, 36, 'Dorian');
 }

@@ -8,7 +8,7 @@ import {
 	ILane,
 } from '../@types';
 
-import { currentSceneVersion, IScene } from "../@types";
+import { currentSceneVersion, IScene } from '../@types';
 
 import { storageRoot } from './dataPath';
 
@@ -40,7 +40,14 @@ export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneRes
 	const path = `/users/${params.user}/scenes/${params.sceneName}.scene`;
 	try {
 		const buffer = await readFile(storageRoot + path);
-		const scene = backwardCompat(JSON.parse(buffer.toString()));
+		const original = JSON.parse(buffer.toString());
+
+		console.log(original);
+
+		const scene = backwardCompat(original);
+
+		console.log('=====')
+		console.log(scene)
 
 		return {
 			success: true,
@@ -59,12 +66,18 @@ export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneRes
 }
 
 function backwardCompat(rawScene: any): IScene {
-	// pretty straight-forward for now.
+	const drumLanes =
+		(rawScene.reduxState && rawScene.reduxState.drumLanes) ||
+		rawScene.drumLanes ||
+		rawScene.lanes; // for version <= 0.0.2
+
 	return {
 		...rawScene,
 		version: currentSceneVersion,
-		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
-		reduxState: rawScene.reduxState
+		reduxState: {
+			...rawScene.reduxState,
+			drumLanes: drumLanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
+		}
 	};
 }
 
@@ -72,7 +85,6 @@ function laneBackwardCompat(rawLane: any, sceneVersion: string): ILane {
 	// pretty straight-forward for now.
 	return {
 		...rawLane,
-		color: rawLane.color || getColorFromString(rawLane.synthName)
-	}
+		color: rawLane.color || getColorFromString(rawLane.synthName),
+	};
 }
-
