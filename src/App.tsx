@@ -7,6 +7,11 @@ import { requestLogin } from './rest/requests';
 
 import { local, skipLoginForLocal } from './config';
 
+import './App.css';
+import { connect } from 'react-redux';
+import { IReduxAction } from './redux';
+import { Dispatch } from 'redux';
+
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
 const initialScreen: Screen = 'Login';
@@ -28,6 +33,8 @@ export function App() {
 		}
 	}, [])
 
+	const MainContainer = connect(null, mapDispatchToMainProps)(Main)
+	
 	return (
 		<div>
 			<div className="logo-header">Telepromptu</div>
@@ -35,10 +42,33 @@ export function App() {
 		</div>
 	);
 
+	// ----------------------------------------------------------------------------
+	// function-scope helpers
+	// ----------------------------------------------------------------------------
+
+	function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
+		return {
+			setUser: (name: string) => dispatch({
+				type: 'SET_USER',
+				user: name
+			}),
+
+			setCell: (laneIndex: number, cellIndex: number, active: boolean) => dispatch({
+				type: 'SET_CELL',
+				broadcast: true,
+				laneIndex,
+				cellIndex,
+				active
+			})
+		}
+	}
+
+	
 	function masterScreen() {
+		
 		switch (screen) {
 			case 'Main':
-				return <Main userInfo={{ name: username }} />;
+				return <MainContainer userInfo={{ name: username }} />;
 			case 'Login':
 				return (
 					<Login

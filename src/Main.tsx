@@ -36,7 +36,13 @@ import { DiatonicPianoRoll, IDiatonicPianoRollProps } from '@musicenviro/ui-elem
 import { store, initialState, IReduxAction } from './redux';
 import { socketClient } from './socketClient';
 
-interface IState {
+interface IMainProps {
+	userInfo: { name: string };
+	setUser: (name: string) => void;
+	setCell: (laneIndex: number, cellIndex: number, active: boolean) => void;
+}
+
+interface IMainState {
 	remoteMouse: IPoint;
 	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 }
@@ -46,13 +52,13 @@ interface ISynthNote {
 	args: any[];
 }
 
-export class Main extends React.Component<{ userInfo: { name: string } }, IState> {
+export class Main extends React.Component<IMainProps, IMainState> {
 	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;
 
 	saveTimer = setInterval(() => this.saveWorkingScene(), saveInterval);
 
-	constructor(props: { userInfo: { name: string } }) {
+	constructor(props: IMainProps) {
 		super(props);
 
 		this.state = {
@@ -73,10 +79,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			setInterval(() => this.reportMousePosition(), 100);
 		});
 
-		store.dispatch({
-			type: 'SET_USER',
-			user: props.userInfo.name,
-		});
+		props.setUser(props.userInfo.name);
 	}
 
 	componentDidMount() {
@@ -156,13 +159,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			saveState: 'Dirty',
 		});
 
-		store.dispatch({
-			type: 'SET_CELL',
-			broadcast: true,
-			laneIndex,
-			cellIndex,
-			active,
-		});
+		this.props.setCell(laneIndex, cellIndex, active);
 	}
 
 	// ----------------------------------------------------------------------------
@@ -300,7 +297,7 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 			property,
 			value,
 		});
-		this.updateSchedule()
+		this.updateSchedule();
 	}
 
 	/**
@@ -311,10 +308,10 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 		store.dispatch({
 			type: 'DELETE_LANE',
 			broadcast: true,
-			laneIndex
-		})
+			laneIndex,
+		});
 
-		this.updateSchedule()
+		this.updateSchedule();
 	}
 
 	// ----------------------------------------------------------------------------
@@ -484,23 +481,26 @@ export class Main extends React.Component<{ userInfo: { name: string } }, IState
 						onAddLane={() => this.handleManualAddLane()}
 					></SJDrumLane>
 
-					{store.getState().drumLanes.slice().map((lane, i) => (
-						<SJDrumLane
-							index={i}
-							availableInstruments={drumSynths.map((synth) => synth.name)}
-							synthName={lane.synthName}
-							notes={lane.loopTimes}
-							key={'lane' + i}
-							onChange={(notes) => this.handleManualNoteChange(i, notes)}
-							onInstrumentChange={(name) =>
-								this.handleManualInstrumentChange(i, name)
-							}
-							onDeleteLane={this.handleManualDeleteLane}
-							isMuted={lane.muted}
-							onMuteButton={() => this.toggleMute(i)}
-							noteColor={lane.color}
-						/>
-					))}
+					{store
+						.getState()
+						.drumLanes.slice()
+						.map((lane, i) => (
+							<SJDrumLane
+								index={i}
+								availableInstruments={drumSynths.map((synth) => synth.name)}
+								synthName={lane.synthName}
+								notes={lane.loopTimes}
+								key={'lane' + i}
+								onChange={(notes) => this.handleManualNoteChange(i, notes)}
+								onInstrumentChange={(name) =>
+									this.handleManualInstrumentChange(i, name)
+								}
+								onDeleteLane={this.handleManualDeleteLane}
+								isMuted={lane.muted}
+								onMuteButton={() => this.toggleMute(i)}
+								noteColor={lane.color}
+							/>
+						))}
 				</div>
 
 				<img

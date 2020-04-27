@@ -151,6 +151,11 @@ export const store = createStore<IReduxState, IReduxAction, unknown, unknown>(
 	initialState,
 );
 
+// =============================================================================
+// modify store.dispatch to update the server, optionally
+// maybe this is supposed to be an "enhancer"? or "middleware"?
+// =============================================================================
+
 const originalDispatch = store.dispatch;
 store.dispatch = ((action: IReduxAction) => {
 	if (action.broadcast) {
