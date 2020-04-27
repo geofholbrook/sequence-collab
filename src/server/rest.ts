@@ -43,25 +43,25 @@ export function initRestApi(): Promise<Express.Application> {
 		
 		createPostRoute('/api/signup', signupUser);
 
-		createPostRoute('/api/scene/save', saveScene);
+		createPostRoute('/api/scene/save', saveScene, false);
 		createGetRoute('/api/scene/load', loadScene);
 
 		// ---------------------------------------------------------------------------
 		// route helpers
 		// ---------------------------------------------------------------------------
 
-		function createGetRoute(url: string, getter: (params: any) => Promise<any>) {
+		function createGetRoute(url: string, getter: (params: any) => Promise<any>, echo: boolean = true) {
 			app.get(url, async (req, res) => {
-				debug(req.hostname, 'GET', req.url);
+				if (echo) debug(req.hostname, 'GET', req.url);
 				const response = await getter(req.query)
 				res.end(JSON.stringify(response))
 				// res.end()
 			}) 
 		}
 
-		function createPostRoute(url: string, handler: (params: any) => Promise<any>) {
+		function createPostRoute(url: string, handler: (params: any) => Promise<any>, echo: boolean = true) {
 			app.post(url, async (req, res) => {
-				debug(req.hostname, 'POST', req.url)
+				if (echo) debug(req.hostname, 'POST', req.url)
 				const response = await handler(req.body);
 				res.end(JSON.stringify(response));
 			});

@@ -41,13 +41,7 @@ export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneRes
 	try {
 		const buffer = await readFile(storageRoot + path);
 		const original = JSON.parse(buffer.toString());
-
-		console.log(original);
-
 		const scene = backwardCompat(original);
-
-		console.log('=====')
-		console.log(scene)
 
 		return {
 			success: true,
