@@ -57,7 +57,6 @@ function doLoginUser(name: string) {
 		name,
 		session: createSession(name),
 	};
-	// console.log(onlineUsers);
 }
 
 export async function signupUser(params: ISignupParams): Promise<ISignupResponse> {

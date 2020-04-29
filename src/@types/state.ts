@@ -7,16 +7,21 @@
  */
 
 import { PropTime } from "./index";
-import { IRange, DiatonicStep } from "@musicenviro/base";
+import { IRange, DiatonicStep, IPoint } from "@musicenviro/base";
 import { ILaneData } from "@musicenviro/ui-elements";
 
-export const currentSceneVersion = "0.0.3";
+export const currentSceneVersion = "0.1.0";
 
-export interface IReduxState {
-	user: string;
-	stepRange: IRange<DiatonicStep>;
+export interface ISavedState {
+    stepRange: IRange<DiatonicStep>;
 	lanes: ILaneData[];
 	drumLanes: ILane[];
+}
+
+export interface IReduxState extends ISavedState {
+    user: string;
+    remoteMouse: IPoint | null;
+	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 }
 
 export interface ILane {

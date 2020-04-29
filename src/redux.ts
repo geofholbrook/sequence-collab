@@ -1,6 +1,6 @@
 import { ILaneData, makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements';
 import { DiatonicStep, IRange } from '@musicenviro/base';
-import { createStore, Dispatch } from 'redux';
+import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState } from './@types';
 import { newLaneForSynth } from './state/newLaneForSynth';
@@ -10,8 +10,10 @@ import { drumSynths } from './sound-generation/synths';
 
 const stepRange = { min: 4, max: 21 };
 
-export const initialState = {
+export const initialState: IReduxState = {
 	user: 'unknown',
+	saveState: 'Clean',
+	remoteMouse: null,
 	stepRange,
 	lanes: makeDefaultLanes(stepRange),
 	drumLanes: [newLaneForSynth(drumSynths[0].name)],
@@ -19,6 +21,7 @@ export const initialState = {
 
 export interface IReduxAction {
 	type:
+		| 'SET_ROOT_PROPERTY'
 		| 'SET_CELL'
 		| 'LOAD_STATE'
 		| 'SET_USER'
@@ -27,6 +30,12 @@ export interface IReduxAction {
 		| 'DELETE_LANE'
 		| 'SET_LANE_PROPERTY';
 	broadcast?: boolean;
+}
+
+export interface ISetRootPropertyAction extends IReduxAction {
+	type: 'SET_ROOT_PROPERTY';
+	propertyName: 'remoteMouse' | 'saveState';
+	value: any
 }
 
 export interface IReduxSetCellAction extends IReduxAction {
@@ -58,7 +67,7 @@ export interface IAddLaneAction extends IReduxAction {
 
 export interface IDeleteLaneAction extends IReduxAction {
 	type: 'DELETE_LANE';
-	laneIndex: number
+	laneIndex: number;
 }
 
 export interface ISetLanePropertyAction extends IReduxAction {
@@ -109,8 +118,11 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			const action = _action as IDeleteLaneAction;
 			return {
 				...state,
-				drumLanes: [...state.drumLanes.slice(0, action.laneIndex), ...state.drumLanes.slice(action.laneIndex + 1)]
-			}
+				drumLanes: [
+					...state.drumLanes.slice(0, action.laneIndex),
+					...state.drumLanes.slice(action.laneIndex + 1),
+				],
+			};
 		}
 
 		case 'SET_LANE_PROPERTY': {
@@ -146,29 +158,30 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 	}
 }
 
-export const store = createStore<IReduxState, IReduxAction, unknown, unknown>(
-	reducer,
-	initialState,
-);
+export type AppStore = Store<IReduxState, IReduxAction>
 
-// =============================================================================
-// modify store.dispatch to update the server, optionally
-// maybe this is supposed to be an "enhancer"? or "middleware"?
-// =============================================================================
+export function createAppStore() {
+	const store = createStore<IReduxState, IReduxAction, unknown, unknown>(reducer, initialState);
 
-const originalDispatch = store.dispatch;
-store.dispatch = ((action: IReduxAction) => {
-	if (action.broadcast) {
-		const payload: IMessage = {
-			user: store.getState().user,
-			type: 'ReduxAction',
-			content: action,
-		};
+	// =============================================================================
+	// modify store.dispatch to update the server, optionally
+	// maybe this is supposed to be an "enhancer"? or "middleware"?
+	// =============================================================================
 
-		socketClient.send(payload);
-	}
+	const originalDispatch = store.dispatch;
+	store.dispatch = ((action: IReduxAction) => {
+		if (action.broadcast) {
+			const payload: IMessage = {
+				user: store.getState().user,
+				type: 'ReduxAction',
+				content: action,
+			};
 
-	console.log(action)
+			socketClient.send(payload);
+		}
 
-	return originalDispatch(action);
-}) as Dispatch<IReduxAction>;
+		return originalDispatch(action);
+	}) as Dispatch<IReduxAction>;
+
+	return store
+}

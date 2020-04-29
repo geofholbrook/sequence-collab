@@ -29,6 +29,12 @@ export interface IInstrumentChangeContent {
     laneIndex: number
 }
 
+export interface ISynthNote {
+	synthName: string;
+	args: any[];
+}
+
+
 export interface IMessage {
     user: string;
     type: 'MousePosition' | 'NoteChange' | 'LaneChange' | 'NewLane' | 'InstrumentChange' | 'ReduxAction';
