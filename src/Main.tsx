@@ -20,7 +20,10 @@ interface IMainProps {
 	userInfo: { name: string };
 	drumLanes: ILane[];
 	lanes: ILaneData[];
-	stepRange: IRange<DiatonicStep>
+	stepRange: IRange<DiatonicStep>;
+
+	remoteMouse: IPoint | null;
+	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
 
 	// callbacks
 	onStartAudio: () => void;
@@ -38,34 +41,21 @@ interface IMainProps {
 	) => void;
 }
 
-interface IMainState {
-	remoteMouse: IPoint;
-	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
-}
-
-export class Main extends React.Component<IMainProps, IMainState> {
-
+export class Main extends React.Component<IMainProps> {
 	constructor(props: IMainProps) {
 		super(props);
-
-		this.state = {
-			remoteMouse: { x: -10, y: -10 },
-			saveState: 'Clean',
-		};
 
 		socketClient.onConnected(() => {
 			setInterval(() => this.reportMousePosition(), 100);
 		});
 	}
 
-
-
 	// ----------------------------------------------------------------------------
 	// piano roll
 	// ----------------------------------------------------------------------------
 
 	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
-		console.log('cell change')
+		console.log('cell change');
 		this.setState({
 			saveState: 'Dirty',
 		});
@@ -111,8 +101,6 @@ export class Main extends React.Component<IMainProps, IMainState> {
 		this.props.addLane(newLaneForSynth(newSynth));
 	}
 
-
-
 	mousePosition: IPoint = { x: -10, y: -10 };
 
 	reportMousePosition() {
@@ -133,9 +121,9 @@ export class Main extends React.Component<IMainProps, IMainState> {
 				<header>
 					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					{this.state.saveState !== 'Clean' && (
+					{this.props.saveState !== 'Clean' && (
 						<span className="unsaved-alert">
-							{this.state.saveState === 'WaitingForSave'
+							{this.props.saveState === 'WaitingForSave'
 								? 'SAVING'
 								: 'UNSAVED CHANGES'}
 						</span>
@@ -168,46 +156,46 @@ export class Main extends React.Component<IMainProps, IMainState> {
 						onAddLane={() => this.handleManualAddLane()}
 					></SJDrumLane>
 
-					{this.props.drumLanes.slice()
-						.map((lane, i) => (
-							<SJDrumLane
-								index={i}
-								availableInstruments={drumSynths.map((synth) => synth.name)}
-								synthName={lane.synthName}
-								notes={lane.loopTimes}
-								key={'lane' + i}
-								onChange={(notes) => this.handleManualNoteChange(i, notes)}
-								onInstrumentChange={(name) =>
-									this.handleManualInstrumentChange(i, name)
-								}
-								onDeleteLane={this.handleManualDeleteLane}
-								isMuted={lane.muted}
-								onMuteButton={() => this.toggleMute(i)}
-								noteColor={lane.color}
-							/>
-						))}
+					{this.props.drumLanes.slice().map((lane, i) => (
+						<SJDrumLane
+							index={i}
+							availableInstruments={drumSynths.map((synth) => synth.name)}
+							synthName={lane.synthName}
+							notes={lane.loopTimes}
+							key={'lane' + i}
+							onChange={(notes) => this.handleManualNoteChange(i, notes)}
+							onInstrumentChange={(name) =>
+								this.handleManualInstrumentChange(i, name)
+							}
+							onDeleteLane={this.handleManualDeleteLane}
+							isMuted={lane.muted}
+							onMuteButton={() => this.toggleMute(i)}
+							noteColor={lane.color}
+						/>
+					))}
 				</div>
 
-				<img
-					src={Cursor}
-					id="remote-mouse"
-					alt=""
-					style={{
-						// backgroundColor: 'blue',
-						opacity: 0.3,
-						position: 'fixed',
-						left: this.state.remoteMouse.x,
-						top: this.state.remoteMouse.y,
-						height: 20,
-						width: 20,
-					}}
-				/>
+				{this.props.remoteMouse && (
+					<img
+						src={Cursor}
+						id="remote-mouse"
+						alt=""
+						style={{
+							// backgroundColor: 'blue',
+							opacity: 0.3,
+							position: 'fixed',
+							left: this.props.remoteMouse.x,
+							top: this.props.remoteMouse.y,
+							height: 20,
+							width: 20,
+						}}
+					/>
+				)}
 
-				{!local && this.state.saveState !== 'Clean' && (
+				{!local && this.props.saveState !== 'Clean' && (
 					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
 				)}
 			</div>
 		);
 	}
 }
-

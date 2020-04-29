@@ -1,29 +1,39 @@
 import { saveSceneToServer, loadSceneFromServer } from '../rest/scene';
-import { currentSceneVersion, IScene } from '../@types';
+import { currentSceneVersion, IScene, ISavedState } from '../@types';
 import { AppStore, initialState } from '../redux';
 
 export async function saveWorkingScene(store: AppStore) {
+	const stateToSave: ISavedState = {
+		stepRange: store.getState().stepRange,
+		lanes: store.getState().lanes,
+		drumLanes: store.getState().drumLanes,
+	};
+
+	store.dispatch({
+		type: 'SET_ROOT_PROPERTY',
+		propertyName: 'saveState',
+		value: 'WaitingForSave',
+	});
+
 	const res = await saveSceneToServer(store.getState().user, {
 		version: currentSceneVersion,
 		name: 'temp',
-		reduxState: store.getState(),
+		reduxState: stateToSave,
 	});
 
-	// if (res.success) {
-	// 	this.setState((prev) =>
-	// 		prev.saveState === 'WaitingForSave'
-	// 			? {
-	// 					saveState: 'Clean',
-	// 			  }
-	// 			: { saveState: 'Dirty' },
-	// 	);
-	// }
+	if (res.success) {
+		store.dispatch({
+			type: 'SET_ROOT_PROPERTY',
+			propertyName: 'saveState',
+			value: store.getState().saveState === 'WaitingForSave' ? 'Clean' : 'Dirty',
+		});
+	}
 }
 
 export async function loadWorkingScene(store: AppStore) {
 	const username = store.getState().user;
 	const res = await loadSceneFromServer(username, 'temp');
-	
+
 	if (res.success) {
 		const scene = res.scene as IScene;
 

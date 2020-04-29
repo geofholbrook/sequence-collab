@@ -2,7 +2,7 @@ import { ILaneData, makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-ele
 import { DiatonicStep, IRange } from '@musicenviro/base';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
-import { IMessage, ILane, IReduxState } from './@types';
+import { IMessage, ILane, IReduxState, SaveState, ISavedState } from './@types';
 import { newLaneForSynth } from './state/newLaneForSynth';
 import { drumSynths } from './sound-generation/synths';
 
@@ -28,14 +28,14 @@ export interface IReduxAction {
 		| 'SET_DRUM_LANES'
 		| 'ADD_LANE'
 		| 'DELETE_LANE'
-		| 'SET_LANE_PROPERTY';
+		| 'SET_LANE_PROPERTY'
 	broadcast?: boolean;
 }
 
 export interface ISetRootPropertyAction extends IReduxAction {
 	type: 'SET_ROOT_PROPERTY';
 	propertyName: 'remoteMouse' | 'saveState';
-	value: any
+	value: any;
 }
 
 export interface IReduxSetCellAction extends IReduxAction {
@@ -52,7 +52,7 @@ export interface IReduxSetDrumLanesAction extends IReduxAction {
 
 export interface IReduxLoadStateAction extends IReduxAction {
 	type: 'LOAD_STATE';
-	state: IReduxState;
+	state: ISavedState;
 }
 
 export interface IReduxSetUserAction extends IReduxAction {
@@ -85,6 +85,14 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 	const state = _state || initialState;
 
 	switch (_action.type) {
+		case 'SET_ROOT_PROPERTY': {
+			const action = _action as ISetRootPropertyAction;
+			return {
+				...state,
+				[action.propertyName]: action.value
+			}
+		}
+
 		case 'SET_CELL': {
 			const action = _action as IReduxSetCellAction;
 			return {
@@ -142,7 +150,10 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 
 		case 'LOAD_STATE': {
 			const action = _action as IReduxLoadStateAction;
-			return action.state;
+			return {
+				...state,
+				...action.state,
+			};
 		}
 
 		case 'SET_USER': {
@@ -158,7 +169,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 	}
 }
 
-export type AppStore = Store<IReduxState, IReduxAction>
+export type AppStore = Store<IReduxState, IReduxAction>;
 
 export function createAppStore() {
 	const store = createStore<IReduxState, IReduxAction, unknown, unknown>(reducer, initialState);
@@ -169,6 +180,7 @@ export function createAppStore() {
 	// =============================================================================
 
 	const originalDispatch = store.dispatch;
+	
 	store.dispatch = ((action: IReduxAction) => {
 		if (action.broadcast) {
 			const payload: IMessage = {
@@ -180,8 +192,20 @@ export function createAppStore() {
 			socketClient.send(payload);
 		}
 
+		if (['SET_CELL'
+		, 'SET_DRUM_LANES'
+		, 'ADD_LANE'
+		, 'DELETE_LANE'
+		, 'SET_LANE_PROPERTY'].includes(action.type)) {
+			store.dispatch({
+				type: 'SET_ROOT_PROPERTY',
+				propertyName: 'saveState',
+				value: 'Dirty'
+			})
+		}
+
 		return originalDispatch(action);
 	}) as Dispatch<IReduxAction>;
 
-	return store
+	return store;
 }

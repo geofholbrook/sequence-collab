@@ -18,10 +18,12 @@ export interface ISavedState {
 	drumLanes: ILane[];
 }
 
+export type SaveState = 'Clean' | 'Dirty' | 'WaitingForSave';
+
 export interface IReduxState extends ISavedState {
     user: string;
     remoteMouse: IPoint | null;
-	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
+	saveState: SaveState;
 }
 
 export interface ILane {
@@ -34,7 +36,7 @@ export interface ILane {
 export interface IScene {
     version: string;
     name: string;
-    reduxState: IReduxState;  // of course, very unsatisfactory, to be redesigned
+    reduxState: ISavedState;  // of course, very unsatisfactory, to be redesigned
 }
 
 /*

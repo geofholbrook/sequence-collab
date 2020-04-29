@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
 import { saveWorkingScene } from './client/workingScene';
 import { saveInterval } from './config'
-import { IMessage, ISynthNote } from './@types';
+import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient } from './socketClient'
 import _ from 'lodash';
 import { ILoopNote, Scheduler } from './Scheduler/Scheduler';
@@ -59,6 +59,14 @@ class App {
 		this.ac && this.ac.suspend();
 	};
 
+	setSaveState(state: SaveState) {
+		this.store.dispatch({
+			type: 'SET_ROOT_PROPERTY',
+			propertyName: 'saveState',
+			value: state
+		})
+	}
+
 	handleServerMessage(message: IMessage) {
 		if (message.user !== this.store.getState().user) {
 			switch (message.type) {
@@ -72,6 +80,7 @@ class App {
 
 				case 'ReduxAction': {
 					const action = message.content as IReduxAction;
+					
 					this.store.dispatch({
 						...action,
 						broadcast: false, // prevents an infinite loop!

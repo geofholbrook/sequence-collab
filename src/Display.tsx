@@ -84,7 +84,9 @@ export function GUI(props: IAppProps) {
 			},
 			drumLanes: state.drumLanes,
 			lanes: state.lanes,
-			stepRange: state.stepRange
+			stepRange: state.stepRange,
+			saveState: state.saveState,
+			remoteMouse: state.remoteMouse
 		};
 	}
 
