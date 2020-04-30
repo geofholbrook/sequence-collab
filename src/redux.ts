@@ -7,7 +7,7 @@ import { drumSynths } from './sound-generation/synths';
 
 // doing this gradually, can move other state in here if it works and we like it.
 
-const stepRange = { min: 4, max: 21 };
+const stepRange = { min: -3, max: 14 };
 
 export const initialState: IReduxState = {
 	user: 'unknown',
@@ -183,8 +183,6 @@ export function createAppStore() {
 	const originalDispatch = store.dispatch;
 
 	store.dispatch = ((action: IReduxAction) => {
-
-		// console.log(action)
 
 		if (action.broadcast) {
 			const payload: IMessage = {

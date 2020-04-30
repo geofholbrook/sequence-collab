@@ -15,6 +15,8 @@ import { local } from '../config';
 import Cursor from './resources/cursor_PNG99.png';
 import './appearance/Main.css';
 import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
+import { IReduxAction } from '../redux';
 
 interface IMainProps {
 	userInfo: { name: string };
@@ -109,7 +111,6 @@ export class Main extends React.Component<IMainProps> {
 				</header>
 
 				<div className="content">
-					static content
 					
 					<Button.Group basic icon>
 						<Button onClick={this.props.onStopAudio}>
@@ -181,6 +182,69 @@ export class Main extends React.Component<IMainProps> {
 }
 
 
+
+export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
+
+function mapStateToMainProps(state: IReduxState) {
+	return {
+		userInfo: {
+			name: state.user,
+		},
+		drumLanes: state.drumLanes,
+		lanes: state.lanes,
+		stepRange: state.stepRange,
+		remoteMouse: state.remoteMouse
+	};
+}
+
+function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
+	return {
+		setCell: (laneIndex: number, cellIndex: number, active: boolean) =>
+			dispatch({
+				type: 'SET_CELL',
+				broadcast: true,
+				laneIndex,
+				cellIndex,
+				active,
+			}),
+
+		setDrumLanes: (drumLanes: ILane[]) =>
+			dispatch({
+				type: 'SET_DRUM_LANES',
+				broadcast: true,
+				drumLanes,
+			}),
+
+		addLane: (lane: ILane) =>
+			dispatch({
+				type: 'ADD_LANE',
+				broadcast: true,
+				lane,
+			}),
+
+		deleteLane: (index: number) =>
+			dispatch({
+				type: 'DELETE_LANE',
+				broadcast: true,
+				index,
+			}),
+
+		setLaneProperty: (
+			laneIndex: number,
+			property: 'synthName' | 'loopTimes' | 'muted',
+			value: any,
+		) =>
+			dispatch({
+				type: 'SET_LANE_PROPERTY',
+				broadcast: true,
+				laneIndex,
+				property,
+				value,
+			}),
+	};
+}
+
+
 function SaveStateDisplay() {
 	function Connectee(props: {saveState: SaveState}) {
 		return props.saveState === 'Clean' ? null : (
@@ -198,3 +262,4 @@ function SaveStateDisplay() {
 
 	return <Connected />
 }
+
