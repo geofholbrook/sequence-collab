@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { GUIConnected } from './Display';
+import { GUIConnected } from './gui/Display';
 import { Provider } from 'react-redux';
 import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
 import { saveWorkingScene } from './client/workingScene';

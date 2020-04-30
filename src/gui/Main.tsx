@@ -6,12 +6,12 @@ import { Button, Icon } from 'semantic-ui-react';
 import { IPoint, DiatonicStep, IRange } from '@musicenviro/base';
 import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 
-import { ILane } from './@types';
-import { drumSynths } from './sound-generation/synths';
-import { newLaneForSynth } from './state/newLaneForSynth';
-import { SJDrumLane } from './components/SJDrumLane';
-import { socketClient } from './socketClient';
-import { local } from './config';
+import { ILane } from '../@types';
+import { drumSynths } from '../sound-generation/synths';
+import { newLaneForSynth } from '../state/newLaneForSynth';
+import { SJDrumLane } from '../components/SJDrumLane';
+import { socketClient } from '../socketClient';
+import { local } from '../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './Main.css';
