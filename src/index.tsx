@@ -9,7 +9,7 @@ import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient } from './socketClient';
 import _ from 'lodash';
 import { ILoopNote, Scheduler } from './sound-generation/Scheduler/Scheduler';
-import { IRange, DiatonicStep, pitchFromStep } from '@musicenviro/base';
+import { IRange, DiatonicStep, pitchFromStep, IPoint } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 
@@ -43,6 +43,7 @@ class App {
 				<GUIConnected
 					onStartAudio={() => this.startAudio()}
 					onStopAudio={() => this.stopAudio()}
+					onMousePositionUpdate={pos => this.reportMousePosition(pos)}
 				/>
 			</Provider>,
 			document.getElementById('root'),
@@ -62,6 +63,14 @@ class App {
 	stopAudio = () => {
 		this.ac && this.ac.suspend();
 	};
+
+	reportMousePosition(pos: IPoint) {
+		socketClient.send({
+			user: this.store.getState().user, 
+			type: 'MousePosition',
+			content: pos
+		})
+	}
 
 	setSaveState(state: SaveState) {
 		this.store.dispatch({

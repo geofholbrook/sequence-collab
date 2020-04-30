@@ -1,7 +1,7 @@
 import * as Tone from 'tone';
 import { MidiPitch } from '@musicenviro/base';
 
-const bassSynth = new Tone.PolySynth().toMaster()
+const bassSynth = new Tone.PolySynth().toDestination()
 
 bassSynth.set({
     oscillator: {

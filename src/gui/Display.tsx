@@ -13,6 +13,7 @@ import { IReduxAction } from '../redux';
 import { Dispatch } from 'redux';
 import { IReduxState, ILane } from '../@types';
 import { loadSceneFromServer } from '../client/rest/scene';
+import { IPoint } from '@musicenviro/base';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
@@ -54,6 +55,7 @@ interface IAppProps {
 	// callbacks
 	onStartAudio: () => void;
 	onStopAudio: () => void;
+	onMousePositionUpdate: (position: IPoint) => void;
 
 	// dispatch mappings
 	setUser: (username: string) => void;
@@ -62,8 +64,14 @@ interface IAppProps {
 export function GUI(props: IAppProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
 	const setUser = props.setUser
+	
 	React.useEffect(() => {
+	
+		console.log('GUI MOUNTING')
+	
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
+			
+			
 			requestLogin('dev').then((res) => {
 				if (res.success) {
 					setUser('dev');
@@ -94,7 +102,6 @@ export function GUI(props: IAppProps) {
 			drumLanes: state.drumLanes,
 			lanes: state.lanes,
 			stepRange: state.stepRange,
-			saveState: state.saveState,
 			remoteMouse: state.remoteMouse
 		};
 	}
@@ -153,6 +160,7 @@ export function GUI(props: IAppProps) {
 					<MainConnected
 						onStartAudio={() => props.onStartAudio()}
 						onStopAudio={() => props.onStopAudio()}
+						onMousePositionUpdate={props.onMousePositionUpdate}
 					/>
 				);
 

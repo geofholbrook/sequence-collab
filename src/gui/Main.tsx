@@ -6,15 +6,15 @@ import { Button, Icon } from 'semantic-ui-react';
 import { IPoint, DiatonicStep, IRange } from '@musicenviro/base';
 import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 
-import { ILane } from '../@types';
+import { ILane, SaveState, IReduxState } from '../@types';
 import { drumSynths } from '../sound-generation/synths';
 import { newLaneForSynth } from '../state/newLaneForSynth';
 import { SJDrumLane } from './components/SJDrumLane';
-import { socketClient } from '../socketClient';
 import { local } from '../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './appearance/Main.css';
+import { connect } from 'react-redux';
 
 interface IMainProps {
 	userInfo: { name: string };
@@ -23,11 +23,11 @@ interface IMainProps {
 	stepRange: IRange<DiatonicStep>;
 
 	remoteMouse: IPoint | null;
-	saveState: 'Clean' | 'Dirty' | 'WaitingForSave';
-
+	
 	// callbacks
 	onStartAudio: () => void;
 	onStopAudio: () => void;
+	onMousePositionUpdate: (point: IPoint) => void;
 
 	// dispatch mappings
 	setCell: (laneIndex: number, cellIndex: number, active: boolean) => void;
@@ -44,10 +44,11 @@ interface IMainProps {
 export class Main extends React.Component<IMainProps> {
 	constructor(props: IMainProps) {
 		super(props);
+		setInterval(() => this.reportMousePosition(), 100);
+	}
 
-		socketClient.onConnected(() => {
-			setInterval(() => this.reportMousePosition(), 100);
-		});
+	componentDidMount() {
+		console.log('MAIN MOUNTING')
 	}
 
 	// ----------------------------------------------------------------------------
@@ -91,11 +92,7 @@ export class Main extends React.Component<IMainProps> {
 	mousePosition: IPoint = { x: -10, y: -10 };
 
 	reportMousePosition() {
-		socketClient.send({
-			user: this.props.userInfo.name,
-			type: 'MousePosition',
-			content: this.mousePosition,
-		});
+		this.props.onMousePositionUpdate(this.mousePosition)
 	}
 
 	handleMouseMove(event: React.MouseEvent) {
@@ -108,16 +105,12 @@ export class Main extends React.Component<IMainProps> {
 				<header>
 					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					{this.props.saveState !== 'Clean' && (
-						<span className="unsaved-alert">
-							{this.props.saveState === 'WaitingForSave'
-								? 'SAVING'
-								: 'UNSAVED CHANGES'}
-						</span>
-					)}
+					<SaveStateDisplay />
 				</header>
 
 				<div className="content">
+					static content
+					
 					<Button.Group basic icon>
 						<Button onClick={this.props.onStopAudio}>
 							<Icon name="stop" />
@@ -179,10 +172,29 @@ export class Main extends React.Component<IMainProps> {
 					/>
 				)}
 
-				{!local && this.props.saveState !== 'Clean' && (
+				{/* {!local && this.props.saveState !== 'Clean' && (
 					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
-				)}
+				)} */}
 			</div>
 		);
 	}
+}
+
+
+function SaveStateDisplay() {
+	function Connectee(props: {saveState: SaveState}) {
+		return props.saveState === 'Clean' ? null : (
+			<span className="unsaved-alert">
+			{props.saveState === 'WaitingForSave'
+				? 'SAVING'
+				: 'UNSAVED CHANGES'}
+		</span>
+	)
+	}
+
+	const Connected = connect((state: IReduxState) => ({
+		saveState: state.saveState
+	}))(Connectee)
+
+	return <Connected />
 }

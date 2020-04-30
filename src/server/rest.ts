@@ -2,7 +2,7 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { getUsersSync, loginUser, signupUser } from './users';
+import { getUsersSync, loginUser, signupUser, getLoggedInUsers } from './users';
 import { storageRoot } from './dataPath';
 import { ILoginParams } from "../@types";
 
@@ -41,16 +41,19 @@ export function initRestApi(): Promise<Express.Application> {
 		});
 
 		
+		
 		createPostRoute('/api/signup', signupUser);
+		createGetRoute('/api/users/online', getLoggedInUsers)
 
 		createPostRoute('/api/scene/save', saveScene, false);
 		createGetRoute('/api/scene/load', loadScene);
+
 
 		// ---------------------------------------------------------------------------
 		// route helpers
 		// ---------------------------------------------------------------------------
 
-		function createGetRoute(url: string, getter: (params: any) => Promise<any>, echo: boolean = true) {
+		function createGetRoute(url: string, getter: (params: any) => any, echo: boolean = true) {
 			app.get(url, async (req, res) => {
 				if (echo) debug(req.hostname, 'GET', req.url);
 				const response = await getter(req.query)

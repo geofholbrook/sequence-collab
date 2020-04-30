@@ -183,6 +183,9 @@ export function createAppStore() {
 	const originalDispatch = store.dispatch;
 
 	store.dispatch = ((action: IReduxAction) => {
+
+		// console.log(action)
+
 		if (action.broadcast) {
 			const payload: IMessage = {
 				user: store.getState().user,

@@ -16,6 +16,7 @@ import Debug from 'debug';
 const debug = Debug('sj:server:users');
 
 import { promisify } from 'util';
+import { allowDuplicateLogins } from '../config';
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
 
@@ -30,13 +31,30 @@ export function getUsersSync() {
 
 export async function getUsers() {
 	const dir = await readdir(storageRoot + '/users');
-	return dir
+	return dir;
+}
+
+export function getLoggedInUsers() {
+	return Object.keys(onlineUsers);
 }
 
 export async function loginUser(params: ILoginParams): Promise<ILoginResponse> {
 	const users = await getUsers();
+
 	if (users.includes(params.name)) {
-		debug('user found. logging in');
+		debug('user found.');
+
+		if (!allowDuplicateLogins && getLoggedInUsers().includes(params.name)) {
+			debug('user already logged in');
+			return {
+				success: false,
+				status: 'LoginRefused',
+				message: `${params.name} already logged in elsewhere`,
+			};
+		}
+
+		debug('logged in.')
+
 		doLoginUser(params.name);
 		return {
 			success: true,
