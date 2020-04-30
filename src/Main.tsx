@@ -15,6 +15,7 @@ import { local } from './config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './Main.css';
+import { loadWorkingScene } from './client/workingScene';
 
 interface IMainProps {
 	userInfo: { name: string };
@@ -55,11 +56,6 @@ export class Main extends React.Component<IMainProps> {
 	// ----------------------------------------------------------------------------
 
 	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
-		console.log('cell change');
-		this.setState({
-			saveState: 'Dirty',
-		});
-
 		this.props.setCell(laneIndex, cellIndex, active);
 	}
 
@@ -67,11 +63,7 @@ export class Main extends React.Component<IMainProps> {
 	// drums
 	// ----------------------------------------------------------------------------
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
-		this.setLaneLoopTimes(laneIndex, notes);
-	}
-
-	setLaneLoopTimes(laneIndex: number, loopTimes: number[]) {
-		this.props.setLaneProperty(laneIndex, 'loopTimes', loopTimes);
+		this.props.setLaneProperty(laneIndex, 'loopTimes', notes);
 	}
 
 	handleManualInstrumentChange(laneIndex: number, synthName: string) {

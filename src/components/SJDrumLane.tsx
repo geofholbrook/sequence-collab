@@ -19,13 +19,13 @@ interface ISJDrumLane extends ISingleNoteLaneProps {
 }
 
 export function SJDrumLane(props: ISJDrumLane) {
+	
 	return (
 		<div className={"sj-drum-lane" + (props.isPlaceHolder ? " placeholder" : "")}>
 			<div className="section button-section">
 			{props.isPlaceHolder 
 				? <Button icon= 'add circle' color='blue' onClick={e => props.onAddLane && props.onAddLane()}></Button>
 				: <Button icon='trash' onClick={e => props.onDeleteLane && props.onDeleteLane(props.index)}></Button>}
-
 			</div>
 
 			<div className="section more-buttons-section">

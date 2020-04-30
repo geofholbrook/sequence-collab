@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { IReduxAction } from './redux';
 import { Dispatch } from 'redux';
 import { IReduxState, ILane } from './@types';
+import { loadSceneFromServer } from './rest/scene';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
@@ -29,11 +30,20 @@ function mapStateToAppProps(state: IReduxState) {
 
 function mapDispatchToAppProps(dispatch: Dispatch<IReduxAction>) {
 	return {
-		setUser: (username: string) => {
-			return dispatch({
+		setUser: async (username: string) => {
+			dispatch({
 				type: 'SET_USER',
 				user: username,
 			})
+
+			const res = await loadSceneFromServer(username, 'temp')
+			if (res.success) {
+				const scene = res.scene!
+				dispatch({
+					type: 'LOAD_STATE',
+					state: scene.reduxState
+				})
+			}
 		}
 	};
 }
@@ -123,14 +133,14 @@ export function GUI(props: IAppProps) {
 				}),
 
 			setLaneProperty: (
-				index: number,
+				laneIndex: number,
 				property: 'synthName' | 'loopTimes' | 'muted',
 				value: any,
 			) =>
 				dispatch({
 					type: 'SET_LANE_PROPERTY',
 					broadcast: true,
-					index,
+					laneIndex,
 					property,
 					value,
 				}),

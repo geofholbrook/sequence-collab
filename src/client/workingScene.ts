@@ -3,6 +3,7 @@ import { currentSceneVersion, IScene, ISavedState } from '../@types';
 import { AppStore, initialState } from '../redux';
 
 export async function saveWorkingScene(store: AppStore) {
+	
 	const stateToSave: ISavedState = {
 		stepRange: store.getState().stepRange,
 		lanes: store.getState().lanes,
@@ -22,6 +23,8 @@ export async function saveWorkingScene(store: AppStore) {
 	});
 
 	if (res.success) {
+		console.log('saved')
+		console.log(stateToSave)
 		store.dispatch({
 			type: 'SET_ROOT_PROPERTY',
 			propertyName: 'saveState',
@@ -32,10 +35,13 @@ export async function saveWorkingScene(store: AppStore) {
 
 export async function loadWorkingScene(store: AppStore) {
 	const username = store.getState().user;
+	console.log('loadWorkingScene', username)
 	const res = await loadSceneFromServer(username, 'temp');
 
 	if (res.success) {
 		const scene = res.scene as IScene;
+
+		console.log(scene)
 
 		store.dispatch({
 			type: 'LOAD_STATE',

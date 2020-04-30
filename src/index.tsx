@@ -3,15 +3,15 @@ import ReactDOM from 'react-dom';
 import { GUIConnected } from './Display';
 import { Provider } from 'react-redux';
 import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
-import { saveWorkingScene } from './client/workingScene';
-import { saveInterval } from './config'
+import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
+import { saveInterval } from './config';
 import { IMessage, ISynthNote, SaveState } from './@types';
-import { socketClient } from './socketClient'
+import { socketClient } from './socketClient';
 import _ from 'lodash';
 import { ILoopNote, Scheduler } from './Scheduler/Scheduler';
 import { IRange, DiatonicStep, pitchFromStep } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
-import * as Tone from 'tone'
+import * as Tone from 'tone';
 
 class App {
 	store = createAppStore();
@@ -30,13 +30,17 @@ class App {
 			}),
 		);
 
-		this.initGUI()
+		this.initGUI();
+
+		this.store.subscribe(() => {
+			this.updateSchedule()
+		})
 	}
 
 	initGUI() {
 		ReactDOM.render(
 			<Provider store={this.store}>
-				<GUIConnected 
+				<GUIConnected
 					onStartAudio={() => this.startAudio()}
 					onStopAudio={() => this.stopAudio()}
 				/>
@@ -63,8 +67,8 @@ class App {
 		this.store.dispatch({
 			type: 'SET_ROOT_PROPERTY',
 			propertyName: 'saveState',
-			value: state
-		})
+			value: state,
+		});
 	}
 
 	handleServerMessage(message: IMessage) {
@@ -78,14 +82,15 @@ class App {
 					});
 					break;
 
-				case 'ReduxAction': {
-					const action = message.content as IReduxAction;
-					
-					this.store.dispatch({
-						...action,
-						broadcast: false, // prevents an infinite loop!
-					});
-				}
+				case 'ReduxAction':
+					{
+						const action = message.content as IReduxAction;
+
+						this.store.dispatch({
+							...action,
+							broadcast: false, // prevents an infinite loop!
+						});
+					}
 
 				default:
 			}
@@ -97,8 +102,8 @@ class App {
 
 		const newLoop = _.concat(
 			[],
-			...reduxState
-				.drumLanes.filter((lane) => !lane.muted)
+			...reduxState.drumLanes
+				.filter((lane) => !lane.muted)
 				.map((lane) =>
 					lane.loopTimes.map((loopTime) => ({
 						data: {
@@ -128,12 +133,11 @@ class App {
 		);
 
 		this.scheduler.setLoop(newLoop);
-									}
-
+	}
 }
 
-const app = new App()
-app.init()
+const app = new App();
+app.init();
 
 function getPitch(stepRange: IRange<DiatonicStep>, laneIndex: number) {
 	const step = stepRange.min + laneIndex;

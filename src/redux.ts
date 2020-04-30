@@ -2,9 +2,11 @@ import { ILaneData, makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-ele
 import { DiatonicStep, IRange } from '@musicenviro/base';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
-import { IMessage, ILane, IReduxState, SaveState, ISavedState } from './@types';
+import { IMessage, ILane, IReduxState, SaveState, ISavedState, IScene } from './@types';
 import { newLaneForSynth } from './state/newLaneForSynth';
 import { drumSynths } from './sound-generation/synths';
+import { loadWorkingScene } from './client/workingScene';
+import { loadSceneFromServer } from './rest/scene';
 
 // doing this gradually, can move other state in here if it works and we like it.
 
@@ -28,7 +30,7 @@ export interface IReduxAction {
 		| 'SET_DRUM_LANES'
 		| 'ADD_LANE'
 		| 'DELETE_LANE'
-		| 'SET_LANE_PROPERTY'
+		| 'SET_LANE_PROPERTY';
 	broadcast?: boolean;
 }
 
@@ -89,8 +91,8 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			const action = _action as ISetRootPropertyAction;
 			return {
 				...state,
-				[action.propertyName]: action.value
-			}
+				[action.propertyName]: action.value,
+			};
 		}
 
 		case 'SET_CELL': {
@@ -135,7 +137,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 
 		case 'SET_LANE_PROPERTY': {
 			const action = _action as ISetLanePropertyAction;
-			return {
+			const newState = {
 				...state,
 				drumLanes: state.drumLanes.map((drumLane, i) =>
 					i === action.laneIndex
@@ -146,6 +148,8 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 						: drumLane,
 				),
 			};
+
+			return newState;
 		}
 
 		case 'LOAD_STATE': {
@@ -180,7 +184,7 @@ export function createAppStore() {
 	// =============================================================================
 
 	const originalDispatch = store.dispatch;
-	
+
 	store.dispatch = ((action: IReduxAction) => {
 		if (action.broadcast) {
 			const payload: IMessage = {
@@ -192,16 +196,16 @@ export function createAppStore() {
 			socketClient.send(payload);
 		}
 
-		if (['SET_CELL'
-		, 'SET_DRUM_LANES'
-		, 'ADD_LANE'
-		, 'DELETE_LANE'
-		, 'SET_LANE_PROPERTY'].includes(action.type)) {
+		if (
+			['SET_CELL', 'SET_DRUM_LANES', 'ADD_LANE', 'DELETE_LANE', 'SET_LANE_PROPERTY'].includes(
+				action.type,
+			)
+		) {
 			store.dispatch({
 				type: 'SET_ROOT_PROPERTY',
 				propertyName: 'saveState',
-				value: 'Dirty'
-			})
+				value: 'Dirty',
+			});
 		}
 
 		return originalDispatch(action);
