@@ -1,12 +1,9 @@
-import { ILaneData, makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements';
-import { DiatonicStep, IRange } from '@musicenviro/base';
+import { 	makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
-import { IMessage, ILane, IReduxState, SaveState, ISavedState, IScene } from './@types';
+import { IMessage, ILane, IReduxState, ISavedState } from './@types';
 import { newLaneForSynth } from './state/newLaneForSynth';
 import { drumSynths } from './sound-generation/synths';
-import { loadWorkingScene } from './client/workingScene';
-import { loadSceneFromServer } from './rest/scene';
 
 // doing this gradually, can move other state in here if it works and we like it.
 

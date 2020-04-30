@@ -23,8 +23,6 @@ export async function saveWorkingScene(store: AppStore) {
 	});
 
 	if (res.success) {
-		console.log('saved')
-		console.log(stateToSave)
 		store.dispatch({
 			type: 'SET_ROOT_PROPERTY',
 			propertyName: 'saveState',
@@ -40,8 +38,6 @@ export async function loadWorkingScene(store: AppStore) {
 
 	if (res.success) {
 		const scene = res.scene as IScene;
-
-		console.log(scene)
 
 		store.dispatch({
 			type: 'LOAD_STATE',

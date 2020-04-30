@@ -15,7 +15,6 @@ import { local } from './config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './Main.css';
-import { loadWorkingScene } from './client/workingScene';
 
 interface IMainProps {
 	userInfo: { name: string };

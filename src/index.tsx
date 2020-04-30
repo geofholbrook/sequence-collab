@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { GUIConnected } from './Display';
 import { Provider } from 'react-redux';
 import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
-import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
+import { saveWorkingScene } from './client/workingScene';
 import { saveInterval } from './config';
 import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient } from './socketClient';
@@ -33,8 +33,8 @@ class App {
 		this.initGUI();
 
 		this.store.subscribe(() => {
-			this.updateSchedule()
-		})
+			this.updateSchedule();
+		});
 	}
 
 	initGUI() {
@@ -91,6 +91,7 @@ class App {
 							broadcast: false, // prevents an infinite loop!
 						});
 					}
+					break;
 
 				default:
 			}

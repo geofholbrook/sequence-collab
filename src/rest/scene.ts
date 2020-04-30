@@ -1,6 +1,6 @@
 import { IScene } from "../@types";
 import { doJsonPost, doJsonGet } from "./requests";
-import { ISaveSceneResponse, ILoadSceneParams, ILoadSceneResponse } from "../@types/api";
+import { ISaveSceneResponse, ILoadSceneResponse } from "../@types/api";
 
 
 export async function saveSceneToServer(user: string, scene: IScene): Promise<ISaveSceneResponse> {

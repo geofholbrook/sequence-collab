@@ -61,18 +61,17 @@ interface IAppProps {
 
 export function GUI(props: IAppProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
-
+	const setUser = props.setUser
 	React.useEffect(() => {
-
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
 			requestLogin('dev').then((res) => {
 				if (res.success) {
-					props.setUser('dev');
+					setUser('dev');
 					setScreen('Main');
 				}
 			});
 		}
-	}, []);
+	}, [setUser]); 
 
 	const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
 
