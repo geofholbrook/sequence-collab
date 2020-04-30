@@ -1,6 +1,6 @@
 import superagent from 'superagent';
-import { ILoginResponse, ISignupResponse } from "../@types";
-import { local, nodeDropletIP } from '../config';
+import { ILoginResponse, ISignupResponse } from "../../@types";
+import { local, nodeDropletIP } from '../../config';
 
 const apiURL = local ? 'http://localhost:4040/api' : `http://${nodeDropletIP}/api`;
 

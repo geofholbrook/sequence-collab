@@ -1,5 +1,5 @@
 import { IRange } from '@musicenviro/base';
-import { PropTime } from '../@types';
+import { PropTime } from '../../@types';
 /**
  *
  * @param loopTime

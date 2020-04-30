@@ -8,7 +8,7 @@ import { saveInterval } from './config';
 import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient } from './socketClient';
 import _ from 'lodash';
-import { ILoopNote, Scheduler } from './Scheduler/Scheduler';
+import { ILoopNote, Scheduler } from './sound-generation/Scheduler/Scheduler';
 import { IRange, DiatonicStep, pitchFromStep } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';

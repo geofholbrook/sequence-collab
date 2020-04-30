@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events';
 import { getNewScheduledNotes } from './getNewScheduledNotes';
-import { PropTime, Seconds } from '../@types';
+import { PropTime, Seconds } from '../../@types';
 import { setInterval } from 'timers';
 
 const lookahead = 0.1;

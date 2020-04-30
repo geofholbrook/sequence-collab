@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { loadSceneFromServer } from '../rest/scene';
+import { loadSceneFromServer } from '../../client/rest/scene';
 // import { doJsonPost } from '../client/requests';
 
 export function TestRequests() {

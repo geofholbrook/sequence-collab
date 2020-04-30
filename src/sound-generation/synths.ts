@@ -1,6 +1,6 @@
 import { kick, hihat, snare } from './drumSynth';
 import { playSample } from './sampler';
-import { ISynth } from '../screens/Test';
+import { ISynth } from '../gui/screens/Test';
 
 import { sampleFiles } from './samples-dir-listing';
 import { Seconds } from '../@types';

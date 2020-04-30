@@ -1,6 +1,6 @@
 
 
-import { getColorFromString } from '../appearance/colors';
+import { getColorFromString } from '../gui/appearance/colors';
 import { ILane } from '../@types';
 
 export function newLaneForSynth(synthName: string): ILane {

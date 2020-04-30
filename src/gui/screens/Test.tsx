@@ -1,8 +1,8 @@
 import * as React from 'react';
 import './Test.css';
 import * as Tone from 'tone';
-import { callSynth, noteSynths } from '../sound-generation/synths';
-import { Seconds } from '../@types';
+import { callSynth, noteSynths } from '../../sound-generation/synths';
+import { Seconds } from '../../@types';
 
 let ac = Tone.context.rawContext as AudioContext;
 

@@ -9,12 +9,12 @@ import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 import { ILane } from '../@types';
 import { drumSynths } from '../sound-generation/synths';
 import { newLaneForSynth } from '../state/newLaneForSynth';
-import { SJDrumLane } from '../components/SJDrumLane';
+import { SJDrumLane } from './components/SJDrumLane';
 import { socketClient } from '../socketClient';
 import { local } from '../config';
 
 import Cursor from './resources/cursor_PNG99.png';
-import './Main.css';
+import './appearance/Main.css';
 
 interface IMainProps {
 	userInfo: { name: string };
@@ -76,7 +76,7 @@ export class Main extends React.Component<IMainProps> {
 
 		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
-		this.doAddLaneWithSynth(newSynth);
+		this.props.addLane(newLaneForSynth(newSynth));
 	}
 
 	handleManualDeleteLane = (laneIndex: number) => {
@@ -87,10 +87,6 @@ export class Main extends React.Component<IMainProps> {
 		const prevMuteState = this.props.drumLanes[laneIndex].muted;
 		this.props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 	};
-
-	private doAddLaneWithSynth(newSynth: string) {
-		this.props.addLane(newLaneForSynth(newSynth));
-	}
 
 	mousePosition: IPoint = { x: -10, y: -10 };
 

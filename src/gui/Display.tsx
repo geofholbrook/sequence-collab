@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { Main } from './Main';
-import { Login } from '../screens/Login';
-import { Test } from '../screens/Test';
-import { TestRequests } from '../screens/TestScreen';
-import { requestLogin } from '../rest/requests';
+import { Login } from './screens/Login';
+import { Test } from './screens/Test';
+import { TestRequests } from './screens/TestScreen';
+import { requestLogin } from '../client/rest/requests';
 
 import { local, skipLoginForLocal } from '../config';
 
-import './App.css';
+import './appearance/Display.css';
 import { connect } from 'react-redux';
 import { IReduxAction } from '../redux';
 import { Dispatch } from 'redux';
 import { IReduxState, ILane } from '../@types';
-import { loadSceneFromServer } from '../rest/scene';
+import { loadSceneFromServer } from '../client/rest/scene';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
