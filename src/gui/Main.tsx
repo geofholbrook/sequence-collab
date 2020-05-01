@@ -64,6 +64,7 @@ export class Main extends React.Component<IMainProps> {
 	// ----------------------------------------------------------------------------
 	// drums
 	// ----------------------------------------------------------------------------
+	
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
 		this.props.setLaneProperty(laneIndex, 'loopTimes', notes);
 	}
@@ -148,7 +149,7 @@ export class Main extends React.Component<IMainProps> {
 							onInstrumentChange={(name) =>
 								this.handleManualInstrumentChange(i, name)
 							}
-							onDeleteLane={this.handleManualDeleteLane}
+							onDeleteLane={laneIndex => this.props.deleteLane(laneIndex)}
 							isMuted={lane.muted}
 							onMuteButton={() => this.toggleMute(i)}
 							noteColor={lane.color}
@@ -222,11 +223,11 @@ function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
 				lane,
 			}),
 
-		deleteLane: (index: number) =>
+		deleteLane: (laneIndex: number) =>
 			dispatch({
 				type: 'DELETE_LANE',
 				broadcast: true,
-				index,
+				laneIndex
 			}),
 
 		setLaneProperty: (

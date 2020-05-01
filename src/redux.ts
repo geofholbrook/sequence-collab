@@ -123,6 +123,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 
 		case 'DELETE_LANE': {
 			const action = _action as IDeleteLaneAction;
+			console.log(action.laneIndex)
 			return {
 				...state,
 				drumLanes: [
