@@ -40,8 +40,6 @@ export function initRestApi(): Promise<Express.Application> {
 			res.end(JSON.stringify(response));
 		});
 
-		
-		
 		createPostRoute('/api/signup', signupUser);
 		createGetRoute('/api/users/online', getLoggedInUsers)
 

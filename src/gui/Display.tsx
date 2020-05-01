@@ -3,7 +3,7 @@ import { MainConnected } from './Main/Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
-import { requestLogin } from '../client/rest/requests';
+import { requestLogin, requestOnlineusers } from '../client/rest/requests';
 
 import { local, skipLoginForLocal } from '../config';
 
@@ -35,17 +35,17 @@ function mapDispatchToAppProps(dispatch: Dispatch<IReduxAction>) {
 			dispatch({
 				type: 'SET_USER',
 				user: username,
-			})
+			});
 
-			const res = await loadSceneFromServer(username, 'temp')
+			const res = await loadSceneFromServer(username, 'temp');
 			if (res.success) {
-				const scene = res.scene!
+				const scene = res.scene!;
 				dispatch({
 					type: 'LOAD_STATE',
-					state: scene.reduxState
-				})
+					state: scene.reduxState,
+				});
 			}
-		}
+		},
 	};
 }
 
@@ -63,25 +63,25 @@ interface IAppProps {
 
 export function GUI(props: IAppProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
-	const setUser = props.setUser
-	
+	const setUser = props.setUser;
+
 	React.useEffect(() => {
-	
-		console.log('GUI MOUNTING')
-	
+		console.log('GUI MOUNTING');
+
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
-			
-			
-			requestLogin('dev').then((res) => {
+			(async () => {
+				const onlineUsers = await requestOnlineusers()
+				console.log({onlineUsers})
+				const res = await requestLogin('dev');
+
 				if (res.success) {
 					setUser('dev');
 					setScreen('Main');
 				}
-			});
+			})();
 		}
-	}, [setUser]); 
+	}, [setUser]);
 
-	
 	return (
 		<div>
 			<div className="logo-header">Telepromptu</div>

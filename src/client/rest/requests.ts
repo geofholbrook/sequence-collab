@@ -12,6 +12,10 @@ export async function requestSignup(name: string) {
 	return doJsonPost<ISignupResponse>('/signup', { name })
 }
 
+export async function requestOnlineusers() {
+	return doJsonGet('/users/online')
+}
+
 export async function doJsonPost<T>(path: string, payload: object): Promise<T> {
 	return new Promise((resolve, reject) => {
 		superagent
@@ -28,7 +32,7 @@ export async function doJsonPost<T>(path: string, payload: object): Promise<T> {
 	});
 }
 
-export async function doJsonGet(path: string, query: object) {
+export async function doJsonGet(path: string, query: object = {}) {
 	return new Promise((resolve, reject) => {
 		superagent
 			.get(apiURL + path)
