@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { MainConnected } from './Main';
+import { MainConnected } from './Main/Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
@@ -88,9 +88,6 @@ export function GUI(props: IAppProps) {
 			<div className="master-screen-container">{masterScreen()}</div>
 		</div>
 	);
-
-	
-	
 
 	function masterScreen() {
 		switch (screen) {

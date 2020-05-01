@@ -6,26 +6,29 @@ import { Button, Icon } from 'semantic-ui-react';
 import { IPoint, DiatonicStep, IRange } from '@musicenviro/base';
 import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 
-import { ILane, SaveState, IReduxState } from '../@types';
-import { drumSynths } from '../sound-generation/synths';
-import { newLaneForSynth } from '../state/newLaneForSynth';
-import { SJDrumLane } from './components/SJDrumLane';
-import { local } from '../config';
+import { ILane, SaveState } from '../../@types';
+import { drumSynths } from '../../sound-generation/synths';
+import { newLaneForSynth } from '../../state/newLaneForSynth';
+import { SJDrumLane } from '../components/SJDrumLane';
+import { local } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
-import './appearance/Main.css';
+import './resources/Main.css';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { IReduxAction } from '../redux';
+import { mapStateToMainProps } from './mapStateToMainProps';
+import { mapDispatchToMainProps } from './mapDispatchToMainProps';
+import { SaveStateDisplay } from './SaveStateDisplay';
 
 interface IMainProps {
 	userInfo: { name: string };
+	saveState: SaveState;
+
 	drumLanes: ILane[];
 	lanes: ILaneData[];
 	stepRange: IRange<DiatonicStep>;
 
 	remoteMouse: IPoint | null;
-	
+
 	// callbacks
 	onStartAudio: () => void;
 	onStopAudio: () => void;
@@ -50,7 +53,7 @@ export class Main extends React.Component<IMainProps> {
 	}
 
 	componentDidMount() {
-		console.log('MAIN MOUNTING')
+		console.log('MAIN MOUNTING');
 	}
 
 	// ----------------------------------------------------------------------------
@@ -64,7 +67,7 @@ export class Main extends React.Component<IMainProps> {
 	// ----------------------------------------------------------------------------
 	// drums
 	// ----------------------------------------------------------------------------
-	
+
 	handleManualNoteChange(laneIndex: number, notes: number[]) {
 		this.props.setLaneProperty(laneIndex, 'loopTimes', notes);
 	}
@@ -95,7 +98,7 @@ export class Main extends React.Component<IMainProps> {
 	mousePosition: IPoint = { x: -10, y: -10 };
 
 	reportMousePosition() {
-		this.props.onMousePositionUpdate(this.mousePosition)
+		this.props.onMousePositionUpdate(this.mousePosition);
 	}
 
 	handleMouseMove(event: React.MouseEvent) {
@@ -108,11 +111,10 @@ export class Main extends React.Component<IMainProps> {
 				<header>
 					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					<SaveStateDisplay />
+					<SaveStateDisplay saveState={this.props.saveState}/>
 				</header>
 
 				<div className="content">
-					
 					<Button.Group basic icon>
 						<Button onClick={this.props.onStopAudio}>
 							<Icon name="stop" />
@@ -149,7 +151,7 @@ export class Main extends React.Component<IMainProps> {
 							onInstrumentChange={(name) =>
 								this.handleManualInstrumentChange(i, name)
 							}
-							onDeleteLane={laneIndex => this.props.deleteLane(laneIndex)}
+							onDeleteLane={(laneIndex) => this.props.deleteLane(laneIndex)}
 							isMuted={lane.muted}
 							onMuteButton={() => this.toggleMute(i)}
 							noteColor={lane.color}
@@ -174,93 +176,14 @@ export class Main extends React.Component<IMainProps> {
 					/>
 				)}
 
-				{/* {!local && this.props.saveState !== 'Clean' && (
+				{!local && this.props.saveState !== 'Clean' && (
 					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
-				)} */}
+				)}
 			</div>
 		);
 	}
 }
 
-
-
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
 
-function mapStateToMainProps(state: IReduxState) {
-	return {
-		userInfo: {
-			name: state.user,
-		},
-		drumLanes: state.drumLanes,
-		lanes: state.lanes,
-		stepRange: state.stepRange,
-		remoteMouse: state.remoteMouse
-	};
-}
-
-function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
-	return {
-		setCell: (laneIndex: number, cellIndex: number, active: boolean) =>
-			dispatch({
-				type: 'SET_CELL',
-				broadcast: true,
-				laneIndex,
-				cellIndex,
-				active,
-			}),
-
-		setDrumLanes: (drumLanes: ILane[]) =>
-			dispatch({
-				type: 'SET_DRUM_LANES',
-				broadcast: true,
-				drumLanes,
-			}),
-
-		addLane: (lane: ILane) =>
-			dispatch({
-				type: 'ADD_LANE',
-				broadcast: true,
-				lane,
-			}),
-
-		deleteLane: (laneIndex: number) =>
-			dispatch({
-				type: 'DELETE_LANE',
-				broadcast: true,
-				laneIndex
-			}),
-
-		setLaneProperty: (
-			laneIndex: number,
-			property: 'synthName' | 'loopTimes' | 'muted',
-			value: any,
-		) =>
-			dispatch({
-				type: 'SET_LANE_PROPERTY',
-				broadcast: true,
-				laneIndex,
-				property,
-				value,
-			}),
-	};
-}
-
-
-function SaveStateDisplay() {
-	function Connectee(props: {saveState: SaveState}) {
-		return props.saveState === 'Clean' ? null : (
-			<span className="unsaved-alert">
-			{props.saveState === 'WaitingForSave'
-				? 'SAVING'
-				: 'UNSAVED CHANGES'}
-		</span>
-	)
-	}
-
-	const Connected = connect((state: IReduxState) => ({
-		saveState: state.saveState
-	}))(Connectee)
-
-	return <Connected />
-}
 

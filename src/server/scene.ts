@@ -13,7 +13,7 @@ import { currentSceneVersion, IScene } from '../@types';
 import { storageRoot } from './dataPath';
 
 import { promisify } from 'util';
-import { getColorFromString } from '../gui/appearance/colors';
+import { getColorFromString } from '../gui/Main/colors';
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
