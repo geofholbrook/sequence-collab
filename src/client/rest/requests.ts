@@ -12,8 +12,9 @@ export async function requestSignup(name: string) {
 	return doJsonPost<ISignupResponse>('/signup', { name })
 }
 
-export async function requestOnlineusers() {
-	return doJsonGet('/users/online')
+export async function requestOnlineusers(): Promise<string[]> {
+	const res = await doJsonGet('/users/online')
+	return res as string[]
 }
 
 export async function doJsonPost<T>(path: string, payload: object): Promise<T> {

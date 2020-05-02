@@ -56,6 +56,7 @@ interface IAppProps {
 	onStartAudio: () => void;
 	onStopAudio: () => void;
 	onMousePositionUpdate: (position: IPoint) => void;
+	onLogin: (username: string) => void;
 
 	// dispatch mappings
 	setUser: (username: string) => void;
@@ -63,7 +64,8 @@ interface IAppProps {
 
 export function GUI(props: IAppProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
-	const setUser = props.setUser;
+	const setUser = props.setUser
+	const onLogin = props.onLogin
 
 	React.useEffect(() => {
 		console.log('GUI MOUNTING');
@@ -71,16 +73,19 @@ export function GUI(props: IAppProps) {
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
 			(async () => {
 				const onlineUsers = await requestOnlineusers()
-				console.log({onlineUsers})
-				const res = await requestLogin('dev');
+				const devUsername = onlineUsers.includes('dev') ? 'dev2' : 'dev'
+
+
+				const res = await requestLogin(devUsername);
 
 				if (res.success) {
-					setUser('dev');
+					setUser(devUsername);
+					onLogin(devUsername);
 					setScreen('Main');
 				}
 			})();
 		}
-	}, [setUser]);
+	}, [setUser, onLogin]);
 
 	return (
 		<div>
@@ -105,10 +110,12 @@ export function GUI(props: IAppProps) {
 					<Login
 						onLogin={async (uname: string) => {
 							props.setUser(uname);
+							props.onLogin(uname);
 							setScreen('Main');
 						}}
 						onSignup={async (uname: string) => {
 							props.setUser(uname);
+							props.onLogin(uname);
 							setScreen('Main');
 						}}
 					/>

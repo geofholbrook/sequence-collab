@@ -34,7 +34,7 @@ export function getNewScheduledNotes<T>(
 			if (!pos) return null;
 			return {
 				data: note.data,
-				audioContextTime: Math.max(acTime, (pos - translation) * loopLength), // allow 'catch up', fix bug
+				audioContextTime: Math.max(acTime, (pos - translation) * loopLength)
 			};
 		})
 		.filter(Boolean) as IScheduledNote<T>[];

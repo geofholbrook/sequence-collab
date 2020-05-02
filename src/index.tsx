@@ -6,7 +6,7 @@ import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
 import { saveWorkingScene } from './client/workingScene';
 import { saveInterval } from './config';
 import { IMessage, ISynthNote, SaveState } from './@types';
-import { socketClient } from './socketClient';
+import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { ILoopNote, Scheduler } from './sound-generation/Scheduler/Scheduler';
 import { IRange, DiatonicStep, pitchFromStep, IPoint } from '@musicenviro/base';
@@ -21,8 +21,6 @@ class App {
 	ac!: AudioContext;
 
 	init() {
-		socketClient.onMessage((message) => this.handleServerMessage(message));
-
 		this.scheduler.onSchedule((notes) =>
 			notes.forEach((note) => {
 				const synth = synths.find((s) => s.name === note.data.synthName);
@@ -44,6 +42,10 @@ class App {
 					onStartAudio={() => this.startAudio()}
 					onStopAudio={() => this.stopAudio()}
 					onMousePositionUpdate={pos => this.reportMousePosition(pos)}
+					onLogin={(username: string) => {
+						initSocketClient(username)
+						socketClient.onMessage((message) => this.handleServerMessage(message));
+					}}
 				/>
 			</Provider>,
 			document.getElementById('root'),
@@ -65,11 +67,14 @@ class App {
 	};
 
 	reportMousePosition(pos: IPoint) {
-		socketClient.send({
-			user: this.store.getState().user, 
-			type: 'MousePosition',
-			content: pos
-		})
+		
+		if (socketClient.connection.readyState === socketClient.connection.OPEN) {
+			socketClient.send({
+				user: this.store.getState().user, 
+				type: 'MousePosition',
+				content: pos
+			})
+		}
 	}
 
 	setSaveState(state: SaveState) {

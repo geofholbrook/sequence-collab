@@ -2,11 +2,15 @@ import { MessageServer } from "@geof/socket-messaging";
 import { IMessage } from "../@types";
 
 import Debug from 'debug'
+import { onlineUsers } from "./users";
 
 const debug = Debug("sj:server:ws")
 
 export function initWSApi() {
+	// TODO make this async
+	
 	const websocketServer = new MessageServer<IMessage>({});
+	
 	websocketServer.onMessage(msg => {
 		if (msg.type !== 'MousePosition') {
 			debug(msg)
@@ -14,8 +18,12 @@ export function initWSApi() {
 		
 		websocketServer.sendToAll(msg);
 	});
-    // TODO make this async
-    
+	
+	websocketServer.onConnectionClosed((id: string) => {
+		delete onlineUsers[id]
+	})
+
+
     debug(`WEBSOCKET server listening on port ${websocketServer.options.port}`)
     return websocketServer
 }
