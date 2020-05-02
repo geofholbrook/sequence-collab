@@ -9,45 +9,15 @@ import { local, skipLoginForLocal } from '../config';
 
 import './appearance/Display.css';
 import { connect } from 'react-redux';
-import { IReduxAction } from '../redux';
-import { Dispatch } from 'redux';
-import { IReduxState, ILane } from '../@types';
-import { loadSceneFromServer } from '../client/rest/scene';
+import { ILane } from '../@types';
 import { IPoint } from '@musicenviro/base';
+import { mapStateToGuiProps, mapDispatchToGuiProps } from './guiMappers';
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
 const initialScreen: Screen = 'Login';
 
 export const GUIConnected = connect(mapStateToGuiProps, mapDispatchToGuiProps)(GUI);
-
-function mapStateToGuiProps(state: IReduxState) {
-	return {
-		userInfo: {
-			name: state.user,
-		},
-	};
-}
-
-function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {
-	return {
-		setUser: async (username: string) => {
-			dispatch({
-				type: 'SET_USER',
-				user: username,
-			});
-
-			const res = await loadSceneFromServer(username, 'temp');
-			if (res.success) {
-				const scene = res.scene!;
-				dispatch({
-					type: 'LOAD_STATE',
-					state: scene.reduxState,
-				});
-			}
-		},
-	};
-}
 
 interface IAppProps {
 	userInfo: { name: string };
