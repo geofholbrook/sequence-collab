@@ -1,11 +1,13 @@
 import React from 'react'
 
 import { Button } from 'semantic-ui-react';
-import { ISJDrumLaneProps } from "./types";
+import { IDrumLaneProps } from "./types";
 
-export function LaneControls(props: ISJDrumLaneProps) {
-	return <div className="section">
-		<div className="section button-section">
+export function LaneControls(props: IDrumLaneProps) {
+    
+    return <div className="section">
+		
+        <div className="section button-section">
 			{props.isPlaceHolder ? (<Button icon="add circle" color="blue" onClick={(e) => props.onAddLane && props.onAddLane()}></Button>) : (<Button icon="trash" onClick={(e) => props.onDeleteLane && props.onDeleteLane(props.index)}></Button>)}
 		</div>
 
@@ -23,5 +25,6 @@ export function LaneControls(props: ISJDrumLaneProps) {
 				</option>))}
 			</select>)}
 		</div>
+
 	</div>;
 }

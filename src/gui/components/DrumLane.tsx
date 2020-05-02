@@ -1,12 +1,14 @@
 import { SingleNoteLane } from '@musicenviro/ui-elements';
 import * as React from 'react';
-import './SJDrumLane.css';
-import { LaneControls } from './LaneControls';
-import { ISJDrumLaneProps } from './types';
+import './DrumLane.css';
 
-export function SJDrumLane(props: ISJDrumLaneProps) {
+import { LaneControls } from './LaneControls';
+
+import { IDrumLaneProps } from './types';
+
+export function DrumLane(props: IDrumLaneProps) {
 	return (
-		<div className={'sj-drum-lane' + (props.isPlaceHolder ? ' placeholder' : '')}>
+		<div className={'lane drum-lane' + (props.isPlaceHolder ? ' placeholder' : '')}>
 			<LaneControls {...props} />
 
 			<div className="section main-section">

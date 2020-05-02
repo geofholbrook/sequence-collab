@@ -7,9 +7,9 @@ import { IPoint, DiatonicStep, IRange } from '@musicenviro/base';
 import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 
 import { ILane, SaveState } from '../../@types';
-import { drumSynths } from '../../sound-generation/synths';
+import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
-import { SJDrumLane } from '../components/SJDrumLane';
+import { DrumLane } from '../components/DrumLane';
 import { local } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
+import { RollLane } from '../components/RollLane';
 
 interface IMainProps {
 	userInfo: { name: string };
@@ -124,7 +125,9 @@ export class Main extends React.Component<IMainProps> {
 						</Button>
 					</Button.Group>
 
-					<DiatonicPianoRoll
+					<RollLane
+						index={0}
+						availableInstruments={noteSynths.map((synth) => synth.name)}
 						width={600}
 						height={300}
 						stepRange={this.props.stepRange}
@@ -134,14 +137,14 @@ export class Main extends React.Component<IMainProps> {
 						}
 					/>
 
-					<SJDrumLane
+					<DrumLane
 						index={this.props.drumLanes.length}
 						isPlaceHolder={true}
 						onAddLane={() => this.handleManualAddLane()}
-					></SJDrumLane>
+					></DrumLane>
 
 					{this.props.drumLanes.slice().map((lane, i) => (
-						<SJDrumLane
+						<DrumLane
 							index={i}
 							availableInstruments={drumSynths.map((synth) => synth.name)}
 							synthName={lane.synthName}
