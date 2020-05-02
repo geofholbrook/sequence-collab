@@ -2,7 +2,7 @@ import { 	makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState, ISavedState } from './@types';
-import { newLaneForSynth } from './state/newLaneForSynth';
+import { newLaneForSynth } from './state-helpers/newLaneForSynth';
 import { drumSynths } from './sound-generation/synths';
 
 // doing this gradually, can move other state in here if it works and we like it.

@@ -8,7 +8,7 @@ import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
 
 import { ILane, SaveState } from '../../@types';
 import { drumSynths } from '../../sound-generation/synths';
-import { newLaneForSynth } from '../../state/newLaneForSynth';
+import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { SJDrumLane } from '../components/SJDrumLane';
 import { local } from '../../config';
 
