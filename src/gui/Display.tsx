@@ -19,9 +19,9 @@ type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
 const initialScreen: Screen = 'Login';
 
-export const GUIConnected = connect(mapStateToAppProps, mapDispatchToAppProps)(GUI);
+export const GUIConnected = connect(mapStateToGuiProps, mapDispatchToGuiProps)(GUI);
 
-function mapStateToAppProps(state: IReduxState) {
+function mapStateToGuiProps(state: IReduxState) {
 	return {
 		userInfo: {
 			name: state.user,
@@ -29,7 +29,7 @@ function mapStateToAppProps(state: IReduxState) {
 	};
 }
 
-function mapDispatchToAppProps(dispatch: Dispatch<IReduxAction>) {
+function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {
 	return {
 		setUser: async (username: string) => {
 			dispatch({
