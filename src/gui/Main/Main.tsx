@@ -8,7 +8,7 @@ import { IPoint } from '@musicenviro/base';
 import { ILane, SaveState, IRollLane, IDrumLane } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
-import { Lane } from '../components/DrumLane';
+import { Lane } from '../components/Lane';
 import { local } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
