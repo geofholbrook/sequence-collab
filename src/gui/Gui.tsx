@@ -58,7 +58,7 @@ export function GUI(props: IAppProps) {
 
 	return (
 		<div>
-			<div className="logo-header">Telepromptu</div>
+			<div className="logo-header">SyncroJam</div>
 			<div className="master-screen-container">{masterScreen()}</div>
 		</div>
 	);
