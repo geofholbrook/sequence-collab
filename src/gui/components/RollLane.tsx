@@ -12,7 +12,7 @@ export function RollLane(props: IRollLaneProps) {
 			<LaneControls {...props} />
 
 			<div className="section main-section">
-				{!props.isPlaceHolder && <DiatonicPianoRoll {...props}/>}
+				<DiatonicPianoRoll {...props} width={602}/>
 			</div>
 		</div>
 	);

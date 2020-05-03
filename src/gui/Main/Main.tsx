@@ -77,7 +77,7 @@ export class Main extends React.Component<IMainProps> {
 		this.props.setLaneProperty(laneIndex, 'synthName', synthName);
 	}
 
-	handleManualAddLane() {
+	handleManualAddDrumLane() {
 		const prevSynthIndex = drumSynths
 			.map((synth) => synth.name)
 			.indexOf(_.last(this.props.drumLanes)?.synthName || '');
@@ -85,6 +85,10 @@ export class Main extends React.Component<IMainProps> {
 		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
 		this.props.addLane(newLaneForSynth(newSynth));
+	}
+
+	handleManualAddDiatonicLane() {
+		this.props.addLane(newLaneForSynth('bass'))
 	}
 
 	handleManualDeleteLane = (laneIndex: number) => {
@@ -107,63 +111,54 @@ export class Main extends React.Component<IMainProps> {
 	}
 
 	renderLane(lane: ILane, laneIndex: number) {
-
 		const generalProps = {
 			index: laneIndex,
 			key: 'lane' + laneIndex,
-			onInstrumentChange: (name: string) => this.handleManualInstrumentChange(laneIndex, name),
+			onInstrumentChange: (name: string) =>
+				this.handleManualInstrumentChange(laneIndex, name),
 			onDeleteLane: (laneIndex: number) => this.props.deleteLane(laneIndex),
 			isMuted: lane.muted,
-			onMuteButton: () => this.toggleMute(laneIndex)
-		}
+			onMuteButton: () => this.toggleMute(laneIndex),
+		};
 
 		switch (lane.laneType) {
-			case 'DiatonicPianoRoll':
-				{
-					const rollLane = lane as IRollLane;
+			case 'DiatonicPianoRoll': {
+				const rollLane = lane as IRollLane;
 
-					return (
-						<RollLane
-							{...generalProps}
-							
-							availableInstruments={noteSynths.map((synth) => synth.name)}
-							width={600}
-							height={300}
-							stepRange={rollLane.stepRange}
-							initialLanes={rollLane.rows}
-							onCellChange={(rowIndex, cellIndex, active) =>
-								this.handlePianoRollCellChange(
-									laneIndex,
-									rowIndex,
-									cellIndex,
-									active,
-								)
-							}
-						/>
-					);
-				}
-				
+				return (
+					<RollLane
+						{...generalProps}
+						availableInstruments={noteSynths.map((synth) => synth.name)}
+						width={600}
+						height={300}
+						stepRange={rollLane.stepRange}
+						initialLanes={rollLane.rows}
+						onCellChange={(rowIndex, cellIndex, active) =>
+							this.handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
+						}
+					/>
+				);
+			}
+
 			/* <DrumLane
 			index={this.props.drumLanes.length}
 			isPlaceHolder={true}
 			onAddLane={() => this.handleManualAddLane()}
 		></DrumLane> */
 
-			case 'SingleNoteLane':
-				{
-					const drumLane = lane as IDrumLane;
-					return (
-						<DrumLane
-							{...generalProps}
-							
-							availableInstruments={drumSynths.map((synth) => synth.name)}
-							synthName={lane.synthName}
-							notes={drumLane.loopTimes}
-							onChange={(notes) => this.handleManualNoteChange(laneIndex, notes)}
-							noteColor={drumLane.color}
-						/>
-					);
-				}
+			case 'SingleNoteLane': {
+				const drumLane = lane as IDrumLane;
+				return (
+					<DrumLane
+						{...generalProps}
+						availableInstruments={drumSynths.map((synth) => synth.name)}
+						synthName={lane.synthName}
+						notes={drumLane.loopTimes}
+						onChange={(notes) => this.handleManualNoteChange(laneIndex, notes)}
+						noteColor={drumLane.color}
+					/>
+				);
+			}
 
 			default:
 				return null;
@@ -180,17 +175,28 @@ export class Main extends React.Component<IMainProps> {
 				</header>
 
 				<div className="content">
-					<Button.Group basic icon>
-						<Button onClick={this.props.onStopAudio}>
-							<Icon name="stop" />
-						</Button>
-						<Button onClick={this.props.onStartAudio}>
-							<Icon name="play" color="green" />
-						</Button>
-					</Button.Group>
+					<Button icon circular  onClick={() => this.handleManualAddDrumLane()}>
+						<Icon name="plus" color="blue" />
+						{" "}Drum
+					</Button>
+					<Button icon circular onClick={() => this.handleManualAddDiatonicLane()}>
+						<Icon name="plus" color="green"/>
+						{" "}Diatonic
+					</Button>
+					<Button icon onClick={this.props.onStopAudio}>
+						<Icon name="reply" />
+					</Button>
+					<Button icon onClick={this.props.onStopAudio}>
+						<Icon name="share" />
+					</Button>
+					<Button icon onClick={this.props.onStopAudio}>
+						<Icon name="stop" color="red"/>
+					</Button>
+					<Button icon onClick={this.props.onStartAudio}>
+						<Icon name="play" color="green"/>
+					</Button>
 
 					{this.props.drumLanes.map((lane, index) => this.renderLane(lane, index))}
-				
 				</div>
 
 				{this.props.remoteMouse && (

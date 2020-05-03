@@ -1,7 +1,21 @@
 .lane {
-    width: 100%;
-    min-height: 50px;
-    display: table
+    width: 860px;
+    display: table;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-left: 5px;
+    border-radius: 5px;
+    background-color: rgb(235, 233, 233);
+    
+}
+
+.drum-lane {
+    min-height: 45px;
+}
+
+.roll-lane {
+    padding-bottom: 10px;
+
 }
 
 .section {
@@ -13,7 +27,6 @@
 .button-section {
     width: 35px;
 }
-
 
 .selector-section select {
     width: 120px;

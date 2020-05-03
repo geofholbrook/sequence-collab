@@ -38,11 +38,11 @@ header {
 
 .content {
 	line-height: 30px;
-	background-color: lightgray;
+	background-color: rgb(92, 92, 92);
 	position: absolute;
 	margin: auto;
 	width: 900px;
-	padding: 25px;
+	padding: 10px;
 
 	top: 50px;
 	bottom: 0px;

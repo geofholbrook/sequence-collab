@@ -3,28 +3,19 @@ import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState, ISavedState } from './@types';
 import { newLaneForSynth } from './state-helpers/newLaneForSynth';
-import { drumSynths } from './sound-generation/synths';
+import { drumSynths, noteSynths } from './sound-generation/synths';
 import { reducer } from './reducer';
 
 // doing this gradually, can move other state in here if it works and we like it.
 
-const stepRange = { min: -3, max: 14 };
 
 export const initialState: IReduxState = {
 	user: 'unknown',
 	saveState: 'Clean',
 	remoteMouse: null,
-	// lanes: makeDefaultLanes(stepRange),
+	// lanes: makeDefaultLanes(defaultStepRange),
 	drumLanes: [
-		{
-			laneType: 'DiatonicPianoRoll',
-			synthName: 'bass',
-			muted: false,
-			stepRange,
-			zeroPitch: 48,
-			mode: 'Mixolydian',
-			rows: makeDefaultLanes(stepRange),
-		},
+		newLaneForSynth(noteSynths[0].name),
 		newLaneForSynth(drumSynths[0].name),
 	],
 };
