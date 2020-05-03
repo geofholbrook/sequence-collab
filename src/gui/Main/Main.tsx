@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
@@ -8,7 +8,7 @@ import { IPoint } from '@musicenviro/base';
 import { ILane, SaveState, IRollLane, IDrumLane } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
-import { DrumLane } from '../components/DrumLane';
+import { Lane } from '../components/DrumLane';
 import { local } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
@@ -17,7 +17,7 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import { RollLane } from '../components/RollLane';
+import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -42,22 +42,21 @@ export interface IMainProps {
 	) => void;
 }
 function Main(props: IMainProps) {
-	
 	const [mousePosition, setMousePosition] = useState<IPoint>({ x: -10, y: -10 });
-	
+	const [selectedLanes, setSelectedLanes] = useState<number[]>([0]);
+
 	useEffect(() => {
 		console.log('MAIN MOUNTING');
 		const mouseTimer = setInterval(reportMousePosition, 100);
 		return () => {
-			clearInterval(mouseTimer)
-		}
-	}, [])
+			clearInterval(mouseTimer);
+		};
+	}, []);
 
 	return (
 		<div className="Screen" onMouseMove={(event) => handleMouseMove(event)}>
 			<header>
-				logged in as{' '}
-				<span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
+				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
 				<SaveStateDisplay saveState={props.saveState} />
 			</header>
 
@@ -120,10 +119,10 @@ function Main(props: IMainProps) {
 		props.addLane(newLaneForSynth(noteSynths[0].name));
 	}
 
-	function toggleMute (laneIndex: number) {
+	function toggleMute(laneIndex: number) {
 		const prevMuteState = props.lanes[laneIndex].muted;
 		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
-	};
+	}
 
 	function reportMousePosition() {
 		props.onMousePositionUpdate(mousePosition);
@@ -134,74 +133,86 @@ function Main(props: IMainProps) {
 	}
 
 	function renderButtons() {
-		return <div>
-			<Button icon circular onClick={handleManualAddDrumLane}>
-				<Icon name="plus" color="blue" /> Drum
-			</Button>
-			<Button icon circular onClick={handleManualAddDiatonicLane}>
-				<Icon name="plus" color="green" /> Diatonic
-			</Button>
-			<Button icon onClick={props.onStopAudio}>
-				<Icon name="reply" />
-			</Button>
-			<Button icon onClick={props.onStopAudio}>
-				<Icon name="share" />
-			</Button>
-			<Button icon onClick={props.onStopAudio}>
-				<Icon name="stop" color="red" />
-			</Button>
-			<Button icon onClick={props.onStartAudio}>
-				<Icon name="play" color="green" />
-			</Button>
-		</div>;
+		return (
+			<div>
+				<Button icon circular onClick={handleManualAddDrumLane}>
+					<Icon name="plus" color="blue" /> Drum
+				</Button>
+				<Button icon circular onClick={handleManualAddDiatonicLane}>
+					<Icon name="plus" color="green" /> Diatonic
+				</Button>
+				<Button icon onClick={props.onStopAudio}>
+					<Icon name="reply" />
+				</Button>
+				<Button icon onClick={props.onStopAudio}>
+					<Icon name="share" />
+				</Button>
+				<Button icon onClick={props.onStopAudio}>
+					<Icon name="stop" color="red" />
+				</Button>
+				<Button icon onClick={props.onStartAudio}>
+					<Icon name="play" color="green" />
+				</Button>
+			</div>
+		);
 	}
 
 	function renderLane(lane: ILane, laneIndex: number) {
-		const generalProps = {
-			index: laneIndex,
-			key: 'lane' + laneIndex,
-			onInstrumentChange: (name: string) =>
-				handleManualInstrumentChange(laneIndex, name),
-			onDeleteLane: (laneIndex: number) => props.deleteLane(laneIndex),
-			isMuted: lane.muted,
-			onMuteButton: () => toggleMute(laneIndex),
-		};
+		const availableInstruments = (lane.laneType === 'DiatonicPianoRoll'
+			? noteSynths
+			: drumSynths
+		).map((synth) => synth.name);
 
-		switch (lane.laneType) {
-			case 'DiatonicPianoRoll': {
-				const rollLane = lane as IRollLane;
+		return (
+			<Lane
+				index={laneIndex}
+				key={'lane' + laneIndex}
+				laneType={lane.laneType}
+				synthName={lane.synthName}
+				onInstrumentChange={(name: string) => handleManualInstrumentChange(laneIndex, name)}
+				onDeleteLane={(laneIndex: number) => props.deleteLane(laneIndex)}
+				isMuted={lane.muted}
+				isSelected={selectedLanes.includes(laneIndex)}
+				onMuteButton={() => toggleMute(laneIndex)}
+				availableInstruments={availableInstruments}
+			>
+				{getInnerComponent()}
+			</Lane>
+		);
 
-				return (
-					<RollLane
-						{...generalProps}
-						availableInstruments={noteSynths.map((synth) => synth.name)}
-						width={600}
-						height={300}
-						stepRange={rollLane.stepRange}
-						initialLanes={rollLane.rows}
-						onCellChange={(rowIndex, cellIndex, active) =>
-							handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
-						}
-					/>
-				);
+		function getInnerComponent() {
+			switch (lane.laneType) {
+				case 'DiatonicPianoRoll': {
+					const rollLane = lane as IRollLane;
+					return (
+						<DiatonicPianoRoll
+							width={602}
+							height={300}
+							stepRange={rollLane.stepRange}
+							initialLanes={rollLane.rows}
+							onCellChange={(rowIndex, cellIndex, active) =>
+								handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
+							}
+						/>
+					);
+				}
+
+				case 'SingleNoteLane': {
+					const drumLane = lane as IDrumLane;
+					return (
+						<SingleNoteLane
+							width={650}
+							height={30}
+							notes={drumLane.loopTimes}
+							onChange={(notes) => handleManualNoteChange(laneIndex, notes)}
+							noteColor={drumLane.color}
+						/>
+					);
+				}
+
+				default:
+					return null;
 			}
-
-			case 'SingleNoteLane': {
-				const drumLane = lane as IDrumLane;
-				return (
-					<DrumLane
-						{...generalProps}
-						availableInstruments={drumSynths.map((synth) => synth.name)}
-						synthName={lane.synthName}
-						notes={drumLane.loopTimes}
-						onChange={(notes) => handleManualNoteChange(laneIndex, notes)}
-						noteColor={drumLane.color}
-					/>
-				);
-			}
-
-			default:
-				return null;
 		}
 	}
 }

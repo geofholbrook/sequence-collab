@@ -24,8 +24,10 @@ export interface IReduxState extends ISavedState {
 	saveState: SaveState;
 }
 
+export type LaneType = 'SingleNoteLane' | 'DiatonicPianoRoll';
+
 export interface ILane {
-    laneType: 'SingleNoteLane' | 'DiatonicPianoRoll';
+    laneType: LaneType;
     synthName: string;
     muted: boolean;
 }
