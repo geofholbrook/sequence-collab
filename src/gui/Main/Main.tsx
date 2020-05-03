@@ -88,7 +88,7 @@ export class Main extends React.Component<IMainProps> {
 	}
 
 	handleManualAddDiatonicLane() {
-		this.props.addLane(newLaneForSynth('bass'))
+		this.props.addLane(newLaneForSynth('bass'));
 	}
 
 	handleManualDeleteLane = (laneIndex: number) => {
@@ -108,6 +108,67 @@ export class Main extends React.Component<IMainProps> {
 
 	handleMouseMove(event: React.MouseEvent) {
 		this.mousePosition = { x: event.clientX, y: event.clientY };
+	}
+
+	render() {
+		return (
+			<div className="Screen" onMouseMove={(event) => this.handleMouseMove(event)}>
+				<header>
+					logged in as{' '}
+					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
+					<SaveStateDisplay saveState={this.props.saveState} />
+				</header>
+
+				<div className="content">
+					{this.renderButtons()}
+					{this.props.drumLanes.map((lane, index) => this.renderLane(lane, index))}
+				</div>
+
+				{this.props.remoteMouse && (
+					<img
+						src={Cursor}
+						id="remote-mouse"
+						alt=""
+						style={{
+							// backgroundColor: 'blue',
+							opacity: 0.3,
+							position: 'fixed',
+							left: this.props.remoteMouse.x,
+							top: this.props.remoteMouse.y,
+							height: 20,
+							width: 20,
+						}}
+					/>
+				)}
+
+				{!local && this.props.saveState !== 'Clean' && (
+					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
+				)}
+			</div>
+		);
+	}
+
+	private renderButtons() {
+		return <div>
+			<Button icon circular onClick={() => this.handleManualAddDrumLane()}>
+				<Icon name="plus" color="blue" /> Drum
+			</Button>
+			<Button icon circular onClick={() => this.handleManualAddDiatonicLane()}>
+				<Icon name="plus" color="green" /> Diatonic
+			</Button>
+			<Button icon onClick={this.props.onStopAudio}>
+				<Icon name="reply" />
+			</Button>
+			<Button icon onClick={this.props.onStopAudio}>
+				<Icon name="share" />
+			</Button>
+			<Button icon onClick={this.props.onStopAudio}>
+				<Icon name="stop" color="red" />
+			</Button>
+			<Button icon onClick={this.props.onStartAudio}>
+				<Icon name="play" color="green" />
+			</Button>
+		</div>;
 	}
 
 	renderLane(lane: ILane, laneIndex: number) {
@@ -140,12 +201,6 @@ export class Main extends React.Component<IMainProps> {
 				);
 			}
 
-			/* <DrumLane
-			index={this.props.drumLanes.length}
-			isPlaceHolder={true}
-			onAddLane={() => this.handleManualAddLane()}
-		></DrumLane> */
-
 			case 'SingleNoteLane': {
 				const drumLane = lane as IDrumLane;
 				return (
@@ -163,64 +218,6 @@ export class Main extends React.Component<IMainProps> {
 			default:
 				return null;
 		}
-	}
-
-	render() {
-		return (
-			<div className="Screen" onMouseMove={(event) => this.handleMouseMove(event)}>
-				<header>
-					logged in as{' '}
-					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					<SaveStateDisplay saveState={this.props.saveState} />
-				</header>
-
-				<div className="content">
-					<Button icon circular  onClick={() => this.handleManualAddDrumLane()}>
-						<Icon name="plus" color="blue" />
-						{" "}Drum
-					</Button>
-					<Button icon circular onClick={() => this.handleManualAddDiatonicLane()}>
-						<Icon name="plus" color="green"/>
-						{" "}Diatonic
-					</Button>
-					<Button icon onClick={this.props.onStopAudio}>
-						<Icon name="reply" />
-					</Button>
-					<Button icon onClick={this.props.onStopAudio}>
-						<Icon name="share" />
-					</Button>
-					<Button icon onClick={this.props.onStopAudio}>
-						<Icon name="stop" color="red"/>
-					</Button>
-					<Button icon onClick={this.props.onStartAudio}>
-						<Icon name="play" color="green"/>
-					</Button>
-
-					{this.props.drumLanes.map((lane, index) => this.renderLane(lane, index))}
-				</div>
-
-				{this.props.remoteMouse && (
-					<img
-						src={Cursor}
-						id="remote-mouse"
-						alt=""
-						style={{
-							// backgroundColor: 'blue',
-							opacity: 0.3,
-							position: 'fixed',
-							left: this.props.remoteMouse.x,
-							top: this.props.remoteMouse.y,
-							height: 20,
-							width: 20,
-						}}
-					/>
-				)}
-
-				{!local && this.props.saveState !== 'Clean' && (
-					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
-				)}
-			</div>
-		);
 	}
 }
 
