@@ -2,7 +2,6 @@ import { modifyLaneCell } from '@musicenviro/ui-elements';
 import { IReduxState, IRollLane, IDrumLane } from './@types';
 import {
 	IReduxAction,
-	initialState,
 	ISetRootPropertyAction,
 	IReduxSetCellAction,
 	IAddLaneAction,
@@ -11,6 +10,7 @@ import {
 	IReduxLoadStateAction,
 	IReduxSetUserAction,
 } from './redux';
+import { initialState } from "./initialState";
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined

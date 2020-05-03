@@ -2,23 +2,8 @@ import { makeDefaultLanes } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState, ISavedState } from './@types';
-import { newLaneForSynth } from './state-helpers/newLaneForSynth';
-import { drumSynths, noteSynths } from './sound-generation/synths';
 import { reducer } from './reducer';
-
-// doing this gradually, can move other state in here if it works and we like it.
-
-
-export const initialState: IReduxState = {
-	user: 'unknown',
-	saveState: 'Clean',
-	remoteMouse: null,
-	// lanes: makeDefaultLanes(defaultStepRange),
-	drumLanes: [
-		newLaneForSynth(noteSynths[0].name),
-		newLaneForSynth(drumSynths[0].name),
-	],
-};
+import { initialState } from './initialState';
 
 export interface IReduxAction {
 	type:

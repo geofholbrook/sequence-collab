@@ -1,6 +1,7 @@
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { currentSceneVersion, IScene, ISavedState } from '../@types';
-import { AppStore, initialState } from '../redux';
+import { AppStore } from '../redux';
+import { initialState } from "../initialState";
 
 export async function saveWorkingScene(store: AppStore) {
 	

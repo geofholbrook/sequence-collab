@@ -10,7 +10,7 @@ import { PropTime } from "./index";
 import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base";
 import { ILaneData } from "@musicenviro/ui-elements";
 
-export const currentSceneVersion = "0.2.0";
+export const currentSceneVersion = "0.2.1";
 
 export interface ISavedState {
     drumLanes: Array<IDrumLane | IRollLane>;

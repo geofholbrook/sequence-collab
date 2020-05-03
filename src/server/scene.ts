@@ -15,6 +15,8 @@ import { storageRoot } from './dataPath';
 import { promisify } from 'util';
 import { getColorFromString } from '../gui/Main/colors';
 
+import { initialState } from "../initialState";
+
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
@@ -60,19 +62,17 @@ export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneRes
 }
 
 function backwardCompat(rawScene: any): IScene {
-	const drumLanes =
-		(rawScene.reduxState && rawScene.reduxState.drumLanes) ||
-		rawScene.drumLanes ||
-		rawScene.lanes; // for version <= 0.0.2
-
-	return {
-		...rawScene,
-		version: currentSceneVersion,
-		reduxState: {
-			...rawScene.reduxState,
-			drumLanes: drumLanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
+	if (rawScene.version < '0.2.1') {
+		return {
+			name: rawScene.name,
+			version: currentSceneVersion,
+			reduxState: {
+				drumLanes: initialState.drumLanes
+			}
 		}
-	};
+	} else {
+		return rawScene
+	}
 }
 
 function laneBackwardCompat(rawLane: any, sceneVersion: string): ILane {
