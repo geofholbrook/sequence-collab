@@ -6,7 +6,7 @@ import { initialState } from "../initialState";
 export async function saveWorkingScene(store: AppStore) {
 	
 	const stateToSave: ISavedState = {
-		drumLanes: store.getState().drumLanes,
+		lanes: store.getState().lanes,
 	};
 
 	store.dispatch({

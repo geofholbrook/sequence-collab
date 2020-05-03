@@ -117,7 +117,7 @@ class App {
 
 		const newLoop = _.concat(
 			[],
-			...reduxState.drumLanes.filter((lane) => !lane.muted).map(getLoopNotesForLane),
+			...reduxState.lanes.filter((lane) => !lane.muted).map(getLoopNotesForLane),
 		);
 
 		this.scheduler.setLoop(newLoop);

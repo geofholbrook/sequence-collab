@@ -19,11 +19,11 @@ import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
 import { RollLane } from '../components/RollLane';
 
-interface IMainProps {
+export interface IMainProps {
 	userInfo: { name: string };
 	saveState: SaveState;
 
-	drumLanes: ILane[];
+	lanes: ILane[];
 	remoteMouse: IPoint | null;
 
 	// callbacks
@@ -63,7 +63,7 @@ function Main(props: IMainProps) {
 
 			<div className="content">
 				{renderButtons()}
-				{props.drumLanes.map((lane, index) => renderLane(lane, index))}
+				{props.lanes.map((lane, index) => renderLane(lane, index))}
 			</div>
 
 			{props.remoteMouse && (
@@ -109,7 +109,7 @@ function Main(props: IMainProps) {
 	function handleManualAddDrumLane() {
 		const prevSynthIndex = drumSynths
 			.map((synth) => synth.name)
-			.indexOf(_.last(props.drumLanes)?.synthName || '');
+			.indexOf(_.last(props.lanes)?.synthName || '');
 
 		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
@@ -121,7 +121,7 @@ function Main(props: IMainProps) {
 	}
 
 	function toggleMute (laneIndex: number) {
-		const prevMuteState = props.drumLanes[laneIndex].muted;
+		const prevMuteState = props.lanes[laneIndex].muted;
 		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 	};
 

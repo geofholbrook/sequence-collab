@@ -67,7 +67,7 @@ function backwardCompat(rawScene: any): IScene {
 			name: rawScene.name,
 			version: currentSceneVersion,
 			reduxState: {
-				drumLanes: initialState.drumLanes
+				lanes: initialState.lanes
 			}
 		}
 	} else {

@@ -1,6 +1,6 @@
 import { SingleNoteLane } from '@musicenviro/ui-elements';
 import * as React from 'react';
-import './DrumLane.css';
+import './Lane.css';
 
 import { LaneControls } from './LaneControls';
 

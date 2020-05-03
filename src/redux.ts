@@ -11,7 +11,6 @@ export interface IReduxAction {
 		| 'SET_CELL'
 		| 'LOAD_STATE'
 		| 'SET_USER'
-		| 'SET_DRUM_LANES'
 		| 'ADD_LANE'
 		| 'DELETE_LANE'
 		| 'SET_LANE_PROPERTY';
@@ -30,11 +29,6 @@ export interface IReduxSetCellAction extends IReduxAction {
 	rowIndex: number;
 	cellIndex: number;
 	active: boolean;
-}
-
-export interface IReduxSetDrumLanesAction extends IReduxAction {
-	type: 'SET_DRUM_LANES';
-	drumLanes: ILane[];
 }
 
 export interface IReduxLoadStateAction extends IReduxAction {

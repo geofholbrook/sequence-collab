@@ -6,7 +6,7 @@ export function mapStateToMainProps(state: IReduxState) {
 			name: state.user,
 		},
 		saveState: state.saveState,
-		drumLanes: state.drumLanes,
+		lanes: state.lanes,
 		remoteMouse: state.remoteMouse,
 	};
 }

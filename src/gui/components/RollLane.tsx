@@ -1,6 +1,5 @@
 import { DiatonicPianoRoll } from '@musicenviro/ui-elements';
 import * as React from 'react';
-import './DrumLane.css';
 
 import { LaneControls } from './LaneControls';
 

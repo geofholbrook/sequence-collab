@@ -11,7 +11,7 @@ export const initialState: IReduxState = {
 	saveState: 'Clean',
 	remoteMouse: null,
 	// lanes: makeDefaultLanes(defaultStepRange),
-	drumLanes: [
+	lanes: [
 		{
 			laneType: 'SingleNoteLane',
 			synthName,
