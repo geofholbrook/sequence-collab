@@ -119,6 +119,11 @@ function Main(props: IMainProps) {
 		props.addLane(newLaneForSynth(noteSynths[0].name));
 	}
 
+	function handleDeleteButton() {
+		// need lane ids (not indexes) to delete multiple lanes.
+		props.deleteLane(selectedLanes[0])
+	}
+
 	function toggleMute(laneIndex: number) {
 		const prevMuteState = props.lanes[laneIndex].muted;
 		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
@@ -132,9 +137,25 @@ function Main(props: IMainProps) {
 		setMousePosition({ x: event.clientX, y: event.clientY });
 	}
 
+	function toggleSelection(laneIndex: number) {
+		// no multiple selection
+		setSelectedLanes([laneIndex])
+		
+		// if (selectedLanes.includes(laneIndex)) {
+		// 	setSelectedLanes(selectedLanes.filter(n => n != laneIndex))
+		// } else {
+			
+		// 	setSelectedLanes([...selectedLanes, laneIndex])
+		// }
+	}
+
 	function renderButtons() {
 		return (
 			<div>
+				<Button
+					icon="trash"
+					onClick={handleDeleteButton}
+				/>
 				<Button icon circular onClick={handleManualAddDrumLane}>
 					<Icon name="plus" color="blue" /> Drum
 				</Button>
@@ -171,6 +192,7 @@ function Main(props: IMainProps) {
 				synthName={lane.synthName}
 				onInstrumentChange={(name: string) => handleManualInstrumentChange(laneIndex, name)}
 				onDeleteLane={(laneIndex: number) => props.deleteLane(laneIndex)}
+				onLaneClick={(laneIndex: number) => toggleSelection(laneIndex)}
 				isMuted={lane.muted}
 				isSelected={selectedLanes.includes(laneIndex)}
 				onMuteButton={() => toggleMute(laneIndex)}

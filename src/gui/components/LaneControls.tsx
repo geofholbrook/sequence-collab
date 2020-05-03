@@ -7,10 +7,7 @@ export function LaneControls(props: ILaneProps) {
 	return (
 		<div className="section">
 			<div className="section button-section">
-				<Button
-					icon="trash"
-					onClick={(e) => props.onDeleteLane && props.onDeleteLane(props.index)}
-				/>
+				
 			</div>
 
 			<div className="section more-buttons-section">

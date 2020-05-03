@@ -13,8 +13,5 @@ export interface ILaneProps {
 	onAddLane?: () => void;
 	onDeleteLane?: (laneIndex: number) => void;
 	onMuteButton?: () => void;
+	onLaneClick?: (laneIndex: number) => void;
 }
-
-// export type IDrumLaneProps = ISingleNoteLaneProps & ILaneProps
-
-// export type IRollLaneProps = IDiatonicPianoRollProps & ILaneProps
