@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
@@ -41,145 +41,130 @@ interface IMainProps {
 		value: any,
 	) => void;
 }
-
-export class Main extends React.Component<IMainProps> {
-	constructor(props: IMainProps) {
-		super(props);
-		setInterval(() => this.reportMousePosition(), 100);
-	}
-
-	componentDidMount() {
+function Main(props: IMainProps) {
+	
+	const [mousePosition, setMousePosition] = useState<IPoint>({ x: -10, y: -10 });
+	
+	useEffect(() => {
 		console.log('MAIN MOUNTING');
-	}
+		const mouseTimer = setInterval(reportMousePosition, 100);
+		return () => {
+			clearInterval(mouseTimer)
+		}
+	}, [])
 
-	// ----------------------------------------------------------------------------
-	// piano roll
-	// ----------------------------------------------------------------------------
+	return (
+		<div className="Screen" onMouseMove={(event) => handleMouseMove(event)}>
+			<header>
+				logged in as{' '}
+				<span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
+				<SaveStateDisplay saveState={props.saveState} />
+			</header>
 
-	handlePianoRollCellChange(
+			<div className="content">
+				{renderButtons()}
+				{props.drumLanes.map((lane, index) => renderLane(lane, index))}
+			</div>
+
+			{props.remoteMouse && (
+				<img
+					src={Cursor}
+					id="remote-mouse"
+					alt=""
+					style={{
+						// backgroundColor: 'blue',
+						opacity: 0.3,
+						position: 'fixed',
+						left: props.remoteMouse.x,
+						top: props.remoteMouse.y,
+						height: 20,
+						width: 20,
+					}}
+				/>
+			)}
+
+			{!local && props.saveState !== 'Clean' && (
+				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
+			)}
+		</div>
+	);
+
+	function handlePianoRollCellChange(
 		laneIndex: number,
 		rowIndex: number,
 		cellIndex: number,
 		active: boolean,
 	) {
-		this.props.setCell(laneIndex, rowIndex, cellIndex, active);
+		props.setCell(laneIndex, rowIndex, cellIndex, active);
 	}
 
-	// ----------------------------------------------------------------------------
-	// drums
-	// ----------------------------------------------------------------------------
-
-	handleManualNoteChange(laneIndex: number, notes: number[]) {
-		this.props.setLaneProperty(laneIndex, 'loopTimes', notes);
+	function handleManualNoteChange(laneIndex: number, notes: number[]) {
+		props.setLaneProperty(laneIndex, 'loopTimes', notes);
 	}
 
-	handleManualInstrumentChange(laneIndex: number, synthName: string) {
-		this.props.setLaneProperty(laneIndex, 'synthName', synthName);
+	function handleManualInstrumentChange(laneIndex: number, synthName: string) {
+		props.setLaneProperty(laneIndex, 'synthName', synthName);
 	}
 
-	handleManualAddDrumLane() {
+	function handleManualAddDrumLane() {
 		const prevSynthIndex = drumSynths
 			.map((synth) => synth.name)
-			.indexOf(_.last(this.props.drumLanes)?.synthName || '');
+			.indexOf(_.last(props.drumLanes)?.synthName || '');
 
 		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 
-		this.props.addLane(newLaneForSynth(newSynth));
+		props.addLane(newLaneForSynth(newSynth));
 	}
 
-	handleManualAddDiatonicLane() {
-		this.props.addLane(newLaneForSynth(noteSynths[0].name));
+	function handleManualAddDiatonicLane() {
+		props.addLane(newLaneForSynth(noteSynths[0].name));
 	}
 
-	handleManualDeleteLane = (laneIndex: number) => {
-		this.props.deleteLane(laneIndex);
+	function toggleMute (laneIndex: number) {
+		const prevMuteState = props.drumLanes[laneIndex].muted;
+		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 	};
 
-	toggleMute = (laneIndex: number) => {
-		const prevMuteState = this.props.drumLanes[laneIndex].muted;
-		this.props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
-	};
-
-	mousePosition: IPoint = { x: -10, y: -10 };
-
-	reportMousePosition() {
-		this.props.onMousePositionUpdate(this.mousePosition);
+	function reportMousePosition() {
+		props.onMousePositionUpdate(mousePosition);
 	}
 
-	handleMouseMove(event: React.MouseEvent) {
-		this.mousePosition = { x: event.clientX, y: event.clientY };
+	function handleMouseMove(event: React.MouseEvent) {
+		setMousePosition({ x: event.clientX, y: event.clientY });
 	}
 
-	render() {
-		return (
-			<div className="Screen" onMouseMove={(event) => this.handleMouseMove(event)}>
-				<header>
-					logged in as{' '}
-					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					<SaveStateDisplay saveState={this.props.saveState} />
-				</header>
-
-				<div className="content">
-					{this.renderButtons()}
-					{this.props.drumLanes.map((lane, index) => this.renderLane(lane, index))}
-				</div>
-
-				{this.props.remoteMouse && (
-					<img
-						src={Cursor}
-						id="remote-mouse"
-						alt=""
-						style={{
-							// backgroundColor: 'blue',
-							opacity: 0.3,
-							position: 'fixed',
-							left: this.props.remoteMouse.x,
-							top: this.props.remoteMouse.y,
-							height: 20,
-							width: 20,
-						}}
-					/>
-				)}
-
-				{!local && this.props.saveState !== 'Clean' && (
-					<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
-				)}
-			</div>
-		);
-	}
-
-	private renderButtons() {
+	function renderButtons() {
 		return <div>
-			<Button icon circular onClick={() => this.handleManualAddDrumLane()}>
+			<Button icon circular onClick={handleManualAddDrumLane}>
 				<Icon name="plus" color="blue" /> Drum
 			</Button>
-			<Button icon circular onClick={() => this.handleManualAddDiatonicLane()}>
+			<Button icon circular onClick={handleManualAddDiatonicLane}>
 				<Icon name="plus" color="green" /> Diatonic
 			</Button>
-			<Button icon onClick={this.props.onStopAudio}>
+			<Button icon onClick={props.onStopAudio}>
 				<Icon name="reply" />
 			</Button>
-			<Button icon onClick={this.props.onStopAudio}>
+			<Button icon onClick={props.onStopAudio}>
 				<Icon name="share" />
 			</Button>
-			<Button icon onClick={this.props.onStopAudio}>
+			<Button icon onClick={props.onStopAudio}>
 				<Icon name="stop" color="red" />
 			</Button>
-			<Button icon onClick={this.props.onStartAudio}>
+			<Button icon onClick={props.onStartAudio}>
 				<Icon name="play" color="green" />
 			</Button>
 		</div>;
 	}
 
-	renderLane(lane: ILane, laneIndex: number) {
+	function renderLane(lane: ILane, laneIndex: number) {
 		const generalProps = {
 			index: laneIndex,
 			key: 'lane' + laneIndex,
 			onInstrumentChange: (name: string) =>
-				this.handleManualInstrumentChange(laneIndex, name),
-			onDeleteLane: (laneIndex: number) => this.props.deleteLane(laneIndex),
+				handleManualInstrumentChange(laneIndex, name),
+			onDeleteLane: (laneIndex: number) => props.deleteLane(laneIndex),
 			isMuted: lane.muted,
-			onMuteButton: () => this.toggleMute(laneIndex),
+			onMuteButton: () => toggleMute(laneIndex),
 		};
 
 		switch (lane.laneType) {
@@ -195,7 +180,7 @@ export class Main extends React.Component<IMainProps> {
 						stepRange={rollLane.stepRange}
 						initialLanes={rollLane.rows}
 						onCellChange={(rowIndex, cellIndex, active) =>
-							this.handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
+							handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
 						}
 					/>
 				);
@@ -209,7 +194,7 @@ export class Main extends React.Component<IMainProps> {
 						availableInstruments={drumSynths.map((synth) => synth.name)}
 						synthName={lane.synthName}
 						notes={drumLane.loopTimes}
-						onChange={(notes) => this.handleManualNoteChange(laneIndex, notes)}
+						onChange={(notes) => handleManualNoteChange(laneIndex, notes)}
 						noteColor={drumLane.color}
 					/>
 				);
