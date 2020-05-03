@@ -88,7 +88,7 @@ export class Main extends React.Component<IMainProps> {
 	}
 
 	handleManualAddDiatonicLane() {
-		this.props.addLane(newLaneForSynth('bass'));
+		this.props.addLane(newLaneForSynth(noteSynths[0].name));
 	}
 
 	handleManualDeleteLane = (laneIndex: number) => {

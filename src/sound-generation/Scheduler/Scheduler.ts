@@ -3,8 +3,8 @@ import { getNewScheduledNotes } from './getNewScheduledNotes';
 import { PropTime, Seconds } from '../../@types';
 import { setInterval } from 'timers';
 
-const lookahead = 0.1;
-const timerInterval = 25;
+const lookahead = 0.2;
+const timerInterval = 100;
 
 export interface ILoopNote<T = number> {
 	data: T;

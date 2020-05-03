@@ -58,12 +58,10 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			}
 			case 'ADD_LANE': {
 				const action = _action as IAddLaneAction;
-				if (action.lane.laneType !== 'SingleNoteLane') {
-					throw new Error('only SingleNoteLane lane type is implemented');
-				}
+				
 				return {
 					...state,
-					drumLanes: [...state.drumLanes, action.lane as IDrumLane],
+					drumLanes: [...state.drumLanes, action.lane as IDrumLane].sort((a,b) => a.laneType.localeCompare(b.laneType)),
 				};
 			}
 			case 'DELETE_LANE': {
