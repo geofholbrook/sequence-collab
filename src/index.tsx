@@ -8,10 +8,11 @@ import { saveInterval } from './config';
 import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
-import { ILoopNote, Scheduler } from './sound-generation/Scheduler/Scheduler';
-import { IRange, DiatonicStep, pitchFromStep, IPoint } from '@musicenviro/base';
+import { Scheduler } from './sound-generation/Scheduler/Scheduler';
+import { IPoint } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
+import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 
 class App {
 	store = createAppStore();
@@ -41,9 +42,9 @@ class App {
 				<GUIConnected
 					onStartAudio={() => this.startAudio()}
 					onStopAudio={() => this.stopAudio()}
-					onMousePositionUpdate={pos => this.reportMousePosition(pos)}
+					onMousePositionUpdate={(pos) => this.reportMousePosition(pos)}
 					onLogin={(username: string) => {
-						initSocketClient(username)
+						initSocketClient(username);
 						socketClient.onMessage((message) => this.handleServerMessage(message));
 					}}
 				/>
@@ -67,13 +68,12 @@ class App {
 	};
 
 	reportMousePosition(pos: IPoint) {
-		
 		if (socketClient.connection.readyState === socketClient.connection.OPEN) {
 			socketClient.send({
-				user: this.store.getState().user, 
+				user: this.store.getState().user,
 				type: 'MousePosition',
-				content: pos
-			})
+				content: pos,
+			});
 		}
 	}
 
@@ -117,34 +117,7 @@ class App {
 
 		const newLoop = _.concat(
 			[],
-			...reduxState.drumLanes
-				.filter((lane) => !lane.muted)
-				.map((lane) =>
-					lane.loopTimes.map((loopTime) => ({
-						data: {
-							synthName: lane.synthName,
-							args: [],
-						},
-						loopTime,
-					})),
-				),
-			...(reduxState
-				? reduxState.lanes.map(
-						(lane, li) =>
-							lane.cells
-								.map(
-									(cell, ci) =>
-										cell.active && {
-											data: {
-												synthName: 'bass',
-												args: [getPitch(reduxState.stepRange, li)],
-											},
-											loopTime: (ci * 1) / 16,
-										},
-								)
-								.filter(Boolean) as ILoopNote<ISynthNote>[],
-				  )
-				: []),
+			...reduxState.drumLanes.filter((lane) => !lane.muted).map(getLoopNotesForLane),
 		);
 
 		this.scheduler.setLoop(newLoop);
@@ -154,7 +127,5 @@ class App {
 const app = new App();
 app.init();
 
-function getPitch(stepRange: IRange<DiatonicStep>, laneIndex: number) {
-	const step = stepRange.min + laneIndex;
-	return pitchFromStep(step, 36, 'Dorian');
-}
+
+

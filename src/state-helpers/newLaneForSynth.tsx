@@ -1,10 +1,11 @@
 
 
 import { getColorFromString } from '../gui/Main/colors';
-import { ILane } from '../@types';
+import { IDrumLane } from '../@types';
 
-export function newLaneForSynth(synthName: string): ILane {
+export function newLaneForSynth(synthName: string): IDrumLane {
 	return {
+		laneType: 'SingleNoteLane',
 		synthName,
 		loopTimes: [],
 		muted: false,

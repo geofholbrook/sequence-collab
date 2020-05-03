@@ -7,8 +7,6 @@ export function mapStateToMainProps(state: IReduxState) {
 		},
 		saveState: state.saveState,
 		drumLanes: state.drumLanes,
-		lanes: state.lanes,
-		stepRange: state.stepRange,
 		remoteMouse: state.remoteMouse,
 	};
 }

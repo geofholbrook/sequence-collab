@@ -5,8 +5,6 @@ import { AppStore, initialState } from '../redux';
 export async function saveWorkingScene(store: AppStore) {
 	
 	const stateToSave: ISavedState = {
-		stepRange: store.getState().stepRange,
-		lanes: store.getState().lanes,
 		drumLanes: store.getState().drumLanes,
 	};
 

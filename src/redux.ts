@@ -1,9 +1,10 @@
-import { 	makeDefaultLanes, modifyLaneCell } from '@musicenviro/ui-elements';
+import { makeDefaultLanes } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState, ISavedState } from './@types';
 import { newLaneForSynth } from './state-helpers/newLaneForSynth';
 import { drumSynths } from './sound-generation/synths';
+import { reducer } from './reducer';
 
 // doing this gradually, can move other state in here if it works and we like it.
 
@@ -13,9 +14,19 @@ export const initialState: IReduxState = {
 	user: 'unknown',
 	saveState: 'Clean',
 	remoteMouse: null,
-	stepRange,
-	lanes: makeDefaultLanes(stepRange),
-	drumLanes: [newLaneForSynth(drumSynths[0].name)],
+	// lanes: makeDefaultLanes(stepRange),
+	drumLanes: [
+		{
+			laneType: 'DiatonicPianoRoll',
+			synthName: 'bass',
+			muted: false,
+			stepRange,
+			zeroPitch: 48,
+			mode: 'Mixolydian',
+			rows: makeDefaultLanes(stepRange),
+		},
+		newLaneForSynth(drumSynths[0].name),
+	],
 };
 
 export interface IReduxAction {
@@ -40,6 +51,7 @@ export interface ISetRootPropertyAction extends IReduxAction {
 export interface IReduxSetCellAction extends IReduxAction {
 	type: 'SET_CELL';
 	laneIndex: number;
+	rowIndex: number;
 	cellIndex: number;
 	active: boolean;
 }
@@ -76,101 +88,6 @@ export interface ISetLanePropertyAction extends IReduxAction {
 	value: any;
 }
 
-// typescript was a little tricky here.
-// 1. state in reducer must allow undefined
-// 2. createStore must have 4 generic types, can't be just 2
-
-export function reducer(_state: IReduxState | undefined, _action: IReduxAction): IReduxState {
-	const state = _state || initialState;
-
-	switch (_action.type) {
-		case 'SET_ROOT_PROPERTY': {
-			const action = _action as ISetRootPropertyAction;
-			return {
-				...state,
-				[action.propertyName]: action.value,
-			};
-		}
-
-		case 'SET_CELL': {
-			const action = _action as IReduxSetCellAction;
-			return {
-				...state,
-				lanes: modifyLaneCell(
-					state.lanes,
-					action.laneIndex,
-					action.cellIndex,
-					action.active,
-				),
-			};
-		}
-
-		case 'SET_DRUM_LANES': {
-			const action = _action as IReduxSetDrumLanesAction;
-			return {
-				...state,
-				drumLanes: action.drumLanes,
-			};
-		}
-
-		case 'ADD_LANE': {
-			const action = _action as IAddLaneAction;
-			return {
-				...state,
-				drumLanes: [...state.drumLanes, action.lane],
-			};
-		}
-
-		case 'DELETE_LANE': {
-			const action = _action as IDeleteLaneAction;
-			console.log(action.laneIndex)
-			return {
-				...state,
-				drumLanes: [
-					...state.drumLanes.slice(0, action.laneIndex),
-					...state.drumLanes.slice(action.laneIndex + 1),
-				],
-			};
-		}
-
-		case 'SET_LANE_PROPERTY': {
-			const action = _action as ISetLanePropertyAction;
-			const newState = {
-				...state,
-				drumLanes: state.drumLanes.map((drumLane, i) =>
-					i === action.laneIndex
-						? {
-								...drumLane,
-								[action.property]: action.value,
-						  }
-						: drumLane,
-				),
-			};
-
-			return newState;
-		}
-
-		case 'LOAD_STATE': {
-			const action = _action as IReduxLoadStateAction;
-			return {
-				...state,
-				...action.state,
-			};
-		}
-
-		case 'SET_USER': {
-			const action = _action as IReduxSetUserAction;
-			return {
-				...state,
-				user: action.user,
-			};
-		}
-
-		default:
-			return state;
-	}
-}
-
 export type AppStore = Store<IReduxState, IReduxAction>;
 
 export function createAppStore() {
@@ -184,7 +101,6 @@ export function createAppStore() {
 	const originalDispatch = store.dispatch;
 
 	store.dispatch = ((action: IReduxAction) => {
-
 		if (action.broadcast) {
 			const payload: IMessage = {
 				user: store.getState().user,

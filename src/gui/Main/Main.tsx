@@ -3,10 +3,9 @@ import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
 
-import { IPoint, DiatonicStep, IRange } from '@musicenviro/base';
-import { DiatonicPianoRoll, ILaneData } from '@musicenviro/ui-elements';
+import { IPoint } from '@musicenviro/base';
 
-import { ILane, SaveState } from '../../@types';
+import { ILane, SaveState, IRollLane, IDrumLane } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { DrumLane } from '../components/DrumLane';
@@ -25,9 +24,6 @@ interface IMainProps {
 	saveState: SaveState;
 
 	drumLanes: ILane[];
-	lanes: ILaneData[];
-	stepRange: IRange<DiatonicStep>;
-
 	remoteMouse: IPoint | null;
 
 	// callbacks
@@ -36,8 +32,7 @@ interface IMainProps {
 	onMousePositionUpdate: (point: IPoint) => void;
 
 	// dispatch mappings
-	setCell: (laneIndex: number, cellIndex: number, active: boolean) => void;
-	setDrumLanes: (drumLanes: ILane[]) => void;
+	setCell: (laneIndex: number, rowIndex: number, cellIndex: number, active: boolean) => void;
 	addLane: (lane: ILane) => void;
 	deleteLane: (index: number) => void;
 	setLaneProperty: (
@@ -61,8 +56,13 @@ export class Main extends React.Component<IMainProps> {
 	// piano roll
 	// ----------------------------------------------------------------------------
 
-	handlePianoRollCellChange(laneIndex: number, cellIndex: number, active: boolean) {
-		this.props.setCell(laneIndex, cellIndex, active);
+	handlePianoRollCellChange(
+		laneIndex: number,
+		rowIndex: number,
+		cellIndex: number,
+		active: boolean,
+	) {
+		this.props.setCell(laneIndex, rowIndex, cellIndex, active);
 	}
 
 	// ----------------------------------------------------------------------------
@@ -106,13 +106,77 @@ export class Main extends React.Component<IMainProps> {
 		this.mousePosition = { x: event.clientX, y: event.clientY };
 	}
 
+	renderLane(lane: ILane, laneIndex: number) {
+
+		const generalProps = {
+			index: laneIndex,
+			key: 'lane' + laneIndex,
+			onInstrumentChange: (name: string) => this.handleManualInstrumentChange(laneIndex, name),
+			onDeleteLane: (laneIndex: number) => this.props.deleteLane(laneIndex),
+			isMuted: lane.muted,
+			onMuteButton: () => this.toggleMute(laneIndex)
+		}
+
+		switch (lane.laneType) {
+			case 'DiatonicPianoRoll':
+				{
+					const rollLane = lane as IRollLane;
+
+					return (
+						<RollLane
+							{...generalProps}
+							
+							availableInstruments={noteSynths.map((synth) => synth.name)}
+							width={600}
+							height={300}
+							stepRange={rollLane.stepRange}
+							initialLanes={rollLane.rows}
+							onCellChange={(rowIndex, cellIndex, active) =>
+								this.handlePianoRollCellChange(
+									laneIndex,
+									rowIndex,
+									cellIndex,
+									active,
+								)
+							}
+						/>
+					);
+				}
+				
+			/* <DrumLane
+			index={this.props.drumLanes.length}
+			isPlaceHolder={true}
+			onAddLane={() => this.handleManualAddLane()}
+		></DrumLane> */
+
+			case 'SingleNoteLane':
+				{
+					const drumLane = lane as IDrumLane;
+					return (
+						<DrumLane
+							{...generalProps}
+							
+							availableInstruments={drumSynths.map((synth) => synth.name)}
+							synthName={lane.synthName}
+							notes={drumLane.loopTimes}
+							onChange={(notes) => this.handleManualNoteChange(laneIndex, notes)}
+							noteColor={drumLane.color}
+						/>
+					);
+				}
+
+			default:
+				return null;
+		}
+	}
+
 	render() {
 		return (
 			<div className="Screen" onMouseMove={(event) => this.handleMouseMove(event)}>
 				<header>
 					logged in as{' '}
 					<span style={{ color: 'lightblue' }}>{this.props.userInfo.name}</span>
-					<SaveStateDisplay saveState={this.props.saveState}/>
+					<SaveStateDisplay saveState={this.props.saveState} />
 				</header>
 
 				<div className="content">
@@ -125,41 +189,8 @@ export class Main extends React.Component<IMainProps> {
 						</Button>
 					</Button.Group>
 
-					<RollLane
-						index={0}
-						availableInstruments={noteSynths.map((synth) => synth.name)}
-						width={600}
-						height={300}
-						stepRange={this.props.stepRange}
-						initialLanes={this.props.lanes}
-						onCellChange={(laneIndex, cellIndex, active) =>
-							this.handlePianoRollCellChange(laneIndex, cellIndex, active)
-						}
-					/>
-
-					<DrumLane
-						index={this.props.drumLanes.length}
-						isPlaceHolder={true}
-						onAddLane={() => this.handleManualAddLane()}
-					></DrumLane>
-
-					{this.props.drumLanes.slice().map((lane, i) => (
-						<DrumLane
-							index={i}
-							availableInstruments={drumSynths.map((synth) => synth.name)}
-							synthName={lane.synthName}
-							notes={lane.loopTimes}
-							key={'lane' + i}
-							onChange={(notes) => this.handleManualNoteChange(i, notes)}
-							onInstrumentChange={(name) =>
-								this.handleManualInstrumentChange(i, name)
-							}
-							onDeleteLane={(laneIndex) => this.props.deleteLane(laneIndex)}
-							isMuted={lane.muted}
-							onMuteButton={() => this.toggleMute(i)}
-							noteColor={lane.color}
-						/>
-					))}
+					{this.props.drumLanes.map((lane, index) => this.renderLane(lane, index))}
+				
 				</div>
 
 				{this.props.remoteMouse && (
@@ -188,5 +219,3 @@ export class Main extends React.Component<IMainProps> {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
-
-

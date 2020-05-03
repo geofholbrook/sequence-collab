@@ -9,7 +9,6 @@ import { local, skipLoginForLocal } from '../config';
 
 import './appearance/Display.css';
 import { connect } from 'react-redux';
-import { ILane } from '../@types';
 import { IPoint } from '@musicenviro/base';
 import { mapStateToGuiProps, mapDispatchToGuiProps } from './guiMappers';
 

@@ -1,13 +1,12 @@
 import React, { useEffect } from 'react';
 import './Test.css';
 import * as Tone from 'tone';
-import { callSynth, noteSynths } from '../../sound-generation/synths';
 import { Seconds } from '../../@types';
 
 import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 
-let ac = Tone.context.rawContext as AudioContext;
+export let ac = Tone.context.rawContext as AudioContext;
 
 export interface ISynth {
 	name: string;
@@ -20,24 +19,10 @@ export function Test() {
 		<div className="Screen TestScreen">
 			<header>test page</header>
 			<div className="content">
-				{/* <NoteSynthButtons /> */}
-
 				<Provider store={store}>
 					<MountieConnected />
 				</Provider>
 			</div>
-		</div>
-	);
-}
-
-function NoteSynthButtons() {
-	return (
-		<div>
-			{noteSynths.map((synth) => (
-				<button key={synth.name} onClick={(e) => callSynth(ac, synth)} unselectable="on">
-					{synth.name}
-				</button>
-			))}
 		</div>
 	);
 }
