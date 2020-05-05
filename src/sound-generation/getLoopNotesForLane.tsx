@@ -10,7 +10,7 @@ export function getLoopNotesForLane(lane: ILane) {
 			return drumLane.loopTimes.map((loopTime) => ({
 				data: {
 					synthName: lane.synthName,
-					args: [],
+					args: [lane.volumeDb],
 				},
 				loopTime,
 			}));
@@ -23,7 +23,7 @@ export function getLoopNotesForLane(lane: ILane) {
 				.map((cell, ci) => cell.active && {
 					data: {
 						synthName: lane.synthName,
-						args: [getPitch(rollLane.stepRange, ri)],
+						args: [getPitch(rollLane.stepRange, ri), lane.volumeDb],
 					},
 					loopTime: (ci * 1) / 16,
 				})

@@ -19,9 +19,7 @@ const players: Array<Tone.Player> = [];
 					resolve();
 				}).toDestination();
 
-				player.set({
-					volume: -9
-				})
+				
 
 				players.push(player);
 			});
@@ -31,6 +29,8 @@ const players: Array<Tone.Player> = [];
 	}
 })();
 
-export function playSample(ac: AudioContext, startTime: Seconds, sampleIndex: number) {
-    players[sampleIndex].start(startTime)
+export function playSample(ac: AudioContext, startTime: Seconds, sampleIndex: number, volumeDb: number = 0) {
+	
+	players[sampleIndex].set({volume: volumeDb - 9})
+	players[sampleIndex].start(startTime)
 }

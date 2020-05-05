@@ -1,11 +1,12 @@
+import { dbToGain } from "tone";
 
 
 const kickVolume = 0.6
 const snareVolume = 0.6
 const hihatVolume = 0.4
 
-export function kick(audioContext: AudioContext, start: number) {
-
+export function kick(audioContext: AudioContext, start: number, volumeDb: number = 0) {
+    const gain = dbToGain(volumeDb)
 
     var osc = audioContext.createOscillator();
     var osc2 = audioContext.createOscillator();
@@ -15,11 +16,11 @@ export function kick(audioContext: AudioContext, start: number) {
     osc.type = "triangle";
     osc2.type = "sine";
 
-    gainOsc.gain.setValueAtTime(kickVolume, start);
-    gainOsc.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+    gainOsc.gain.setValueAtTime(kickVolume * gain, start);
+    gainOsc.gain.exponentialRampToValueAtTime(0.001 * gain, start + 0.5);
     
-    gainOsc2.gain.setValueAtTime(kickVolume, start);
-    gainOsc2.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+    gainOsc2.gain.setValueAtTime(kickVolume * gain, start);
+    gainOsc2.gain.exponentialRampToValueAtTime(0.001 * gain, start + 0.5);
   
 
     osc.frequency.setValueAtTime(120, start);
@@ -43,23 +44,23 @@ export function kick(audioContext: AudioContext, start: number) {
 
 };
 
-export function snare(audioContext: AudioContext, start: number) {
-
+export function snare(audioContext: AudioContext, start: number, volumeDb: number = 0) {
+    const gain = dbToGain(volumeDb)
 
     var osc3 = audioContext.createOscillator();
     var gainOsc3 = audioContext.createGain();
 
     var filterGain = audioContext.createGain();
 
-    filterGain.gain.setValueAtTime(snareVolume, start);
-    filterGain.gain.exponentialRampToValueAtTime(0.01, start + 0.2);
+    filterGain.gain.setValueAtTime(snareVolume * gain, start);
+    filterGain.gain.exponentialRampToValueAtTime(0.01 * gain, start + 0.2);
 
     osc3.type = "triangle";
     osc3.frequency.value = 100;
     gainOsc3.gain.value = 0;
 
     gainOsc3.gain.setValueAtTime(0, start);
-    gainOsc3.gain.exponentialRampToValueAtTime(0.01, start + 0.1);
+    gainOsc3.gain.exponentialRampToValueAtTime(0.01 * gain, start + 0.1);
 
     osc3.connect(gainOsc3);
     gainOsc3.connect(audioContext.destination);
@@ -91,8 +92,9 @@ export function snare(audioContext: AudioContext, start: number) {
 };
 
 
-export function hihat(audioContext: AudioContext, start: number) {
-
+export function hihat(audioContext: AudioContext, start: number, volumeDb: number = 0) {
+    const gain = dbToGain(volumeDb)
+    
     var gainOsc4 = audioContext.createGain();
     var fundamental = 40;
     var ratios = [2, 3, 4.16, 5.43, 6.79, 8.21];
@@ -118,8 +120,8 @@ export function hihat(audioContext: AudioContext, start: number) {
         
     });
 
-    gainOsc4.gain.setValueAtTime(hihatVolume, start);
-    gainOsc4.gain.exponentialRampToValueAtTime(0.01, start + 0.05);
+    gainOsc4.gain.setValueAtTime(hihatVolume * gain, start);
+    gainOsc4.gain.exponentialRampToValueAtTime(0.01 * gain, start + 0.05);
     
     bandpass.connect(highpass);
     highpass.connect(gainOsc4);

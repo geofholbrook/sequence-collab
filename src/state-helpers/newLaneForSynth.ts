@@ -1,14 +1,13 @@
 
 
 import { getColorFromString } from '../gui/Main/colors';
-import { IDrumLane, ILane, IRollLane } from '../@types';
-import { drumSynths } from '../sound-generation/synths';
+import { IDrumLane, IRollLane } from '../@types';
 import { makeDefaultLanes } from '@musicenviro/ui-elements';
 
 const defaultStepRange = { min: -3, max: 14 };
 
 export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
-	if (drumSynths.find(synth => synth.name === synthName)) {
+	if (!['bass', 'bass2'].includes(synthName)) {
 		return <IDrumLane>{
 			laneType: 'SingleNoteLane',
 			synthName,
@@ -22,6 +21,7 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 			laneType: 'DiatonicPianoRoll',
 			synthName,
 			muted: false,
+			volumeDb: 0,
 			stepRange: defaultStepRange,
 			zeroPitch: 48,
 			mode: 'Dorian',

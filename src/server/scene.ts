@@ -15,7 +15,8 @@ import { storageRoot } from './dataPath';
 import { promisify } from 'util';
 import { getColorFromString } from '../gui/Main/colors';
 
-import { initialState } from "../initialState";
+import { initialState } from '../initialState';
+import { newLaneForSynth } from '../state-helpers/newLaneForSynth';
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
@@ -67,17 +68,28 @@ function backwardCompat(rawScene: any): IScene {
 			name: rawScene.name,
 			version: currentSceneVersion,
 			reduxState: {
-				lanes: initialState.lanes
-			}
-		}
+				lanes: initialState.lanes,
+			},
+		};
 	} else {
+
 		return rawScene
+
+		// this doesn't work
+		// return {
+		// 	...rawScene,
+		// 	reduxState: {
+		// 		...rawScene.reduxState,
+		// 		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
+		// 	},
+		// };
 	}
 }
 
 function laneBackwardCompat(rawLane: any, sceneVersion: string): ILane {
 	// pretty straight-forward for now.
 	return {
+		...newLaneForSynth(rawLane.synthName),
 		...rawLane,
 		color: rawLane.color || getColorFromString(rawLane.synthName),
 	};

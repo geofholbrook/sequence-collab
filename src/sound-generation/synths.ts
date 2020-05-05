@@ -18,7 +18,8 @@ export const drumSynths: ISynth[] = [
 ];
 
 export const noteSynths: ISynth[] = [
-	{ name: 'bass', fn: playBass }
+	{ name: 'bass', fn: playBass },
+	{ name: 'bass2', fn: playBass },
 ]
 
 export const synths = [...drumSynths, ...noteSynths]
