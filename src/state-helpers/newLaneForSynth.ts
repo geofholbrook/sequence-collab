@@ -13,6 +13,7 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 			laneType: 'SingleNoteLane',
 			synthName,
 			loopTimes: [],
+			volumeDb: 0,
 			muted: false,
 			color: getColorFromString(synthName)
 		}

@@ -3,13 +3,29 @@ import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { ILaneProps } from './types';
 
-import { VolumeKnob } from '@musicenviro/ui-elements'
+import { VolumeKnob } from '@musicenviro/ui-elements';
 
-export function LaneControls(props: ILaneProps) {
+import { connect } from 'react-redux';
+import { ISetLanePropertyAction } from '../../redux';
+
+export const LaneControls = connect(null, (dispatch, ownProps: ILaneProps) => ({
+	onVolumeChange: (volumeDb: number) =>
+		dispatch({
+			type: 'SET_LANE_PROPERTY',
+			laneIndex: ownProps.index,
+			property: 'volumeDb',
+			value: volumeDb,
+		} as ISetLanePropertyAction),
+}))((props: ILaneProps) => {
 	return (
 		<div className="section">
 			<div className="section button-section">
-				<VolumeKnob size={30} />
+				<VolumeKnob
+					initialDb={props.volumeDb}
+					size={35}
+					indicatorColor="lightgreen"
+					onChange={props.onVolumeChange}
+				/>
 			</div>
 
 			<div className="section more-buttons-section">
@@ -39,4 +55,4 @@ export function LaneControls(props: ILaneProps) {
 			</div>
 		</div>
 	);
-}
+});

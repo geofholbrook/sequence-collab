@@ -1,12 +1,16 @@
 .lane {
     width: 860px;
     display: table;
+    
     margin-top: 5px;
     margin-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
+
     padding-left: 5px;
     border-radius: 5px;
-    background-color: rgb(235, 233, 233);   
-   
+    /* background-color: rgb(235, 233, 233);    */
+    background-color: white;
 }
 
 .lane.selected {
@@ -30,8 +34,12 @@
 }
 
 .button-section {
-    width: 35px;
+    width: 38px;
 }
+
+/* .volume-knob {
+    border: solid 1px;
+} */
 
 .selector-section select {
     width: 120px;

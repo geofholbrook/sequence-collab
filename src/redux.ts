@@ -1,7 +1,7 @@
 import { makeDefaultLanes } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
-import { IMessage, ILane, IReduxState, ISavedState } from './@types';
+import { IMessage, ILane, IReduxState, ISavedState, LaneProperties } from './@types';
 import { reducer } from './reducer';
 import { initialState } from './initialState';
 
@@ -54,7 +54,7 @@ export interface IDeleteLaneAction extends IReduxAction {
 export interface ISetLanePropertyAction extends IReduxAction {
 	type: 'SET_LANE_PROPERTY';
 	laneIndex: number;
-	property: 'synthName' | 'loopTimes' | 'muted';
+	property: LaneProperties;
 	value: any;
 }
 

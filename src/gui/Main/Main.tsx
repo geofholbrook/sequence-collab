@@ -5,7 +5,7 @@ import { Button, Icon } from 'semantic-ui-react';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
 
-import { ILane, SaveState, IRollLane, IDrumLane } from '../../@types';
+import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
@@ -37,14 +37,14 @@ export interface IMainProps {
 	deleteLane: (index: number) => void;
 	setLaneProperty: (
 		index: number,
-		property: 'synthName' | 'loopTimes' | 'muted',
+		property: LaneProperties,
 		value: any,
 	) => void;
 }
 
 function Main(props: IMainProps) {
 	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
-	const [selectedLanes, setSelectedLanes] = useState<number[]>([0]);
+	const [selectedLane, setSelectedLane] = useState<number>(0);
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -54,6 +54,10 @@ function Main(props: IMainProps) {
 			clearInterval(mouseTimer);
 		};
 	}, []);
+
+	useEffect(() => {
+		if (selectedLane > props.lanes.length - 1) setSelectedLane(props.lanes.length - 1)
+	}, [props.lanes])
 
 	function handleMouseMove(event: React.MouseEvent) {
 		mousePosition.current = { x: event.clientX, y: event.clientY };
@@ -137,7 +141,7 @@ function Main(props: IMainProps) {
 
 	function handleDeleteButton() {
 		// need lane ids (not indexes) to delete multiple lanes.
-		props.deleteLane(selectedLanes[0]);
+		props.deleteLane(selectedLane);
 	}
 
 	function toggleMute(laneIndex: number) {
@@ -147,7 +151,7 @@ function Main(props: IMainProps) {
 
 	function toggleSelection(laneIndex: number) {
 		// no multiple selection
-		setSelectedLanes([laneIndex]);
+		setSelectedLane(laneIndex);
 
 		// if (selectedLanes.includes(laneIndex)) {
 		// 	setSelectedLanes(selectedLanes.filter(n => n != laneIndex))
@@ -159,25 +163,25 @@ function Main(props: IMainProps) {
 
 	function renderButtons() {
 		return (
-			<div>
-				<Button icon="trash" onClick={handleDeleteButton} />
-				<Button icon circular onClick={handleManualAddDrumLane}>
+			<div className="top-buttons">
+				<Button icon="trash" floated="left" onClick={handleDeleteButton} />
+				<Button icon circular floated="left" onClick={handleManualAddDrumLane}>
 					<Icon name="plus" color="blue" /> Drum
 				</Button>
-				<Button icon circular onClick={handleManualAddDiatonicLane}>
+				<Button icon circular floated="left" onClick={handleManualAddDiatonicLane}>
 					<Icon name="plus" color="green" /> Diatonic
-				</Button>
-				<Button icon onClick={props.onStopAudio}>
-					<Icon name="reply" />
-				</Button>
-				<Button icon onClick={props.onStopAudio}>
-					<Icon name="share" />
 				</Button>
 				<Button icon onClick={props.onStopAudio}>
 					<Icon name="stop" color="red" />
 				</Button>
 				<Button icon onClick={props.onStartAudio}>
 					<Icon name="play" color="green" />
+				</Button>
+				<Button icon floated="right" onClick={props.onStopAudio}>
+					<Icon name="share" />
+				</Button>
+				<Button icon floated="right" onClick={props.onStopAudio}>
+					<Icon name="reply" />
 				</Button>
 			</div>
 		);
@@ -198,8 +202,9 @@ function Main(props: IMainProps) {
 				onInstrumentChange={(name: string) => handleManualInstrumentChange(laneIndex, name)}
 				onDeleteLane={(laneIndex: number) => props.deleteLane(laneIndex)}
 				onLaneClick={(laneIndex: number) => toggleSelection(laneIndex)}
+				volumeDb={lane.volumeDb}
 				isMuted={lane.muted}
-				isSelected={selectedLanes.includes(laneIndex)}
+				isSelected={selectedLane === laneIndex}
 				onMuteButton={() => toggleMute(laneIndex)}
 				availableInstruments={availableInstruments}
 			>

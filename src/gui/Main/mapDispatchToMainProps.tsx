@@ -1,4 +1,4 @@
-import { ILane } from '../../@types';
+import { ILane, LaneProperties } from '../../@types';
 import { Dispatch } from 'redux';
 import { IReduxAction, IReduxSetCellAction } from '../../redux';
 
@@ -27,7 +27,7 @@ export function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
 			}),
 		setLaneProperty: (
 			laneIndex: number,
-			property: 'synthName' | 'loopTimes' | 'muted',
+			property: LaneProperties,
 			value: any,
 		) =>
 			dispatch({

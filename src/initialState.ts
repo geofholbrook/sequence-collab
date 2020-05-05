@@ -16,6 +16,7 @@ export const initialState: IReduxState = {
 			laneType: 'SingleNoteLane',
 			synthName,
 			loopTimes: [],
+			volumeDb: 0,
 			muted: false,
 			color: getColorFromString(synthName)
 		},
