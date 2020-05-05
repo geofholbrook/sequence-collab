@@ -3,11 +3,13 @@ import React from 'react';
 import { Button } from 'semantic-ui-react';
 import { ILaneProps } from './types';
 
+import { VolumeKnob } from '@musicenviro/ui-elements'
+
 export function LaneControls(props: ILaneProps) {
 	return (
 		<div className="section">
 			<div className="section button-section">
-				
+				<VolumeKnob size={30} />
 			</div>
 
 			<div className="section more-buttons-section">

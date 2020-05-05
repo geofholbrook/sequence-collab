@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
@@ -41,8 +41,9 @@ export interface IMainProps {
 		value: any,
 	) => void;
 }
+
 function Main(props: IMainProps) {
-	const [mousePosition, setMousePosition] = useState<IPoint>({ x: -10, y: -10 });
+	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
 	const [selectedLanes, setSelectedLanes] = useState<number[]>([0]);
 
 	useEffect(() => {
@@ -53,8 +54,16 @@ function Main(props: IMainProps) {
 		};
 	}, []);
 
+	function handleMouseMove(event: React.MouseEvent) {
+		mousePosition.current = { x: event.clientX, y: event.clientY };
+	}
+
+	function reportMousePosition() {
+		props.onMousePositionUpdate(mousePosition.current)
+	}
+
 	return (
-		<div className="Screen" onMouseMove={(event) => handleMouseMove(event)}>
+		<div className="Screen" onMouseMove={handleMouseMove}>
 			<header>
 				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
 				<SaveStateDisplay saveState={props.saveState} />
@@ -129,13 +138,9 @@ function Main(props: IMainProps) {
 		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 	}
 
-	function reportMousePosition() {
-		props.onMousePositionUpdate(mousePosition);
-	}
 
-	function handleMouseMove(event: React.MouseEvent) {
-		setMousePosition({ x: event.clientX, y: event.clientY });
-	}
+
+
 
 	function toggleSelection(laneIndex: number) {
 		// no multiple selection

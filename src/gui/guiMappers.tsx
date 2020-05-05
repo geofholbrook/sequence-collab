@@ -8,6 +8,7 @@ export function mapStateToGuiProps(state: IReduxState) {
 		userInfo: {
 			name: state.user,
 		},
+		remoteMouse: state.remoteMouse
 	};
 }
 export function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {

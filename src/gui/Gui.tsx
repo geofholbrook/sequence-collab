@@ -18,7 +18,7 @@ const initialScreen: Screen = 'Login';
 
 export const GUIConnected = connect(mapStateToGuiProps, mapDispatchToGuiProps)(GUI);
 
-interface IAppProps {
+interface IGuiProps {
 	userInfo: { name: string };
 
 	// callbacks
@@ -31,7 +31,7 @@ interface IAppProps {
 	setUser: (username: string) => void;
 }
 
-export function GUI(props: IAppProps) {
+export function GUI(props: IGuiProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
 	const setUser = props.setUser
 	const onLogin = props.onLogin
