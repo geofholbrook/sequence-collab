@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
 
-import { IPoint } from '@musicenviro/base';
+import { IPoint, subtractPoints } from '@musicenviro/base';
 
 import { ILane, SaveState, IRollLane, IDrumLane } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
@@ -45,6 +45,7 @@ export interface IMainProps {
 function Main(props: IMainProps) {
 	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
 	const [selectedLanes, setSelectedLanes] = useState<number[]>([0]);
+	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		console.log('MAIN MOUNTING');
@@ -59,7 +60,13 @@ function Main(props: IMainProps) {
 	}
 
 	function reportMousePosition() {
-		props.onMousePositionUpdate(mousePosition.current)
+		if (!contentDivRef.current) return;
+
+		// report position relative to content div
+		const rect = contentDivRef.current.getBoundingClientRect();
+		const topLeft = { x: rect.left, y: rect.top };
+
+		props.onMousePositionUpdate(subtractPoints(mousePosition.current, topLeft));
 	}
 
 	return (
@@ -69,12 +76,12 @@ function Main(props: IMainProps) {
 				<SaveStateDisplay saveState={props.saveState} />
 			</header>
 
-			<div className="content">
+			<div className="content" ref={contentDivRef}>
 				{renderButtons()}
 				{props.lanes.map((lane, index) => renderLane(lane, index))}
 			</div>
 
-			{props.remoteMouse && (
+			{props.remoteMouse && contentDivRef.current && (
 				<img
 					src={Cursor}
 					id="remote-mouse"
@@ -83,8 +90,8 @@ function Main(props: IMainProps) {
 						// backgroundColor: 'blue',
 						opacity: 0.3,
 						position: 'fixed',
-						left: props.remoteMouse.x,
-						top: props.remoteMouse.y,
+						left: props.remoteMouse.x + contentDivRef.current.getBoundingClientRect().left - 5,
+						top: props.remoteMouse.y + contentDivRef.current.getBoundingClientRect().top,
 						height: 20,
 						width: 20,
 					}}
@@ -130,7 +137,7 @@ function Main(props: IMainProps) {
 
 	function handleDeleteButton() {
 		// need lane ids (not indexes) to delete multiple lanes.
-		props.deleteLane(selectedLanes[0])
+		props.deleteLane(selectedLanes[0]);
 	}
 
 	function toggleMute(laneIndex: number) {
@@ -138,18 +145,14 @@ function Main(props: IMainProps) {
 		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
 	}
 
-
-
-
-
 	function toggleSelection(laneIndex: number) {
 		// no multiple selection
-		setSelectedLanes([laneIndex])
-		
+		setSelectedLanes([laneIndex]);
+
 		// if (selectedLanes.includes(laneIndex)) {
 		// 	setSelectedLanes(selectedLanes.filter(n => n != laneIndex))
 		// } else {
-			
+
 		// 	setSelectedLanes([...selectedLanes, laneIndex])
 		// }
 	}
@@ -157,10 +160,7 @@ function Main(props: IMainProps) {
 	function renderButtons() {
 		return (
 			<div>
-				<Button
-					icon="trash"
-					onClick={handleDeleteButton}
-				/>
+				<Button icon="trash" onClick={handleDeleteButton} />
 				<Button icon circular onClick={handleManualAddDrumLane}>
 					<Icon name="plus" color="blue" /> Drum
 				</Button>
