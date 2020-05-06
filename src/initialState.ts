@@ -1,3 +1,4 @@
+import { v1 as uuid } from 'uuid'
 import { IReduxState } from './@types';
 import { newLaneForSynth } from './state-helpers/newLaneForSynth';
 import { getColorFromString } from './gui/Main/colors';
@@ -13,6 +14,7 @@ export const initialState: IReduxState = {
 	// lanes: makeDefaultLanes(defaultStepRange),
 	lanes: [
 		{
+			laneId: uuid(),
 			laneType: 'SingleNoteLane',
 			synthName,
 			loopTimes: [],

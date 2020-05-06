@@ -12,7 +12,7 @@ import { ILaneData } from "@musicenviro/ui-elements";
 
 export type LaneProperties = 'synthName' | 'loopTimes' | 'muted' | 'volumeDb';
 
-export const currentSceneVersion = "0.2.1";
+export const currentSceneVersion = "0.2.3";
 
 export interface ISavedState {
     lanes: Array<IDrumLane | IRollLane>;
@@ -29,6 +29,7 @@ export interface IReduxState extends ISavedState {
 export type LaneType = 'SingleNoteLane' | 'DiatonicPianoRoll';
 
 export interface ILane {
+    laneId: string; // 0.2.3 adds this.
     laneType: LaneType;
     synthName: string;
     volumeDb: number; // db

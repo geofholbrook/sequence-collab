@@ -179,7 +179,7 @@ function Main(props: IMainProps) {
 					const rollLane = lane as IRollLane;
 					return (
 						<DiatonicPianoRoll
-							id={laneIndex.toString()}
+							id={lane.laneId}
 							width={602}
 							height={300}
 							stepRange={rollLane.stepRange}

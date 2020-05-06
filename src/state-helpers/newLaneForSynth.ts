@@ -1,4 +1,4 @@
-
+import { v1 as uuid } from 'uuid'
 
 import { getColorFromString } from '../gui/Main/colors';
 import { IDrumLane, IRollLane } from '../@types';
@@ -10,6 +10,7 @@ const defaultStepRange = { min: -3, max: 14 };
 export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 	if (!noteSynthNames.includes(synthName)) {
 		return <IDrumLane>{
+			laneId: uuid(),
 			laneType: 'SingleNoteLane',
 			synthName,
 			loopTimes: [],
@@ -19,6 +20,7 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 		}
 	} else {
 		return <IRollLane>{
+			laneId: uuid(),
 			laneType: 'DiatonicPianoRoll',
 			synthName,
 			muted: false,

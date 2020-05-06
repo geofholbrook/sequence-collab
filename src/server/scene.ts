@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import {v1 as uuid} from 'uuid'
 
 import {
 	ISaveSceneParams,
@@ -7,6 +8,8 @@ import {
 	ILoadSceneResponse,
 	ILane,
 } from '../@types';
+
+
 
 import { currentSceneVersion, IScene } from '../@types';
 
@@ -72,8 +75,15 @@ function backwardCompat(rawScene: any): IScene {
 			},
 		};
 	} else {
-
 		return rawScene
+
+		// return {
+		// 	...rawScene,
+		// 	lanes: rawScene.lanes.map((lane:any) => !!lane.laneId ? lane : {
+		// 		...lane,
+		// 		laneId: uuid()
+		// 	})
+		// }
 
 		// this doesn't work
 		// return {
