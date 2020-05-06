@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
@@ -35,11 +35,7 @@ export interface IMainProps {
 	setCell: (laneIndex: number, rowIndex: number, cellIndex: number, active: boolean) => void;
 	addLane: (lane: ILane) => void;
 	deleteLane: (index: number) => void;
-	setLaneProperty: (
-		index: number,
-		property: LaneProperties,
-		value: any,
-	) => void;
+	setLaneProperty: (index: number, property: LaneProperties, value: any) => void;
 }
 
 function Main(props: IMainProps) {
@@ -56,8 +52,17 @@ function Main(props: IMainProps) {
 	}, []);
 
 	useEffect(() => {
-		if (selectedLane > props.lanes.length - 1) setSelectedLane(props.lanes.length - 1)
-	}, [props.lanes])
+		if (selectedLane > props.lanes.length - 1) setSelectedLane(props.lanes.length - 1);
+	}, [props.lanes]);
+
+	const setCell = props.setCell;
+
+	const handlePianoRollCellChange = useCallback(
+		(id: string, rowIndex: number, cellIndex: number, active: boolean) => {
+			setCell(parseInt(id), rowIndex, cellIndex, active);
+		},
+		[setCell],
+	);
 
 	function handleMouseMove(event: React.MouseEvent) {
 		mousePosition.current = { x: event.clientX, y: event.clientY };
@@ -71,50 +76,6 @@ function Main(props: IMainProps) {
 		const topLeft = { x: rect.left, y: rect.top };
 
 		props.onMousePositionUpdate(subtractPoints(mousePosition.current, topLeft));
-	}
-
-	return (
-		<div className="Screen" onMouseMove={handleMouseMove}>
-			<header>
-				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
-				<SaveStateDisplay saveState={props.saveState} />
-			</header>
-
-			<div className="content" ref={contentDivRef}>
-				{renderButtons()}
-				{props.lanes.map((lane, index) => renderLane(lane, index))}
-			</div>
-
-			{props.remoteMouse && contentDivRef.current && (
-				<img
-					src={Cursor}
-					id="remote-mouse"
-					alt=""
-					style={{
-						// backgroundColor: 'blue',
-						opacity: 0.3,
-						position: 'fixed',
-						left: props.remoteMouse.x + contentDivRef.current.getBoundingClientRect().left - 5,
-						top: props.remoteMouse.y + contentDivRef.current.getBoundingClientRect().top,
-						height: 20,
-						width: 20,
-					}}
-				/>
-			)}
-
-			{!local && props.saveState !== 'Clean' && (
-				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
-			)}
-		</div>
-	);
-
-	function handlePianoRollCellChange(
-		laneIndex: number,
-		rowIndex: number,
-		cellIndex: number,
-		active: boolean,
-	) {
-		props.setCell(laneIndex, rowIndex, cellIndex, active);
 	}
 
 	function handleManualNoteChange(laneIndex: number, notes: number[]) {
@@ -218,13 +179,12 @@ function Main(props: IMainProps) {
 					const rollLane = lane as IRollLane;
 					return (
 						<DiatonicPianoRoll
+							id={laneIndex.toString()}
 							width={602}
 							height={300}
 							stepRange={rollLane.stepRange}
 							initialLanes={rollLane.rows}
-							onCellChange={(rowIndex, cellIndex, active) =>
-								handlePianoRollCellChange(laneIndex, rowIndex, cellIndex, active)
-							}
+							onCellChange={handlePianoRollCellChange}
 						/>
 					);
 				}
@@ -247,6 +207,45 @@ function Main(props: IMainProps) {
 			}
 		}
 	}
+
+	return (
+		<div className="Screen" onMouseMove={handleMouseMove}>
+			<header>
+				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
+				<SaveStateDisplay saveState={props.saveState} />
+			</header>
+
+			<div className="content" ref={contentDivRef}>
+				{renderButtons()}
+				{props.lanes.map((lane, index) => renderLane(lane, index))}
+			</div>
+
+			{props.remoteMouse && contentDivRef.current && (
+				<img
+					src={Cursor}
+					id="remote-mouse"
+					alt=""
+					style={{
+						// backgroundColor: 'blue',
+						opacity: 0.3,
+						position: 'fixed',
+						left:
+							props.remoteMouse.x +
+							contentDivRef.current.getBoundingClientRect().left -
+							5,
+						top:
+							props.remoteMouse.y + contentDivRef.current.getBoundingClientRect().top,
+						height: 20,
+						width: 20,
+					}}
+				/>
+			)}
+
+			{!local && props.saveState !== 'Clean' && (
+				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
+			)}
+		</div>
+	);
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);

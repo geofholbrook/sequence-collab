@@ -9,8 +9,6 @@ export async function saveWorkingScene(store: AppStore) {
 		lanes: store.getState().lanes,
 	};
 
-	console.log(stateToSave)
-
 	store.dispatch({
 		type: 'SET_ROOT_PROPERTY',
 		propertyName: 'saveState',

@@ -4,7 +4,7 @@ import { ISynth } from '../gui/screens/Test';
 
 import { sampleFiles } from './samples-dir-listing';
 import { Seconds } from '../@types';
-import { playBass } from './bassSynth';
+import { playBass, playBass2 } from './bassSynth';
 
 export const drumSynths: ISynth[] = [
 	{ name: 'kick', fn: kick },
@@ -19,7 +19,7 @@ export const drumSynths: ISynth[] = [
 
 export const noteSynths: ISynth[] = [
 	{ name: 'bass', fn: playBass },
-	{ name: 'bass2', fn: playBass },
+	{ name: 'treble', fn: playBass2 },
 ]
 
 export const synths = [...drumSynths, ...noteSynths]

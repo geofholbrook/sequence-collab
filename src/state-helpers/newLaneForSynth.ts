@@ -3,11 +3,12 @@
 import { getColorFromString } from '../gui/Main/colors';
 import { IDrumLane, IRollLane } from '../@types';
 import { makeDefaultLanes } from '@musicenviro/ui-elements';
+import { noteSynthNames } from '../sound-generation/noteSynthNames';
 
 const defaultStepRange = { min: -3, max: 14 };
 
 export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
-	if (!['bass', 'bass2'].includes(synthName)) {
+	if (!noteSynthNames.includes(synthName)) {
 		return <IDrumLane>{
 			laneType: 'SingleNoteLane',
 			synthName,

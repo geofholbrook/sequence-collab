@@ -9,7 +9,7 @@ import { IMessage, ISynthNote, SaveState } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { Scheduler } from './sound-generation/Scheduler/Scheduler';
-import { IPoint } from '@musicenviro/base';
+import { IPoint, enableUseWatch } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
@@ -37,6 +37,8 @@ class App {
 	}
 
 	initGUI() {
+		// enableUseWatch()
+
 		ReactDOM.render(
 			<Provider store={this.store}>
 				<GUIConnected

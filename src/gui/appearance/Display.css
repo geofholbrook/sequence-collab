@@ -47,7 +47,9 @@ header {
 	/* padding: 10px; */
 
 	top: 50px;
-	bottom: 0px;
+	min-height: 1000px;
+	padding-bottom: 25px;
+	/* bottom: 0px; */
 	/* overflow: hidden; */
 }
 
