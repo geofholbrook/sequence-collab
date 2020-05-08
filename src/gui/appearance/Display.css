@@ -8,13 +8,14 @@ body,
 
 .logo-header {
 	/* font: 300 18px/1.5 'Berkshire Swash', Helvetica, sans-serif; */
-	font-size: 1.5em; font-weight: bold; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; letter-spacing: 15px;
+	font-size: 2em; font-weight: bold; font-family: 'Courier New', Courier, monospace;
+	letter-spacing: 45px;
 	color: #2b2b2b;
 	/* text-shadow: 1px 1px 0px #ededed, 4px 4px 0px rgba(0, 0, 0, 0.15); */
-	background-color: darkblue;
+	background-color: black;
 	color: white;
-	height: 25px;
-	line-height: 25px;
+	height: 35px;
+	line-height: 35px;
 	margin: auto;
 	text-align: center;
   width: 900px;
@@ -23,8 +24,7 @@ body,
 
 .Screen {
 	text-align: center;
-	font-family: Arial, Helvetica, sans-serif;
-
+	font-weight: bold; font-family: 'Courier New', Courier, monospace;
 	width: 900px;
 	margin: auto;
 }
@@ -46,7 +46,7 @@ header {
 	width: 900px;
 	/* padding: 10px; */
 
-	top: 50px;
+	top: 60px;
 	min-height: 1000px;
 	padding-bottom: 25px;
 	/* bottom: 0px; */

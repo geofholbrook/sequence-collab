@@ -58,7 +58,7 @@ export function GUI(props: IGuiProps) {
 
 	return (
 		<div>
-			<div className="logo-header">SyncroJam</div>
+			<div className="logo-header">jammr.io</div>
 			<div className="master-screen-container">{masterScreen()}</div>
 		</div>
 	);
