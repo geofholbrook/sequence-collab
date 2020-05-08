@@ -3,7 +3,8 @@ import { IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 import { LaneType } from '../../@types'
 
 export interface ILaneProps {
-	index: number;
+	index: number; // hopefully this becomes obsolete.
+	laneId: string;
 	laneType: LaneType;
 	synthName: string;
 	availableInstruments?: string[];

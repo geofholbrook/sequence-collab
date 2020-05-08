@@ -32,15 +32,15 @@ export interface IMainProps {
 	onMousePositionUpdate: (point: IPoint) => void;
 
 	// dispatch mappings
-	setCell: (laneIndex: number, rowIndex: number, cellIndex: number, active: boolean) => void;
+	setCell: (laneId: string, rowIndex: number, cellIndex: number, active: boolean) => void;
 	addLane: (lane: ILane) => void;
-	deleteLane: (index: number) => void;
-	setLaneProperty: (index: number, property: LaneProperties, value: any) => void;
+	deleteLane: (laneId: string) => void;
+	setLaneProperty: (laneId: string, property: LaneProperties, value: any) => void;
 }
 
 function Main(props: IMainProps) {
 	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
-	const [selectedLane, setSelectedLane] = useState<number>(0);
+	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -51,15 +51,20 @@ function Main(props: IMainProps) {
 		};
 	}, []);
 
+	function findLane(id: string) {
+		return props.lanes.find((lane) => lane.laneId === id);
+	}
+
 	useEffect(() => {
-		if (selectedLane > props.lanes.length - 1) setSelectedLane(props.lanes.length - 1);
+		if (props.lanes.length > 0 && selectedLaneId && !findLane(selectedLaneId))
+			setSelectedLaneId(props.lanes[0].laneId);
 	}, [props.lanes]);
 
 	const setCell = props.setCell;
 
 	const handlePianoRollCellChange = useCallback(
 		(id: string, rowIndex: number, cellIndex: number, active: boolean) => {
-			setCell(parseInt(id), rowIndex, cellIndex, active);
+			setCell(id, rowIndex, cellIndex, active);
 		},
 		[setCell],
 	);
@@ -78,12 +83,12 @@ function Main(props: IMainProps) {
 		props.onMousePositionUpdate(subtractPoints(mousePosition.current, topLeft));
 	}
 
-	function handleManualNoteChange(laneIndex: number, notes: number[]) {
-		props.setLaneProperty(laneIndex, 'loopTimes', notes);
+	function handleManualNoteChange(laneId: string, notes: number[]) {
+		props.setLaneProperty(laneId, 'loopTimes', notes);
 	}
 
-	function handleManualInstrumentChange(laneIndex: number, synthName: string) {
-		props.setLaneProperty(laneIndex, 'synthName', synthName);
+	function handleManualInstrumentChange(laneId: string, synthName: string) {
+		props.setLaneProperty(laneId, 'synthName', synthName);
 	}
 
 	function handleManualAddDrumLane() {
@@ -102,17 +107,18 @@ function Main(props: IMainProps) {
 
 	function handleDeleteButton() {
 		// need lane ids (not indexes) to delete multiple lanes.
-		props.deleteLane(selectedLane);
+		selectedLaneId && props.deleteLane(selectedLaneId);
 	}
 
-	function toggleMute(laneIndex: number) {
-		const prevMuteState = props.lanes[laneIndex].muted;
-		props.setLaneProperty(laneIndex, 'muted', !prevMuteState);
+	function toggleMute(laneId: string) {
+		const prevMuteState = findLane(laneId)!.muted;
+		props.setLaneProperty(laneId, 'muted', !prevMuteState);
 	}
 
-	function toggleSelection(laneIndex: number) {
+	// misnamed at the moment
+	function toggleSelection(laneId: string) {
 		// no multiple selection
-		setSelectedLane(laneIndex);
+		setSelectedLaneId(laneId);
 
 		// if (selectedLanes.includes(laneIndex)) {
 		// 	setSelectedLanes(selectedLanes.filter(n => n != laneIndex))
@@ -157,16 +163,17 @@ function Main(props: IMainProps) {
 		return (
 			<Lane
 				index={laneIndex}
+				laneId={lane.laneId}
 				key={'lane' + laneIndex}
 				laneType={lane.laneType}
 				synthName={lane.synthName}
-				onInstrumentChange={(name: string) => handleManualInstrumentChange(laneIndex, name)}
-				onDeleteLane={(laneIndex: number) => props.deleteLane(laneIndex)}
-				onLaneClick={(laneIndex: number) => toggleSelection(laneIndex)}
+				onInstrumentChange={(name: string) => handleManualInstrumentChange(lane.laneId, name)}
+				onDeleteLane={() => props.deleteLane(lane.laneId)}
+				onLaneClick={() => toggleSelection(lane.laneId)}
 				volumeDb={lane.volumeDb}
 				isMuted={lane.muted}
-				isSelected={selectedLane === laneIndex}
-				onMuteButton={() => toggleMute(laneIndex)}
+				isSelected={selectedLaneId === lane.laneId}
+				onMuteButton={() => toggleMute(lane.laneId)}
 				availableInstruments={availableInstruments}
 			>
 				{getInnerComponent()}
@@ -196,7 +203,7 @@ function Main(props: IMainProps) {
 							width={650}
 							height={30}
 							notes={drumLane.loopTimes}
-							onChange={(notes) => handleManualNoteChange(laneIndex, notes)}
+							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
 							noteColor={drumLane.color}
 						/>
 					);

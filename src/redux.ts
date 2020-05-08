@@ -25,7 +25,7 @@ export interface ISetRootPropertyAction extends IReduxAction {
 
 export interface IReduxSetCellAction extends IReduxAction {
 	type: 'SET_CELL';
-	laneIndex: number;
+	laneId: string;
 	rowIndex: number;
 	cellIndex: number;
 	active: boolean;
@@ -48,12 +48,12 @@ export interface IAddLaneAction extends IReduxAction {
 
 export interface IDeleteLaneAction extends IReduxAction {
 	type: 'DELETE_LANE';
-	laneIndex: number;
+	laneId: string;
 }
 
 export interface ISetLanePropertyAction extends IReduxAction {
 	type: 'SET_LANE_PROPERTY';
-	laneIndex: number;
+	laneId: string;
 	property: LaneProperties;
 	value: any;
 }

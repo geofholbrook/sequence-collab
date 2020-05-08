@@ -36,8 +36,8 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				const action = _action as IReduxSetCellAction;
 				return {
 					...state,
-					lanes: state.lanes.map((lane, li) => {
-						if (li !== action.laneIndex) return lane;
+					lanes: state.lanes.map(lane => {
+						if (lane.laneId !== action.laneId) return lane;
 						if (lane.laneType !== 'DiatonicPianoRoll') {
 							throw new Error(`SET_CELL called on lane of type ${lane.laneType}`);
 						}
@@ -68,23 +68,20 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				const action = _action as IDeleteLaneAction;
 				return {
 					...state,
-					lanes: [
-						...state.lanes.slice(0, action.laneIndex),
-						...state.lanes.slice(action.laneIndex + 1),
-					],
+					lanes: state.lanes.filter(lane => lane.laneId !== action.laneId)
 				};
 			}
 			case 'SET_LANE_PROPERTY': {
 				const action = _action as ISetLanePropertyAction;
 				const newState = {
 					...state,
-					lanes: state.lanes.map((drumLane, i) =>
-						i === action.laneIndex
+					lanes: state.lanes.map(lane =>
+						 lane.laneId === action.laneId
 							? {
-									...drumLane,
+									...lane,
 									[action.property]: action.value,
 							  }
-							: drumLane,
+							: lane,
 					),
 				};
 				return newState;

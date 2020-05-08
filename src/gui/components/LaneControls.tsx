@@ -12,7 +12,7 @@ export const LaneControls = connect(null, (dispatch, ownProps: ILaneProps) => ({
 	onVolumeChange: (volumeDb: number) =>
 		dispatch({
 			type: 'SET_LANE_PROPERTY',
-			laneIndex: ownProps.index,
+			laneId: ownProps.laneId,
 			property: 'volumeDb',
 			value: volumeDb,
 		} as ISetLanePropertyAction),
