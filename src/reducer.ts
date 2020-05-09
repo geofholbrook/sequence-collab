@@ -1,5 +1,5 @@
 import { modifyLaneCell } from '@musicenviro/ui-elements';
-import { IReduxState, IRollLane, IDrumLane } from './@types';
+import { IReduxState, IRollLane, IDrumLane, ILane } from './@types';
 import {
 	IReduxAction,
 	ISetRootPropertyAction,
@@ -9,8 +9,9 @@ import {
 	ISetLanePropertyAction,
 	IReduxLoadStateAction,
 	IReduxSetUserAction,
+	IRotateAction,
 } from './redux';
-import { initialState } from "./initialState";
+import { initialState } from './initialState';
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined
@@ -36,15 +37,15 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				const action = _action as IReduxSetCellAction;
 				return {
 					...state,
-					lanes: state.lanes.map(lane => {
+					lanes: state.lanes.map((lane) => {
 						if (lane.laneId !== action.laneId) return lane;
 						if (lane.laneType !== 'DiatonicPianoRoll') {
 							throw new Error(`SET_CELL called on lane of type ${lane.laneType}`);
 						}
-                        
-                        const rollLane = lane as IRollLane;
-                        
-                        return {
+
+						const rollLane = lane as IRollLane;
+
+						return {
 							...rollLane,
 							rows: modifyLaneCell(
 								rollLane.rows,
@@ -58,34 +59,34 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			}
 			case 'ADD_LANE': {
 				const action = _action as IAddLaneAction;
-				
-				const insertIndex = action.after 
-					? state.lanes.findIndex(lane => lane.laneId === action.after) + 1
-					: state.lanes.length - 1
+
+				const insertIndex = action.after
+					? state.lanes.findIndex((lane) => lane.laneId === action.after) + 1
+					: state.lanes.length - 1;
 
 				return {
 					...state,
 					lanes: [
-						...state.lanes.slice(0, insertIndex), 
+						...state.lanes.slice(0, insertIndex),
 						action.lane as IDrumLane,
-						...state.lanes.slice(insertIndex)
-					].sort((a,b) => a.laneType.localeCompare(b.laneType)),
+						...state.lanes.slice(insertIndex),
+					].sort((a, b) => a.laneType.localeCompare(b.laneType)),
 				};
 			}
 			case 'DELETE_LANE': {
 				const action = _action as IDeleteLaneAction;
-				
+
 				return {
 					...state,
-					lanes: state.lanes.filter(lane => lane.laneId !== action.laneId)
+					lanes: state.lanes.filter((lane) => lane.laneId !== action.laneId),
 				};
 			}
 			case 'SET_LANE_PROPERTY': {
 				const action = _action as ISetLanePropertyAction;
 				const newState = {
 					...state,
-					lanes: state.lanes.map(lane =>
-						 lane.laneId === action.laneId
+					lanes: state.lanes.map((lane) =>
+						lane.laneId === action.laneId
 							? {
 									...lane,
 									[action.property]: action.value,
@@ -94,6 +95,13 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 					),
 				};
 				return newState;
+			}
+			case 'ROTATE': {
+				const action = _action as IRotateAction;
+				return {
+					...state,
+					lanes: state.lanes.map((lane) => rotateLane(lane, action.amount)),
+				};
 			}
 			case 'LOAD_STATE': {
 				const action = _action as IReduxLoadStateAction;
@@ -112,5 +120,32 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			default:
 				return state;
 		}
+	}
+}
+
+function rotateLane(_lane: ILane, amount: number): IRollLane | IDrumLane {
+	const splitIndex = (-amount + 16) % 16;
+	switch (_lane.laneType) {
+		case 'DiatonicPianoRoll': {
+			const lane = _lane as IRollLane;
+			return {
+				...lane,
+				rows: lane.rows.map((row) => ({
+					...row,
+					cells: [...row.cells.slice(splitIndex), ...row.cells.slice(0, splitIndex)],
+				})),
+			};
+		}
+
+		case 'SingleNoteLane': {
+			const lane = _lane as IDrumLane;
+			return {
+				...lane,
+				loopTimes: lane.loopTimes.map((time) => (time + amount / 16 + 1) % 1),
+			};
+		}
+
+		default:
+			throw new Error('unknown lane type');
 	}
 }

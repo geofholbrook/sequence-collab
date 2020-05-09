@@ -38,5 +38,10 @@ export function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
 				property,
 				value,
 			}),
+		rotate: (amount: number) => dispatch({
+			type: 'ROTATE',
+			broadcast: true,
+			amount
+		})
 	};
 }

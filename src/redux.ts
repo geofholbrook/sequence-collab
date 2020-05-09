@@ -13,6 +13,7 @@ export interface IReduxAction {
 		| 'SET_USER'
 		| 'ADD_LANE'
 		| 'DELETE_LANE'
+		| 'ROTATE'
 		| 'SET_LANE_PROPERTY';
 	broadcast?: boolean;
 }
@@ -21,6 +22,11 @@ export interface ISetRootPropertyAction extends IReduxAction {
 	type: 'SET_ROOT_PROPERTY';
 	propertyName: 'remoteMouse' | 'saveState';
 	value: any;
+}
+
+export interface IRotateAction extends IReduxAction {
+	type: 'ROTATE',
+	amount: number
 }
 
 export interface IReduxSetCellAction extends IReduxAction {

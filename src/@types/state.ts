@@ -10,7 +10,7 @@ import { PropTime } from "./index";
 import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base";
 import { ILaneData } from "@musicenviro/ui-elements";
 
-export type LaneProperties = 'synthName' | 'loopTimes' | 'muted' | 'volumeDb' | 'viewMode';
+export type LaneProperties = 'synthName' | 'loopTimes' | 'muted' | 'volumeDb' | 'color';
 
 export const currentSceneVersion = "0.2.3";
 

@@ -21,6 +21,7 @@ import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { ISynth } from '../screens/Test';
+import { getColorFromString } from './colors';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -39,6 +40,7 @@ export interface IMainProps {
 	addLane: (lane: ILane, after?: string) => void;
 	deleteLane: (laneId: string) => void;
 	setLaneProperty: (laneId: string, property: LaneProperties, value: any) => void;
+	rotate: (amount: number) => void;
 }
 
 function Main(props: IMainProps) {
@@ -98,6 +100,7 @@ function Main(props: IMainProps) {
 
 	function handleManualInstrumentChange(laneId: string, synthName: string) {
 		props.setLaneProperty(laneId, 'synthName', synthName);
+		props.setLaneProperty(laneId, 'color', getColorFromString(synthName))
 	}
 
 	function handleManualAddDrumLane() {
@@ -176,10 +179,10 @@ function Main(props: IMainProps) {
 				<Button icon onClick={props.onStartAudio}>
 					<Icon name="play" color="green" />
 				</Button>
-				<Button icon floated="right" onClick={props.onStopAudio}>
+				<Button icon floated="right" onClick={() => props.rotate(1)}>
 					<Icon name="share" />
 				</Button>
-				<Button icon floated="right" onClick={props.onStopAudio}>
+				<Button icon floated="right" onClick={() => props.rotate(-1)}>
 					<Icon name="reply" />
 				</Button>
 			</div>
