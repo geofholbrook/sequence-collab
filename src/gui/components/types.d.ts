@@ -2,6 +2,8 @@ import { ISingleNoteLaneProps } from '@musicenviro/ui-elements/lib/components/Si
 import { IDiatonicPianoRollProps } from '@musicenviro/ui-elements';
 import { LaneType } from '../../@types'
 
+export type ViewMode = 'Expanded' | 'Collapsed'
+
 export interface ILaneProps {
 	index: number; // hopefully this becomes obsolete.
 	laneId: string;
@@ -11,6 +13,7 @@ export interface ILaneProps {
 	volumeDb: number;
 	isMuted: boolean;
 	isSelected: boolean;
+	viewMode?: ViewMode;
 	onInstrumentChange?: (name: string) => void;
 	onAddLane?: () => void;
 	onDeleteLane?: (laneIndex: number) => void;

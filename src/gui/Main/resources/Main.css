@@ -5,8 +5,11 @@
 }
 
 .diatonic-piano-roll {
-    margin-top: 0px;
-    margin-left: 15px;
+    margin: 10px -25px 10px 0px
+}
+
+.cell-grid-preview {
+    margin: 10px 20px 10px 0px
 }
 
 .top-buttons {

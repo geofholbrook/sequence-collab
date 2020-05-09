@@ -18,6 +18,7 @@ import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
 import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
+import { getPreviewForRollLane } from './getPreviewForRollLane';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -184,16 +185,25 @@ function Main(props: IMainProps) {
 			switch (lane.laneType) {
 				case 'DiatonicPianoRoll': {
 					const rollLane = lane as IRollLane;
-					return (
-						<DiatonicPianoRoll
+					
+					if (selectedLaneId === lane.laneId) {
+
+						
+						return (
+							<DiatonicPianoRoll
 							id={lane.laneId}
 							width={602}
 							height={300}
 							stepRange={rollLane.stepRange}
 							initialLanes={rollLane.rows}
 							onCellChange={handlePianoRollCellChange}
-						/>
-					);
+							/>
+							);
+						} else {
+							return (
+								getPreviewForRollLane(rollLane)
+							)
+						}
 				}
 
 				case 'SingleNoteLane': {
@@ -256,3 +266,6 @@ function Main(props: IMainProps) {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
+
+
+

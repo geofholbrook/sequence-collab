@@ -27,3 +27,7 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 		}
 	}
 };
+
+Lane.defaultProps = {
+	viewMode: 'Expanded'
+}
