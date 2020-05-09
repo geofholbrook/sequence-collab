@@ -13,8 +13,8 @@
 }
 
 .lane.selected {
-    border: solid 3px orange;
-    /* background-color: rgb(197, 229, 255)  */
+    outline: solid 3px orange;
+    background-color: rgb(255, 254, 213) 
 }
 
 .lane .volume-knob {
