@@ -197,7 +197,7 @@ function Main(props: IMainProps) {
 								viewMode === 'Expanded' ? (
 									<DiatonicPianoRoll
 										id={lane.laneId}
-										width={592}
+										width={584}
 										height={300}
 										stepRange={rollLane.stepRange}
 										initialLanes={rollLane.rows}
