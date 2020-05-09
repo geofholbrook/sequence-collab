@@ -13,11 +13,12 @@ export function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
 				cellIndex,
 				active,
 			}),
-		addLane: (lane: ILane) =>
+		addLane: (lane: ILane, after?: string) =>
 			dispatch({
 				type: 'ADD_LANE',
 				broadcast: true,
 				lane,
+				after
 			}),
 		deleteLane: (laneId: string) =>
 			dispatch({

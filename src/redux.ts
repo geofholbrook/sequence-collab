@@ -44,6 +44,7 @@ export interface IReduxSetUserAction extends IReduxAction {
 export interface IAddLaneAction extends IReduxAction {
 	type: 'ADD_LANE';
 	lane: ILane;
+	after?: string;
 }
 
 export interface IDeleteLaneAction extends IReduxAction {

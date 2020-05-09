@@ -20,55 +20,57 @@ export const LaneControls = connect(
 	mapDispatchToLaneControlsProps(),
 )((props: ILaneControlsProps) => {
 	return (
-		<div className="lane-controls">
-			<table>
-				<tr>
-					<td>
-						<div style={{ display: 'flex' }}>
-							{renderAccordionIcon(props.viewMode!, props.onExpand!, props.onCollapse!)}
-							<VolumeKnob
-								initialDb={props.volumeDb}
-								size={35}
-								indicatorColor="lightgreen"
-								onChange={props.onVolumeChange}
+		<div className="lane-controls lane-whitespace">
+			<table className="lane-whitespace">
+				<tbody className="lane-whitespace">
+					<tr className="lane-whitespace">
+						<td className="lane-whitespace">
+							<div className="lane-whitespace" style={{ display: 'flex' }}>
+								{renderAccordionIcon(
+									props.viewMode!,
+									props.onExpand!,
+									props.onCollapse!,
+								)}
+								<VolumeKnob
+									initialDb={props.volumeDb}
+									size={35}
+									indicatorColor="lightgreen"
+									onChange={props.onVolumeChange}
+								/>
+							</div>
+						</td>
+						<td className="lane-whitespace">
+							<Button
+								icon={props.isMuted ? 'volume off' : 'volume up'}
+								color={props.isMuted ? 'yellow' : undefined}
+								onClick={props.onMuteButton}
 							/>
-						</div>
-					</td>
-					<td>
-						<Button
-							icon={props.isMuted ? 'volume off' : 'volume up'}
-							color={props.isMuted ? 'yellow' : undefined}
-							onClick={props.onMuteButton}
-						/>
-					</td>
-					<td>
-						<select
-							className="instrument-selector"
-							// style={{ position: 'absolute', top: 15, left: 40, width: 80 }}
-							onChange={(e) =>
-								props.onInstrumentChange &&
-								props.onInstrumentChange((e.target as HTMLSelectElement).value)
-							}
-							value={props.synthName}
-						>
-							{(props.availableInstruments || []).map((name) => (
-								<option key={name} value={name}>
-									{name}
-								</option>
-							))}
-						</select>
-					</td>
-				</tr>
+						</td>
+						<td className="lane-whitespace">
+							<select
+								className="instrument-selector"
+								// style={{ position: 'absolute', top: 15, left: 40, width: 80 }}
+								onChange={(e) =>
+									props.onInstrumentChange &&
+									props.onInstrumentChange((e.target as HTMLSelectElement).value)
+								}
+								value={props.synthName}
+							>
+								{(props.availableInstruments || []).map((name) => (
+									<option key={name} value={name}>
+										{name}
+									</option>
+								))}
+							</select>
+						</td>
+					</tr>
+				</tbody>
 			</table>
 		</div>
 	);
 });
 
-function renderAccordionIcon(
-	viewMode: ViewMode,
-	onExpand: () => void,
-	onCollapse: () => void
-) {
+function renderAccordionIcon(viewMode: ViewMode, onExpand: () => void, onCollapse: () => void) {
 	switch (viewMode) {
 		case 'Collapsed':
 			return (
@@ -91,6 +93,6 @@ function renderAccordionIcon(
 			);
 
 		default:
-			return <div style={{ width: 15 }} />;
+			return <div className="lane-whitespace" style={{ width: 20 }} />;
 	}
 }

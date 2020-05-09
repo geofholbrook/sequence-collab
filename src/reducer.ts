@@ -59,13 +59,22 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 			case 'ADD_LANE': {
 				const action = _action as IAddLaneAction;
 				
+				const insertIndex = action.after 
+					? state.lanes.findIndex(lane => lane.laneId === action.after) + 1
+					: state.lanes.length - 1
+
 				return {
 					...state,
-					lanes: [...state.lanes, action.lane as IDrumLane].sort((a,b) => a.laneType.localeCompare(b.laneType)),
+					lanes: [
+						...state.lanes.slice(0, insertIndex), 
+						action.lane as IDrumLane,
+						...state.lanes.slice(insertIndex)
+					].sort((a,b) => a.laneType.localeCompare(b.laneType)),
 				};
 			}
 			case 'DELETE_LANE': {
 				const action = _action as IDeleteLaneAction;
+				
 				return {
 					...state,
 					lanes: state.lanes.filter(lane => lane.laneId !== action.laneId)

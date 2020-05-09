@@ -9,7 +9,7 @@ import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties } from '../../@t
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
-import { local } from '../../config';
+import { local, cycleDrumSynthsWhenAdding } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './resources/Main.css';
@@ -20,6 +20,7 @@ import { SaveStateDisplay } from './SaveStateDisplay';
 import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
+import { ISynth } from '../screens/Test';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -35,7 +36,7 @@ export interface IMainProps {
 
 	// dispatch mappings
 	setCell: (laneId: string, rowIndex: number, cellIndex: number, active: boolean) => void;
-	addLane: (lane: ILane) => void;
+	addLane: (lane: ILane, after?: string) => void;
 	deleteLane: (laneId: string) => void;
 	setLaneProperty: (laneId: string, property: LaneProperties, value: any) => void;
 }
@@ -57,6 +58,10 @@ function Main(props: IMainProps) {
 
 	function findLane(id: string) {
 		return props.lanes.find((lane) => lane.laneId === id);
+	}
+
+	function getLaneIndex(id: string) {
+		return props.lanes.findIndex((lane) => lane.laneId === id);
 	}
 
 	useEffect(() => {
@@ -96,13 +101,27 @@ function Main(props: IMainProps) {
 	}
 
 	function handleManualAddDrumLane() {
-		const prevSynthIndex = drumSynths
-			.map((synth) => synth.name)
-			.indexOf(_.last(props.lanes)?.synthName || '');
+		props.addLane(newLaneForSynth(getNextSynth()), selectedLaneId);
 
-		const newSynth = drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
+		function getNextSynth(): string {
+			const prevDrumSynthName = drumSelected()
+			if (!prevDrumSynthName) return drumSynths[0].name
 
-		props.addLane(newLaneForSynth(newSynth));
+			if (cycleDrumSynthsWhenAdding) {
+				const prevSynthIndex = drumSynths.findIndex(synth => synth.name === prevDrumSynthName)
+				return drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
+			} else {
+				return prevDrumSynthName
+			}
+		}
+
+		function drumSelected() {
+			if (!selectedLaneId) return null
+			const lane = findLane(selectedLaneId)
+			if (!lane) return null // shouldn't happen
+			if (lane.laneType !== 'SingleNoteLane') return null
+			return lane.synthName
+		}
 	}
 
 	function handleManualAddDiatonicLane() {
@@ -111,7 +130,16 @@ function Main(props: IMainProps) {
 
 	function handleDeleteButton() {
 		// need lane ids (not indexes) to delete multiple lanes.
-		selectedLaneId && props.deleteLane(selectedLaneId);
+		if (!selectedLaneId) return;
+
+		const index = getLaneIndex(selectedLaneId);
+		const newSelectedId =
+			index === props.lanes.length - 1
+				? props.lanes[index - 1]?.laneId
+				: props.lanes[index + 1].laneId;
+
+		props.deleteLane(selectedLaneId);
+		setSelectedLaneId(newSelectedId);
 	}
 
 	function toggleMute(laneId: string) {
@@ -237,7 +265,14 @@ function Main(props: IMainProps) {
 				<SaveStateDisplay saveState={props.saveState} />
 			</header>
 
-			<div className="content" ref={contentDivRef}>
+			<div className="content foo" 
+				ref={contentDivRef}
+				onClick={e => {
+					if ((e.target as HTMLElement).className.split(' ').includes('content')) {
+						setSelectedLaneId(undefined)
+					}
+				}}
+			>
 				{renderButtons()}
 				{props.lanes.map((lane, index) => renderLane(lane, index))}
 			</div>
