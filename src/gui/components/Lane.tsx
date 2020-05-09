@@ -1,9 +1,14 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import './Lane.css';
 import { LaneControls } from './LaneControls';
-import { ILaneProps } from './types';
+import { ILaneProps, ViewMode } from './types';
+import { ViewContext } from './ViewContext';
 
 export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
+	const [viewMode, setViewMode] = useState<ViewMode>(
+		props.laneType === 'DiatonicPianoRoll' ? 'Collapsed' : 'None',
+	);
+
 	return (
 		<div
 			className={['lane', getSpecificClass(), props.isSelected && 'selected'].join(' ')}
@@ -12,13 +17,20 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 			<table>
 				<tr>
 					<td>
-						<LaneControls {...props} />
-					</td>
-					<td>
-						<div className="lane-panel">{props.children}</div>
+						<LaneControls
+							{...props}
+							viewMode={viewMode}
+							onExpand={() => setViewMode('Expanded')}
+							onCollapse={() => setViewMode('Collapsed')}
+						/>
 					</td>
 				</tr>
 			</table>
+						<div className="lane-panel">
+							<ViewContext.Provider value={viewMode}>
+								{props.children /* probably just one element */} 
+							</ViewContext.Provider>
+						</div>
 		</div>
 	);
 
@@ -34,8 +46,4 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 				return null;
 		}
 	}
-};
-
-Lane.defaultProps = {
-	viewMode: 'Expanded',
 };

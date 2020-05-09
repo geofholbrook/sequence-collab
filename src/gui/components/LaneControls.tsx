@@ -1,36 +1,38 @@
 import React from 'react';
 
-import { Button } from 'semantic-ui-react';
-import { ILaneProps } from './types';
+import { Button, Icon } from 'semantic-ui-react';
+import { ILaneProps, ViewMode } from './types';
 
 import { VolumeKnob } from '@musicenviro/ui-elements';
 
 import { connect } from 'react-redux';
-import { ISetLanePropertyAction } from '../../redux';
+import { Lane } from './Lane';
+import { mapDispatchToLaneControlsProps } from './mapDispatchToLaneControlsProps';
 
-export const LaneControls = connect(null, (dispatch, ownProps: ILaneProps) => ({
-	onVolumeChange: (volumeDb: number) =>
-		dispatch({
-			type: 'SET_LANE_PROPERTY',
-			broadcast: true,
-			laneId: ownProps.laneId,
-			property: 'volumeDb',
-			value: volumeDb,
-		} as ISetLanePropertyAction),
-}))((props: ILaneProps) => {
+export interface ILaneControlsProps extends ILaneProps {
+	viewMode: ViewMode;
+	onExpand?: () => void;
+	onCollapse?: () => void;
+}
+
+export const LaneControls = connect(
+	null,
+	mapDispatchToLaneControlsProps(),
+)((props: ILaneControlsProps) => {
 	return (
 		<div className="lane-controls">
-			{/* <div className="section button-section"> */}
-
 			<table>
 				<tr>
 					<td>
-						<VolumeKnob
-							initialDb={props.volumeDb}
-							size={35}
-							indicatorColor="lightgreen"
-							onChange={props.onVolumeChange}
-						/>
+						<div style={{ display: 'flex' }}>
+							{renderAccordionIcon(props.viewMode!, props.onExpand!, props.onCollapse!)}
+							<VolumeKnob
+								initialDb={props.volumeDb}
+								size={35}
+								indicatorColor="lightgreen"
+								onChange={props.onVolumeChange}
+							/>
+						</div>
 					</td>
 					<td>
 						<Button
@@ -58,11 +60,37 @@ export const LaneControls = connect(null, (dispatch, ownProps: ILaneProps) => ({
 					</td>
 				</tr>
 			</table>
-
-			{/* </div> */}
-
-			{/* <div className="section selector-section"> */}
-			{/* </div> */}
 		</div>
 	);
 });
+
+function renderAccordionIcon(
+	viewMode: ViewMode,
+	onExpand: () => void,
+	onCollapse: () => void
+) {
+	switch (viewMode) {
+		case 'Collapsed':
+			return (
+				<Icon
+					fitted
+					style={{ width: 20, height: 30 }}
+					onClick={onExpand}
+					name="caret right"
+				/>
+			);
+
+		case 'Expanded':
+			return (
+				<Icon
+					fitted
+					style={{ width: 20, height: 30 }}
+					onClick={onCollapse}
+					name="caret down"
+				/>
+			);
+
+		default:
+			return <div style={{ width: 15 }} />;
+	}
+}

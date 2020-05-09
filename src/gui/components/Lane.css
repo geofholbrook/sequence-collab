@@ -29,28 +29,30 @@
 .lane-controls {
     /* background-color: lightsalmon; */
     width: 220px;
-    display: table-cell;
+    /* display: table-cell; */
     /* line-height: 100%; */
-    /* vertical-align: middle; */
+    /* vertical-align: top; */
 }
 
 .lane-panel {
     /* background-color: lightblue; */
     width: 640px;
-    vertical-align: middle;
+    /* vertical-align: top; */
 }
 
 .diatonic-piano-roll {
     margin-top: 10px;
-    margin-left: 18px;
+    margin-left: 8px;
     margin-bottom: 10px;
 }
 
 .cell-grid-preview {
     margin-bottom: -10px;
+    margin-left: -10px;
 }
 
 .single-note-lane {
     margin-top: 10px;
+    margin-left: -10px;
 }
 

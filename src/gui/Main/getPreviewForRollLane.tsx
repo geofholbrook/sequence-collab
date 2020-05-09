@@ -20,7 +20,7 @@ export function getPreviewForRollLane(lane: IRollLane) {
         }
     }))
 
-    return <CellGridPreview width={602} height={50}
+    return <CellGridPreview width={580} height={45}
         cells={cells}
         numRows={numRows}
         numColumns={numColumns}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react';
+import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
 import _ from 'lodash';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
@@ -19,6 +19,7 @@ import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
 import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
+import { ViewContext } from '../components/ViewContext';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -43,6 +44,8 @@ function Main(props: IMainProps) {
 	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 	const contentDivRef = useRef<HTMLDivElement>(null);
+
+	const viewContext = useContext(ViewContext);
 
 	useEffect(() => {
 		console.log('MAIN MOUNTING');
@@ -168,7 +171,9 @@ function Main(props: IMainProps) {
 				key={'lane' + laneIndex}
 				laneType={lane.laneType}
 				synthName={lane.synthName}
-				onInstrumentChange={(name: string) => handleManualInstrumentChange(lane.laneId, name)}
+				onInstrumentChange={(name: string) =>
+					handleManualInstrumentChange(lane.laneId, name)
+				}
 				onDeleteLane={() => props.deleteLane(lane.laneId)}
 				onLaneClick={() => toggleSelection(lane.laneId)}
 				volumeDb={lane.volumeDb}
@@ -185,32 +190,32 @@ function Main(props: IMainProps) {
 			switch (lane.laneType) {
 				case 'DiatonicPianoRoll': {
 					const rollLane = lane as IRollLane;
-					
-					if (selectedLaneId === lane.laneId) {
 
-						
-						return (
-							<DiatonicPianoRoll
-							id={lane.laneId}
-							width={602}
-							height={300}
-							stepRange={rollLane.stepRange}
-							initialLanes={rollLane.rows}
-							onCellChange={handlePianoRollCellChange}
-							/>
-							);
-						} else {
-							return (
-								getPreviewForRollLane(rollLane)
-							)
-						}
+					return (
+						<ViewContext.Consumer>
+							{(viewMode) =>
+								viewMode === 'Expanded' ? (
+									<DiatonicPianoRoll
+										id={lane.laneId}
+										width={592}
+										height={300}
+										stepRange={rollLane.stepRange}
+										initialLanes={rollLane.rows}
+										onCellChange={handlePianoRollCellChange}
+									/>
+								) : (
+									getPreviewForRollLane(rollLane)
+								)
+							}
+						</ViewContext.Consumer>
+					);
 				}
 
 				case 'SingleNoteLane': {
 					const drumLane = lane as IDrumLane;
 					return (
 						<SingleNoteLane
-							width={650}
+							width={630}
 							height={30}
 							notes={drumLane.loopTimes}
 							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
@@ -266,6 +271,3 @@ function Main(props: IMainProps) {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
-
-
-

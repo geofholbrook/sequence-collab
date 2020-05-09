@@ -13,14 +13,14 @@ export const initialState: IReduxState = {
 	remoteMouse: null,
 	// lanes: makeDefaultLanes(defaultStepRange),
 	lanes: [
-		{
-			laneId: uuid(),
-			laneType: 'SingleNoteLane',
-			synthName,
-			loopTimes: [],
-			volumeDb: 0,
-			muted: false,
-			color: getColorFromString(synthName)
-		},
+		// {
+		// 	laneId: uuid(),
+		// 	laneType: 'SingleNoteLane',
+		// 	synthName,
+		// 	loopTimes: [],
+		// 	volumeDb: 0,
+		// 	muted: false,
+		// 	color: getColorFromString(synthName)
+		// },
 	],
 };
