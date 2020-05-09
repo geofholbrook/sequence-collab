@@ -9,8 +9,16 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 			className={['lane', getSpecificClass(), props.isSelected && 'selected'].join(' ')}
 			onClick={() => props.onLaneClick && props.onLaneClick(props.index)}
 		>
-			<LaneControls {...props} />
-			<div className="section main-section">{props.children}</div>
+			<table>
+				<tr>
+					<td>
+						<LaneControls {...props} />
+					</td>
+					<td>
+						<div className="lane-panel">{props.children}</div>
+					</td>
+				</tr>
+			</table>
 		</div>
 	);
 
@@ -29,5 +37,5 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 };
 
 Lane.defaultProps = {
-	viewMode: 'Expanded'
-}
+	viewMode: 'Expanded',
+};

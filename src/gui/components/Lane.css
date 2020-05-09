@@ -1,14 +1,10 @@
 .lane {
     width: 860px;
-    display: table;
+    display: flex;
     
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left: auto;
-    margin-right: auto;
-
-    padding-left: 5px;
-    border-radius: 5px;
+    margin: 5px auto 5px auto;
+    /* padding-left: 5px; */
+    /* border-radius: 5px; */
     /* background-color: rgb(235, 233, 233);    */
     background-color: white;
 }
@@ -17,32 +13,44 @@
     background-color: rgb(197, 229, 255) 
 }
 
-.drum-lane {
-    min-height: 45px;
+.lane .volume-knob {
+    float: left;
 }
 
-/* .roll-lane {
-    padding-bottom: 10px;
-} */
-
-.section {
-    display: table-cell;
-    /* border: solid 1px; */
-    vertical-align: middle;
+.lane .button {
+    float: left;
 }
 
-.button-section {
-    width: 38px;
-}
-
-/* .volume-knob {
-    border: solid 1px;
-} */
-
-.selector-section select {
+.lane select {
+    float: left;
     width: 120px;
 }
 
-.main-section {
-    /* padding: 10px 0px 10px 0px */
+.lane-controls {
+    /* background-color: lightsalmon; */
+    width: 220px;
+    display: table-cell;
+    /* line-height: 100%; */
+    /* vertical-align: middle; */
 }
+
+.lane-panel {
+    /* background-color: lightblue; */
+    width: 640px;
+    vertical-align: middle;
+}
+
+.diatonic-piano-roll {
+    margin-top: 10px;
+    margin-left: 18px;
+    margin-bottom: 10px;
+}
+
+.cell-grid-preview {
+    margin-bottom: -10px;
+}
+
+.single-note-lane {
+    margin-top: 10px;
+}
+
