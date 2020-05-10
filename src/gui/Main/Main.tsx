@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef, useContext } from 'react';
-import _ from 'lodash';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
 import { Button, Icon } from 'semantic-ui-react';
 
@@ -20,7 +19,6 @@ import { SaveStateDisplay } from './SaveStateDisplay';
 import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
-import { ISynth } from '../screens/Test';
 import { getColorFromString } from './colors';
 
 export interface IMainProps {
@@ -48,15 +46,13 @@ function Main(props: IMainProps) {
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
-	const viewContext = useContext(ViewContext);
-
 	useEffect(() => {
 		console.log('MAIN MOUNTING');
 		const mouseTimer = setInterval(reportMousePosition, 100);
 		return () => {
 			clearInterval(mouseTimer);
 		};
-	}, []);
+	}, [reportMousePosition]);
 
 	function findLane(id: string) {
 		return props.lanes.find((lane) => lane.laneId === id);

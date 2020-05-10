@@ -3,6 +3,7 @@ import { IReduxAction } from "../redux";
 
 export * from './api'
 export * from './state'
+export * from './sound'
 
 export type PropTime = number
 export type Seconds = number

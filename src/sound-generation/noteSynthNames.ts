@@ -1,1 +1,1 @@
-export const noteSynthNames = ['bass', 'treble'];
+export const noteSynthNames = ['bass', 'treble', 'faustDjembe'];

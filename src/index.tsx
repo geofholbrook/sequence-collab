@@ -22,11 +22,16 @@ class App {
 	ac!: AudioContext;
 
 	init() {
-		this.scheduler.onSchedule((notes) =>
+		this.ac = new AudioContext()
+		Tone.setContext(this.ac);
+		this.scheduler.setAudioContext(this.ac);
+		synths.forEach(synth => synth.init && synth.init(this.ac))
+
+		this.scheduler.onSchedule((notes) =>{
 			notes.forEach((note) => {
 				const synth = synths.find((s) => s.name === note.data.synthName);
 				synth && callSynth(this.ac, synth, note.audioContextTime, ...note.data.args);
-			}),
+			})}
 		);
 
 		this.initGUI();
@@ -37,7 +42,7 @@ class App {
 	}
 
 	initGUI() {
-		// enableUseWatch()
+		enableUseWatch()
 
 		ReactDOM.render(
 			<Provider store={this.store}>
@@ -58,9 +63,6 @@ class App {
 	startAudio = () => {
 		if (this.ac) {
 			this.ac.resume();
-		} else {
-			this.ac = Tone.context.rawContext as AudioContext;
-			this.scheduler.setAudioContext(this.ac);
 			this.scheduler.start();
 		}
 	};
