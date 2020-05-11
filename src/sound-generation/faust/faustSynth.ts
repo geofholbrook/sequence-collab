@@ -12,7 +12,7 @@ type Plugin = {
 }
     
 
-class FaustSynth {
+export class FaustSynth {
     moduleName: string;
 	PluginClass: PluginClassType;
 	plugin: Plugin | undefined;

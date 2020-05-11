@@ -5,7 +5,7 @@ import { ISynth } from '../@types';
 import { sampleFiles } from './samples-dir-listing';
 import { Seconds } from '../@types';
 import { playBass, playBass2 } from './bassSynth';
-import { playFaustNote, initFaustSynth } from './faust/faustSynth';
+import { FaustSynth } from './faust/FaustSynth';
 
 export const drumSynths: ISynth[] = [
 	{ name: 'kick', fn: kick },
@@ -21,7 +21,7 @@ export const drumSynths: ISynth[] = [
 export const noteSynths: ISynth[] = [
 	{ name: 'bass', fn: playBass },
 	{ name: 'treble', fn: playBass2 },
-	{ name: 'faustDjembe', fn: playFaustNote, init: initFaustSynth }
+	...getFaustSynths()
 ]
 
 export const synths = [...drumSynths, ...noteSynths]
