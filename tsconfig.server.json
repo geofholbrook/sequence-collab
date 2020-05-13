@@ -15,7 +15,7 @@
       "moduleResolution": "node",
       "resolveJsonModule": true,
       "isolatedModules": false,
-      "emit": false
+      "noEmit": true
     },
     "outFile": "./serverjs/index.js",
     "include": [
