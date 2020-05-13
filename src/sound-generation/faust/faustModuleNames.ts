@@ -1,4 +1,5 @@
 export const faustModuleNames = [
-'dumbTriangle',
+'dumbMarimba',
+'lowSquare',
 'monoDjembe',
 ]

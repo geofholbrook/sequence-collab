@@ -52,8 +52,8 @@
   "dependencies": {
     "@babel/core": "7.9.0",
     "@geof/socket-messaging": "^0.5.3",
-    "@musicenviro/base": "file:../musicenviro__base",
-    "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
+    "@musicenviro/base": "^0.2.8",
+    "@musicenviro/ui-elements": "^0.5.12",
     "@svgr/webpack": "4.3.3",
     "@types/cors": "^2.8.6",
     "@types/debug": "^4.1.5",
