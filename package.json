@@ -23,7 +23,7 @@
     "do-electron-start": "node src/start-react",
     "pack": "build --dir",
     "dist": "npm run build && build",
-    "server": "TS_NODE_PROJECT=tsconfig.server.json DEBUG=sj:*,gsm:* ts-node-dev src/server/index.ts",
+    "server": "TS_NODE_PROJECT=tsconfig.commonjs.json DEBUG=sj:*,gsm:* ts-node-dev src/server/index.ts",
     "server-pm2": "pm2 start npm --no-automation --name telepromptu-server -- run server",
     "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
   },

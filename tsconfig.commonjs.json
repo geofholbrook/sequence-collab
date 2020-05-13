@@ -15,9 +15,9 @@
       "moduleResolution": "node",
       "resolveJsonModule": true,
       "isolatedModules": false,
-      "emit": false
+      "noEmit": true,
+      "jsx": "react"
     },
-    "outFile": "./serverjs/index.js",
     "include": [
       "src/server/index.ts"
     ]
