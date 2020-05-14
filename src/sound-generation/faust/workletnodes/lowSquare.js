@@ -897,11 +897,13 @@ let lowSquareProcessorString = `
 
 const dspName = "lowSquare";
 
-// WAP factory or npm package module
-if (typeof module === "undefined") {
-    window.lowSquare = lowSquare;
-    window.FaustlowSquare = lowSquare;
-    window[dspName] = lowSquare;
-} else {
-    module.exports = { lowSquare };
-}
+export { lowSquare }
+
+// // WAP factory or npm package module
+// if (typeof module === "undefined") {
+//     window.lowSquare = lowSquare;
+//     window.FaustlowSquare = lowSquare;
+//     window[dspName] = lowSquare;
+// } else {
+//     module.exports = { lowSquare };
+// }

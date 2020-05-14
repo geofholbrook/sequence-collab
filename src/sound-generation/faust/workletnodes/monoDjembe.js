@@ -897,11 +897,13 @@ let monoDjembeProcessorString = `
 
 const dspName = "monoDjembe";
 
-// WAP factory or npm package module
-if (typeof module === "undefined") {
-    window.monoDjembe = monoDjembe;
-    window.FaustmonoDjembe = monoDjembe;
-    window[dspName] = monoDjembe;
-} else {
-    module.exports = { monoDjembe };
-}
+export { monoDjembe }
+
+// // WAP factory or npm package module
+// if (typeof module === "undefined") {
+//     window.monoDjembe = monoDjembe;
+//     window.FaustmonoDjembe = monoDjembe;
+//     window[dspName] = monoDjembe;
+// } else {
+//     module.exports = { monoDjembe };
+// }

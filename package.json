@@ -2,7 +2,7 @@
   "name": "sequence-collab",
   "version": "0.0.0",
   "private": true,
-  "homepage": "http://telepromptu.com/",
+  "homepage": "http://telepromptu.com",
   "build": {
     "appId": "com.electron.electron-with-create-react-app",
     "win": {
@@ -25,7 +25,8 @@
     "dist": "npm run build && build",
     "server": "TS_NODE_PROJECT=tsconfig.commonjs.json DEBUG=sj:*,gsm:* ts-node-dev src/server/index.ts",
     "server-pm2": "pm2 start npm --no-automation --name telepromptu-server -- run server",
-    "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/"
+    "deploy-client": "npm run build && scp -r ./build/* geof@nodedroplet:/home/geof/webroot/",
+    "deploy-server": "tsc --project tsconfig.server.json && scp -r ./serverjs/* geof@nodedroplet:/home/geof/jammr-server/"
   },
   "eslintConfig": {
     "extends": "react-app"

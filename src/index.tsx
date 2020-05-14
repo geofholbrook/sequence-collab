@@ -13,6 +13,7 @@ import { IPoint, enableUseWatch } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
+import { initSamplers } from './sound-generation/sampler';
 
 class App {
 	store = createAppStore();
@@ -22,18 +23,6 @@ class App {
 	ac!: AudioContext;
 
 	init() {
-		this.ac = new AudioContext()
-		Tone.setContext(this.ac);
-		this.scheduler.setAudioContext(this.ac);
-		synths.forEach(synth => synth.init && synth.init(this.ac))
-
-		this.scheduler.onSchedule((notes) =>{
-			notes.forEach((note) => {
-				const synth = synths.find((s) => s.name === note.data.synthName);
-				synth && callSynth(this.ac, synth, note.audioContextTime, ...note.data.args);
-			})}
-		);
-
 		this.initGUI();
 
 		this.store.subscribe(() => {
@@ -42,7 +31,7 @@ class App {
 	}
 
 	initGUI() {
-		enableUseWatch()
+		enableUseWatch();
 
 		ReactDOM.render(
 			<Provider store={this.store}>
@@ -60,10 +49,31 @@ class App {
 		);
 	}
 
-	startAudio = () => {
+	startAudio = async () => {
 		if (this.ac) {
 			this.ac.resume();
 			this.scheduler.start();
+		} else {
+			this.ac = new AudioContext();
+
+			if (!this.ac.audioWorklet) {
+				throw new Error('CONTEXT MISSING AUDIOWORKLET')
+			}
+
+			Tone.setContext(this.ac);
+			this.scheduler.setAudioContext(this.ac);
+			
+			synths.forEach((synth) => synth.init && synth.init(this.ac));
+
+			this.scheduler.onSchedule((notes) => {
+				notes.forEach((note) => {
+					const synth = synths.find((s) => s.name === note.data.synthName);
+					synth && callSynth(this.ac, synth, note.audioContextTime, ...note.data.args);
+				});
+			});
+
+			await initSamplers(this.ac)
+			this.startAudio()
 		}
 	};
 
@@ -130,6 +140,3 @@ class App {
 
 const app = new App();
 app.init();
-
-
-

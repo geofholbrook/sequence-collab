@@ -5,7 +5,11 @@ import { Seconds } from '../@types';
 
 const players: Array<Tone.Player> = [];
 
-(async function () {
+export async function initSamplers(ac: AudioContext) {
+	
+	// because it's a different instance of Tone?
+	Tone.setContext(ac)
+	
 	let index = 0
 	while (index < sampleFiles.length) {
 		const filename = sampleFiles[index++];
@@ -14,12 +18,9 @@ const players: Array<Tone.Player> = [];
 				const audioFile = require('./samples/' + filename);
 				setTimeout(reject, 1000);
 
-
 				const player = new Tone.Player(audioFile, () => {
 					resolve();
 				}).toDestination();
-
-				
 
 				players.push(player);
 			});
@@ -27,10 +28,9 @@ const players: Array<Tone.Player> = [];
 			console.log(filename, 'timed out');
 		}
 	}
-})();
+}
 
 export function playSample(ac: AudioContext, startTime: Seconds, sampleIndex: number, volumeDb: number = 0) {
-	
 	players[sampleIndex].set({volume: volumeDb - 9})
 	players[sampleIndex].start(startTime)
 }

@@ -3,8 +3,6 @@ import { ISynth } from '../../@types';
 
 import { faustModuleNames } from './faustModuleNames';
 
-const { monoDjembe } = require('./workletnodes/monoDjembe');
-
 // these live here, for now.
 const faustSynths = faustModuleNames.map(name => new FaustSynth(require(`./workletnodes/${name}`)[name], name))
 
@@ -15,3 +13,4 @@ export function getFaustSynths(): ISynth[] {
 		fn: (ac, time, pitch, volumeDb) => faustSynth.playNote(ac, time, pitch, volumeDb),
 	}));
 }
+

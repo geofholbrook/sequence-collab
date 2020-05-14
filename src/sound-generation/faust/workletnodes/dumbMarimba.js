@@ -897,11 +897,13 @@ let dumbMarimbaProcessorString = `
 
 const dspName = "dumbMarimba";
 
-// WAP factory or npm package module
-if (typeof module === "undefined") {
-    window.dumbMarimba = dumbMarimba;
-    window.FaustdumbMarimba = dumbMarimba;
-    window[dspName] = dumbMarimba;
-} else {
-    module.exports = { dumbMarimba };
-}
+export { dumbMarimba }
+
+// // WAP factory or npm package module
+// if (typeof module === "undefined") {
+//     window.dumbMarimba = dumbMarimba;
+//     window.FaustdumbMarimba = dumbMarimba;
+//     window[dspName] = dumbMarimba;
+// } else {
+//     module.exports = { dumbMarimba };
+// }
