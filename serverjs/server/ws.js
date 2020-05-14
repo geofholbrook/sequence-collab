@@ -14,7 +14,8 @@ function initWSApi() {
         if (msg.type !== 'MousePosition') {
             debug(msg);
         }
-        websocketServer.sendToAll(msg);
+        // disable this for now.
+        // websocketServer.sendToAll(msg);
     });
     websocketServer.onConnectionClosed(function (id) {
         delete users_1.onlineUsers[id];
