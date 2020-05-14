@@ -82,13 +82,15 @@ class App {
 	};
 
 	reportMousePosition(pos: IPoint) {
-		if (socketClient.connection.readyState === socketClient.connection.OPEN) {
-			socketClient.send({
-				user: this.store.getState().user,
-				type: 'MousePosition',
-				content: pos,
-			});
-		}
+		// disable for now
+		
+		// if (socketClient.connection.readyState === socketClient.connection.OPEN) {
+		// 	socketClient.send({
+		// 		user: this.store.getState().user,
+		// 		type: 'MousePosition',
+		// 		content: pos,
+		// 	});
+		// }
 	}
 
 	setSaveState(state: SaveState) {
