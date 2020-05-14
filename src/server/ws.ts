@@ -16,7 +16,8 @@ export function initWSApi() {
 			debug(msg)
 		}
 		
-		websocketServer.sendToAll(msg);
+		// disable this for now.
+		// websocketServer.sendToAll(msg);
 	});
 	
 	websocketServer.onConnectionClosed((id: string) => {
