@@ -22,6 +22,7 @@ import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
 import e from 'express';
 import { requestInviteLink } from '../../client/rest/requests';
+import { SessionStatus } from './SessionStatus';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -336,8 +337,3 @@ function Main(props: IMainProps) {
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
 
 
-function SessionStatus(props: {sessionInfo: ISession | null, user: string}) {
-	
-	
-	return <span></span>
-}

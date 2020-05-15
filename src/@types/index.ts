@@ -29,5 +29,5 @@ export interface ISession {
 
 export interface IOnlineUser {
     name: string;
-    session: ISession;
+    sessionId: string;
 }

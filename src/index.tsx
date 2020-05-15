@@ -53,7 +53,7 @@ class App {
 						})
 
 						if (this.inviteSessionId) {
-							const res = await requestSessionEntry(this.inviteSessionId) as IRequestSessionEntryResponse
+							const res = await requestSessionEntry(username, this.inviteSessionId) as IRequestSessionEntryResponse
 							console.log(res)
 
 							this.store.dispatch<IReduxLoadStateAction>({
@@ -149,6 +149,7 @@ class App {
 					break;
 
 				case 'SessionInfo':
+					console.log(message.content);
 					this.store.dispatch<ISetRootPropertyAction>({
 						type: 'SET_ROOT_PROPERTY',
 						propertyName: 'sessionInfo',

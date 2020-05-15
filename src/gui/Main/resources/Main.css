@@ -1,6 +1,10 @@
 
-header .guest-list {
+header .session-status {
     margin-left: 20px;
+}
+
+header .session-status .user-list {
+    color: orange;
 }
 
 .unsaved-alert {

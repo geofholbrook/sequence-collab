@@ -22,8 +22,8 @@ export async function requestInviteLink(hostUsername: string): Promise<IRequestI
 	return res as IRequestInviteLinkResponse
 }
 
-export async function requestSessionEntry(sessionId: string): Promise<IRequestSessionEntryResponse> {
-	const res = await doJsonPost('/request-session-entry', { sessionId })
+export async function requestSessionEntry(guest: string, sessionId: string): Promise<IRequestSessionEntryResponse> {
+	const res = await doJsonPost('/request-session-entry', { guest, sessionId })
 	return res as IRequestSessionEntryResponse
 }
 

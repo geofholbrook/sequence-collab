@@ -8,7 +8,7 @@ import {
 	ISignupResponse,
 } from '../@types';
 import { storageRoot } from './dataPath';
-import { createSession } from './session';
+import { createSession, handleLogoffForSession } from './session';
 import { maxUsers } from './config';
 
 import Debug from 'debug';
@@ -16,7 +16,7 @@ const debug = Debug('sj:server:users');
 
 import { promisify } from 'util';
 import { allowDuplicateLogins } from '../config';
-import { onlineUsers } from './storage';
+import { onlineUsers, sessions } from './storage';
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
 
@@ -40,18 +40,14 @@ export async function loginUser(params: ILoginParams): Promise<ILoginResponse> {
 	const users = await getUsers();
 
 	if (users.includes(params.name)) {
-		debug('user found.');
-
 		if (!allowDuplicateLogins && getLoggedInUsers().includes(params.name)) {
-			debug('user already logged in');
-			return {
-				success: false,
+		debug('user already logged in');
+		return {
+			success: false,
 				status: 'LoginRefused',
 				message: `${params.name} already logged in elsewhere`,
 			};
 		}
-
-		debug('logged in.')
 
 		doLoginUser(params.name);
 		return {
@@ -69,10 +65,25 @@ export async function loginUser(params: ILoginParams): Promise<ILoginResponse> {
 }
 
 function doLoginUser(name: string) {
+	const newSession = createSession(name);
+	sessions[newSession.id] = newSession;
+
 	onlineUsers[name] = {
 		name,
-		session: createSession(name),
+		sessionId: newSession.id
 	};
+	
+	debug(`${name} connected`)
+	debug('online users:', Object.keys(onlineUsers).length === 0 ? '<none>' : Object.keys(onlineUsers).join())
+}
+
+export function doLogoffUser(name: string) {
+	if (!onlineUsers[name]) return
+	handleLogoffForSession(name, onlineUsers[name].sessionId)
+	delete onlineUsers[name]
+
+	debug(`${name} disconnected.`)
+	debug('online users:', Object.keys(onlineUsers).length === 0 ? '<none>' : Object.keys(onlineUsers).join())
 }
 
 export async function signupUser(params: ISignupParams): Promise<ISignupResponse> {

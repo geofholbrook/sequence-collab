@@ -8,7 +8,7 @@ import { ILoginParams } from "../@types";
 
 import Debug from 'debug'
 import { serveSaveSceneRequest, serveLoadSceneRequest } from './scene';
-import { getInviteLink, getSessionEntry } from './session';
+import { getInviteLink, serveSessionEntryRequest } from './session';
 
 const debug = Debug('sj:server:rest')
 
@@ -49,7 +49,7 @@ export function initRestApi(): Promise<Express.Application> {
 		createGetRoute('/api/scene/load', serveLoadSceneRequest);
 
 		createGetRoute('/api/request-invite-link', getInviteLink) 
-		createPostRoute('/api/request-session-entry', getSessionEntry)
+		createPostRoute('/api/request-session-entry', serveSessionEntryRequest)
 
 		// ---------------------------------------------------------------------------
 		// route helpers
