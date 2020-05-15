@@ -20,6 +20,8 @@ import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
+import e from 'express';
+import { requestInviteLink } from '../../client/rest/requests';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -175,12 +177,31 @@ function Main(props: IMainProps) {
 				<Button icon onClick={props.onStartAudio}>
 					<Icon name="play" color="green" />
 				</Button>
+				
+				<Button icon floated="right" labelPosition="left"
+					onClick={async () => {
+						try {
+							const res = await requestInviteLink(props.userInfo.name)
+							if (!res.success) throw new Error(res.message)
+							await navigator.clipboard.writeText(res.link)
+							alert('invite link copied to clipboard')
+						} catch (e) {
+							alert('invite link request failed: ' + e.message)
+						}
+					}} 
+				>
+					Invite
+					<Icon name="user plus" />
+				</Button>
+				
 				<Button icon floated="right" onClick={() => props.rotate(1)}>
 					<Icon name="share" />
 				</Button>
 				<Button icon floated="right" onClick={() => props.rotate(-1)}>
 					<Icon name="reply" />
 				</Button>
+
+
 			</div>
 		);
 	}

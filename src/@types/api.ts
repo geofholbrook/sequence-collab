@@ -46,3 +46,14 @@ export interface ILoadSceneResponse {
     message: string;
     scene: IScene | null
 }
+
+export interface IRequestInviteLinkParams {
+    hostUsername: string
+}
+
+export interface IRequestInviteLinkResponse {
+    success: boolean;
+    status: 'ValidLink' | 'NoLinkGenerated';
+    message: string;
+    link: string;
+}
