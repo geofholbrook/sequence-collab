@@ -20,12 +20,13 @@ export const GUIConnected = connect(mapStateToGuiProps, mapDispatchToGuiProps)(G
 
 interface IGuiProps {
 	userInfo: { name: string };
+	inviteSessionId: string | null;
 
 	// callbacks
 	onStartAudio: () => void;
 	onStopAudio: () => void;
 	onMousePositionUpdate: (position: IPoint) => void;
-	onLogin: (username: string) => void;
+	onLogin: (username: string) => Promise<boolean>;
 
 	// dispatch mappings
 	setUser: (username: string) => void;
@@ -44,12 +45,11 @@ export function GUI(props: IGuiProps) {
 				const onlineUsers = await requestOnlineusers()
 				const devUsername = onlineUsers.includes('dev') ? 'dev2' : 'dev'
 
-
 				const res = await requestLogin(devUsername);
 
 				if (res.success) {
 					setUser(devUsername);
-					onLogin(devUsername);
+					onLogin(devUsername).then()
 					setScreen('Main');
 				}
 			})();
@@ -78,13 +78,13 @@ export function GUI(props: IGuiProps) {
 				return (
 					<Login
 						onLogin={async (uname: string) => {
-							props.setUser(uname);
-							props.onLogin(uname);
+							// props.setUser(uname);
+							await props.onLogin(uname);
 							setScreen('Main');
 						}}
 						onSignup={async (uname: string) => {
-							props.setUser(uname);
-							props.onLogin(uname);
+							// props.setUser(uname);
+							await props.onLogin(uname);
 							setScreen('Main');
 						}}
 					/>

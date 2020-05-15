@@ -11,6 +11,7 @@ export function mapStateToGuiProps(state: IReduxState) {
 		remoteMouse: state.remoteMouse
 	};
 }
+
 export function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {
 	return {
 		setUser: async (username: string) => {

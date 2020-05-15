@@ -7,7 +7,9 @@ import { storageRoot } from './dataPath';
 import { ILoginParams } from "../@types";
 
 import Debug from 'debug'
-import { saveScene, loadScene } from './scene';
+import { serveSaveSceneRequest, serveLoadSceneRequest } from './scene';
+import { getInviteLink, getSessionEntry } from './session';
+
 const debug = Debug('sj:server:rest')
 
 const app = express();
@@ -43,9 +45,11 @@ export function initRestApi(): Promise<Express.Application> {
 		createPostRoute('/api/signup', signupUser);
 		createGetRoute('/api/users/online', getLoggedInUsers)
 
-		createPostRoute('/api/scene/save', saveScene, false);
-		createGetRoute('/api/scene/load', loadScene);
+		createPostRoute('/api/scene/save', serveSaveSceneRequest, false);
+		createGetRoute('/api/scene/load', serveLoadSceneRequest);
 
+		createGetRoute('/api/request-invite-link', getInviteLink) 
+		createPostRoute('/api/request-session-entry', getSessionEntry)
 
 		// ---------------------------------------------------------------------------
 		// route helpers

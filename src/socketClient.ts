@@ -9,7 +9,7 @@ export let socketClient: MessageClient<IMessage>;
 
 export function initSocketClient(username: string) {
     socketClient = new MessageClient<IMessage>(serverURL, {
-        identifier: username
+        identifier: username,
     });
 }
 

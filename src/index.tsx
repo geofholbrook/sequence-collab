@@ -1,11 +1,12 @@
+import querystring from 'querystring';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { GUIConnected } from './gui/Gui';
 import { Provider } from 'react-redux';
-import { createAppStore, ISetRootPropertyAction, IReduxAction } from './redux';
-import { saveWorkingScene } from './client/workingScene';
+import { createAppStore, ISetRootPropertyAction, IReduxAction, IReduxLoadStateAction, IReduxSetUserAction } from './redux';
+import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
 import { saveInterval } from './config';
-import { IMessage, ISynthNote, SaveState } from './@types';
+import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { Scheduler } from './sound-generation/Scheduler/Scheduler';
@@ -14,6 +15,7 @@ import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 import { initSamplers } from './sound-generation/sampler';
+import { requestSessionEntry } from './client/rest/requests';
 
 class App {
 	store = createAppStore();
@@ -22,7 +24,11 @@ class App {
 	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;
 
+	inviteSessionId: string | null = null;
+
 	init() {
+		this.checkForInviteLink();
+
 		this.initGUI();
 
 		this.store.subscribe(() => {
@@ -31,18 +37,39 @@ class App {
 	}
 
 	initGUI() {
-		enableUseWatch();
+		// enableUseWatch();
 
 		ReactDOM.render(
 			<Provider store={this.store}>
 				<GUIConnected
 					onStartAudio={() => this.startAudio()}
 					onStopAudio={() => this.stopAudio()}
-					onMousePositionUpdate={(pos) => this.reportMousePosition(pos)}
-					onLogin={(username: string) => {
+					onMousePositionUpdate={(pos: IPoint) => this.reportMousePosition(pos)}
+					onLogin={async (username: string) => {
+						
+						this.store.dispatch<IReduxSetUserAction>({
+							type: 'SET_USER',
+							user: username
+						})
+
+						if (this.inviteSessionId) {
+							const res = await requestSessionEntry(this.inviteSessionId) as IRequestSessionEntryResponse
+							console.log(res)
+
+							this.store.dispatch<IReduxLoadStateAction>({
+								type: "LOAD_STATE",
+								state: res.scene!.reduxState
+							})
+						} else {
+							await loadWorkingScene(this.store)
+						}
+						
 						initSocketClient(username);
 						socketClient.onMessage((message) => this.handleServerMessage(message));
+
+						return true
 					}}
+					inviteSessionId={this.inviteSessionId}
 				/>
 			</Provider>,
 			document.getElementById('root'),
@@ -57,12 +84,12 @@ class App {
 			this.ac = new AudioContext();
 
 			if (!this.ac.audioWorklet) {
-				throw new Error('CONTEXT MISSING AUDIOWORKLET')
+				throw new Error('CONTEXT MISSING AUDIOWORKLET');
 			}
 
 			Tone.setContext(this.ac);
 			this.scheduler.setAudioContext(this.ac);
-			
+
 			synths.forEach((synth) => synth.init && synth.init(this.ac));
 
 			this.scheduler.onSchedule((notes) => {
@@ -72,8 +99,8 @@ class App {
 				});
 			});
 
-			await initSamplers(this.ac)
-			this.startAudio()
+			await initSamplers(this.ac);
+			this.startAudio();
 		}
 	};
 
@@ -83,7 +110,6 @@ class App {
 
 	reportMousePosition(pos: IPoint) {
 		// disable for now
-		
 		// if (socketClient.connection.readyState === socketClient.connection.OPEN) {
 		// 	socketClient.send({
 		// 		user: this.store.getState().user,
@@ -101,6 +127,16 @@ class App {
 		});
 	}
 
+	checkForInviteLink() {
+		const queryRaw = window.location.search;
+		if (!queryRaw) return;
+		const query = querystring.parse(queryRaw.slice(1)); // remove leading '?' before parse
+
+		if ('invite' in query) {
+			this.inviteSessionId = query.invite as string
+		}
+	}
+
 	handleServerMessage(message: IMessage) {
 		if (message.user !== this.store.getState().user) {
 			switch (message.type) {
@@ -110,6 +146,14 @@ class App {
 						propertyName: 'remoteMouse',
 						value: message.content,
 					});
+					break;
+
+				case 'SessionInfo':
+					this.store.dispatch<ISetRootPropertyAction>({
+						type: 'SET_ROOT_PROPERTY',
+						propertyName: 'sessionInfo',
+						value: message.content
+					})
 					break;
 
 				case 'ReduxAction':

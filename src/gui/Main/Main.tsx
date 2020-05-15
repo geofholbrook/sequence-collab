@@ -4,7 +4,7 @@ import { Button, Icon } from 'semantic-ui-react';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
 
-import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties } from '../../@types';
+import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties, ISession } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
@@ -25,6 +25,7 @@ import { requestInviteLink } from '../../client/rest/requests';
 
 export interface IMainProps {
 	userInfo: { name: string };
+	sessionInfo: ISession | null;
 	saveState: SaveState;
 
 	lanes: ILane[];
@@ -98,30 +99,32 @@ function Main(props: IMainProps) {
 
 	function handleManualInstrumentChange(laneId: string, synthName: string) {
 		props.setLaneProperty(laneId, 'synthName', synthName);
-		props.setLaneProperty(laneId, 'color', getColorFromString(synthName))
+		props.setLaneProperty(laneId, 'color', getColorFromString(synthName));
 	}
 
 	function handleManualAddDrumLane() {
 		props.addLane(newLaneForSynth(getNextSynth()), selectedLaneId);
 
 		function getNextSynth(): string {
-			const prevDrumSynthName = drumSelected()
-			if (!prevDrumSynthName) return drumSynths[0].name
+			const prevDrumSynthName = drumSelected();
+			if (!prevDrumSynthName) return drumSynths[0].name;
 
 			if (cycleDrumSynthsWhenAdding) {
-				const prevSynthIndex = drumSynths.findIndex(synth => synth.name === prevDrumSynthName)
+				const prevSynthIndex = drumSynths.findIndex(
+					(synth) => synth.name === prevDrumSynthName,
+				);
 				return drumSynths[(prevSynthIndex + 1) % drumSynths.length].name;
 			} else {
-				return prevDrumSynthName
+				return prevDrumSynthName;
 			}
 		}
 
 		function drumSelected() {
-			if (!selectedLaneId) return null
-			const lane = findLane(selectedLaneId)
-			if (!lane) return null // shouldn't happen
-			if (lane.laneType !== 'SingleNoteLane') return null
-			return lane.synthName
+			if (!selectedLaneId) return null;
+			const lane = findLane(selectedLaneId);
+			if (!lane) return null; // shouldn't happen
+			if (lane.laneType !== 'SingleNoteLane') return null;
+			return lane.synthName;
 		}
 	}
 
@@ -177,33 +180,36 @@ function Main(props: IMainProps) {
 				<Button icon onClick={props.onStartAudio}>
 					<Icon name="play" color="green" />
 				</Button>
-				
-				<Button icon floated="right" labelPosition="left"
-					onClick={async () => {
-						try {
-							const res = await requestInviteLink(props.userInfo.name)
-							if (!res.success) throw new Error(res.message)
-							await navigator.clipboard.writeText(res.link)
-							alert('invite link copied to clipboard')
-						} catch (e) {
-							alert('invite link request failed: ' + e.message)
-						}
-					}} 
-				>
+
+				<Button icon floated="right" labelPosition="left" onClick={handleInviteButton}>
 					Invite
 					<Icon name="user plus" />
 				</Button>
-				
+
 				<Button icon floated="right" onClick={() => props.rotate(1)}>
 					<Icon name="share" />
 				</Button>
 				<Button icon floated="right" onClick={() => props.rotate(-1)}>
 					<Icon name="reply" />
 				</Button>
-
-
 			</div>
 		);
+	}
+
+	async function handleInviteButton() {
+		try {
+			const res = await requestInviteLink(props.userInfo.name);
+			if (!res.success) throw new Error(res.message);
+			console.log(res);
+
+			// replace domain to current domain (so that localhost works too)
+			const querystring = res.link!.split('?')[1];
+			const link = window.location.origin + '?' + querystring;
+			await navigator.clipboard.writeText(link);
+			alert('invite link copied to clipboard');
+		} catch (e) {
+			alert('invite link request failed: ' + e.message);
+		}
 	}
 
 	function renderLane(lane: ILane, laneIndex: number) {
@@ -279,17 +285,19 @@ function Main(props: IMainProps) {
 	}
 
 	return (
-		<div className="Screen" onMouseMove={handleMouseMove}>
+		<div className="Screen MainScreen" onMouseMove={handleMouseMove}>
 			<header>
 				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
+				<SessionStatus sessionInfo={props.sessionInfo} user={props.userInfo.name} />
 				<SaveStateDisplay saveState={props.saveState} />
 			</header>
 
-			<div className="content foo" 
+			<div
+				className="content foo"
 				ref={contentDivRef}
-				onClick={e => {
+				onClick={(e) => {
 					if ((e.target as HTMLElement).className.split(' ').includes('content')) {
-						setSelectedLaneId(undefined)
+						setSelectedLaneId(undefined);
 					}
 				}}
 			>
@@ -326,3 +334,10 @@ function Main(props: IMainProps) {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
+
+
+function SessionStatus(props: {sessionInfo: ISession | null, user: string}) {
+	
+	
+	return <span></span>
+}

@@ -22,10 +22,16 @@ import { initialState } from '../initialState';
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
-export async function saveScene(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
-	const path = `/users/${params.user}/scenes/${params.scene.name}.scene`;
+export function getScenePath(user: string, sceneName: string) {
+	return `/users/${user}/scenes/${sceneName}.scene`;
+
+}
+
+export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
+	const path = getScenePath(params.user, params.scene.name);
+
 	try {
-		writeFile(storageRoot + path, JSON.stringify(params.scene, null, 4));
+		await saveScene(path, params.scene);
 		return {
 			success: true,
 			status: 'Saved',
@@ -40,12 +46,22 @@ export async function saveScene(params: ISaveSceneParams): Promise<ISaveSceneRes
 	}
 }
 
-export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneResponse> {
-	const path = `/users/${params.user}/scenes/${params.sceneName}.scene`;
+export async function saveScene(path: string, scene: IScene) {
+	return writeFile(storageRoot + path, JSON.stringify(scene, null, 4));
+}
+
+export async function loadScene(path: string) {
+	const buffer = await readFile(storageRoot + path);
+	const original = JSON.parse(buffer.toString());
+	const scene = backwardCompat(original);
+
+	return scene;
+}
+
+export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<ILoadSceneResponse> {
+	const path = getScenePath(params.user, params.sceneName);
 	try {
-		const buffer = await readFile(storageRoot + path);
-		const original = JSON.parse(buffer.toString());
-		const scene = backwardCompat(original);
+		const scene = await loadScene(path);
 
 		return {
 			success: true,
@@ -62,6 +78,8 @@ export async function loadScene(params: ILoadSceneParams): Promise<ILoadSceneRes
 		};
 	}
 }
+
+
 
 function backwardCompat(rawScene: any): IScene {
 	if (rawScene.version < '0.2.1') {

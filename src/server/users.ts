@@ -1,5 +1,4 @@
 import fs from 'fs';
-import { IOnlineUser } from '../@types';
 import {
 	ICreateUserParams,
 	ICreateUserResponse,
@@ -17,10 +16,9 @@ const debug = Debug('sj:server:users');
 
 import { promisify } from 'util';
 import { allowDuplicateLogins } from '../config';
+import { onlineUsers } from './storage';
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
-
-export const onlineUsers: { [index: string]: IOnlineUser } = {};
 
 /**
  * all existing users.

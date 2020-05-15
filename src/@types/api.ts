@@ -55,5 +55,15 @@ export interface IRequestInviteLinkResponse {
     success: boolean;
     status: 'ValidLink' | 'NoLinkGenerated';
     message: string;
-    link: string;
+    link?: string;
+}
+
+export interface IRequestSessionEntryParams {
+    sessionId: string;
+}
+
+export interface IRequestSessionEntryResponse {
+    success: boolean;
+    message: string;
+    scene?: IScene;
 }

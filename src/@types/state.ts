@@ -6,7 +6,7 @@
  *      3. update backwardCompat function
  */
 
-import { PropTime } from "./index";
+import { PropTime, ISession } from "./index";
 import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base";
 import { ILaneData } from "@musicenviro/ui-elements";
 
@@ -22,6 +22,7 @@ export type SaveState = 'Clean' | 'Dirty' | 'WaitingForSave';
 
 export interface IReduxState extends ISavedState {
     user: string;
+    sessionInfo?: ISession;
     remoteMouse: IPoint | null;
 	saveState: SaveState;
 }

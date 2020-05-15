@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { ILoginResponse, ISignupResponse, IRequestInviteLinkResponse } from "../../@types";
+import { ILoginResponse, ISignupResponse, IRequestInviteLinkResponse, IRequestSessionEntryResponse } from "../../@types";
 import { local, nodeDropletIP } from '../../config';
 
 const apiURL = local ? 'http://localhost:4040/api' : `https://${nodeDropletIP}/api`;
@@ -20,6 +20,11 @@ export async function requestOnlineusers(): Promise<string[]> {
 export async function requestInviteLink(hostUsername: string): Promise<IRequestInviteLinkResponse> {
 	const res = await doJsonGet('/request-invite-link', { hostUsername })
 	return res as IRequestInviteLinkResponse
+}
+
+export async function requestSessionEntry(sessionId: string): Promise<IRequestSessionEntryResponse> {
+	const res = await doJsonPost('/request-session-entry', { sessionId })
+	return res as IRequestSessionEntryResponse
 }
 
 export async function doJsonPost<T>(path: string, payload: object): Promise<T> {

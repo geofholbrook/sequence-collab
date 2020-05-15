@@ -3,8 +3,8 @@ import './Login.css';
 import { requestLogin, requestSignup } from '../../client/rest/requests';
 
 export function Login(props: { 
-	onLogin: (username: string, password: string) => void;
-	onSignup: (username: string, password: string) => void;
+	onLogin: (username: string) => void;
+	onSignup: (username: string) => void;
  }) {
 	let password = '';
 
@@ -25,8 +25,9 @@ export function Login(props: {
 			setUsernameRequired(true);
 		} else {
 			const res = await requestLogin(username);
+
 			if (res.success) {
-				props.onLogin(username, password);
+				props.onLogin(username);
 			} else {
 				setUnknownUser(true);
 			}
@@ -41,14 +42,13 @@ export function Login(props: {
 			setUsernameRequired(false);
 			const res = await requestSignup(username);
 			if (res.success) {
-				props.onSignup(username, password)
+				props.onSignup(username)
 			} else {
 				switch (res.status) {
 					case "UserExists": 
 						setUserExists(true);
 				}
 			}
-
 		}
 	}
 
