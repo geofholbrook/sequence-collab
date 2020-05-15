@@ -105,6 +105,8 @@ export async function signupUser(params: ISignupParams): Promise<ISignupResponse
 	}
 
 	await doSignup(params);
+	doLoginUser(params.name);
+
 	return {
 		success: true,
 		status: 'SignedUp',

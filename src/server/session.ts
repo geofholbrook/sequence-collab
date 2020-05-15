@@ -78,12 +78,15 @@ export function handleLogoffForSession(loggingOffUser: string, sessionId: string
 
     const session = sessions[sessionId]
     if (session.host === loggingOffUser) {
+        console.log(session)
+
         if (session.guests.length === 0) {
             delete sessions[sessionId];
         } else {
             // if host leaves, make one of the guests the host
-            session.host === session.guests.shift()
+            session.host = session.guests.shift()!
         }
+        console.log({after: session})
     } else {
         session.guests = session.guests.filter(guest => guest === loggingOffUser)
     }

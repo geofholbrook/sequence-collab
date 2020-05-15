@@ -54,12 +54,16 @@ class App {
 
 						if (this.inviteSessionId) {
 							const res = await requestSessionEntry(username, this.inviteSessionId) as IRequestSessionEntryResponse
-							console.log(res)
-
-							this.store.dispatch<IReduxLoadStateAction>({
-								type: "LOAD_STATE",
-								state: res.scene!.reduxState
-							})
+							
+							if (res.success) {
+								this.store.dispatch<IReduxLoadStateAction>({
+									type: "LOAD_STATE",
+									state: res.scene!.reduxState
+								})
+							} else {
+								alert(res.message);
+								await loadWorkingScene(this.store)
+							}
 						} else {
 							await loadWorkingScene(this.store)
 						}
