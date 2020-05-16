@@ -50,46 +50,78 @@ var util_1 = require("util");
 var initialState_1 = require("../initialState");
 var writeFile = util_1.promisify(fs.writeFile);
 var readFile = util_1.promisify(fs.readFile);
-function saveScene(params) {
+function getScenePath(user, sceneName) {
+    return "/users/" + user + "/scenes/" + sceneName + ".scene";
+}
+exports.getScenePath = getScenePath;
+function serveSaveSceneRequest(params) {
     return __awaiter(this, void 0, void 0, function () {
-        var path;
+        var path, e_1;
         return __generator(this, function (_a) {
-            path = "/users/" + params.user + "/scenes/" + params.scene.name + ".scene";
-            try {
-                writeFile(dataPath_1.storageRoot + path, JSON.stringify(params.scene, null, 4));
-                return [2 /*return*/, {
-                        success: true,
-                        status: 'Saved',
-                        message: "saved scene to " + path,
-                    }];
+            switch (_a.label) {
+                case 0:
+                    path = getScenePath(params.user, params.scene.name);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, saveScene(path, params.scene)];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/, {
+                            success: true,
+                            status: 'Saved',
+                            message: "saved scene to " + path,
+                        }];
+                case 3:
+                    e_1 = _a.sent();
+                    return [2 /*return*/, {
+                            success: false,
+                            status: 'NotSaved',
+                            message: e_1.message,
+                        }];
+                case 4: return [2 /*return*/];
             }
-            catch (e) {
-                return [2 /*return*/, {
-                        success: false,
-                        status: 'NotSaved',
-                        message: e.message,
-                    }];
-            }
-            return [2 /*return*/];
+        });
+    });
+}
+exports.serveSaveSceneRequest = serveSaveSceneRequest;
+function saveScene(path, scene) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, writeFile(dataPath_1.storageRoot + path, JSON.stringify(scene, null, 4))];
         });
     });
 }
 exports.saveScene = saveScene;
-function loadScene(params) {
+function loadScene(path) {
     return __awaiter(this, void 0, void 0, function () {
-        var path, buffer, original, scene, e_1;
+        var buffer, original, scene;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    path = "/users/" + params.user + "/scenes/" + params.sceneName + ".scene";
-                    _a.label = 1;
+                case 0: return [4 /*yield*/, readFile(dataPath_1.storageRoot + path)];
                 case 1:
-                    _a.trys.push([1, 3, , 4]);
-                    return [4 /*yield*/, readFile(dataPath_1.storageRoot + path)];
-                case 2:
                     buffer = _a.sent();
                     original = JSON.parse(buffer.toString());
                     scene = backwardCompat(original);
+                    return [2 /*return*/, scene];
+            }
+        });
+    });
+}
+exports.loadScene = loadScene;
+function serveLoadSceneRequest(params) {
+    return __awaiter(this, void 0, void 0, function () {
+        var path, scene, e_2;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    path = getScenePath(params.user, params.sceneName);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, loadScene(path)];
+                case 2:
+                    scene = _a.sent();
                     return [2 /*return*/, {
                             success: true,
                             status: 'Loaded',
@@ -97,11 +129,11 @@ function loadScene(params) {
                             scene: scene,
                         }];
                 case 3:
-                    e_1 = _a.sent();
+                    e_2 = _a.sent();
                     return [2 /*return*/, {
                             success: false,
                             status: 'NotLoaded',
-                            message: e_1.message,
+                            message: e_2.message,
                             scene: null,
                         }];
                 case 4: return [2 /*return*/];
@@ -109,7 +141,7 @@ function loadScene(params) {
         });
     });
 }
-exports.loadScene = loadScene;
+exports.serveLoadSceneRequest = serveLoadSceneRequest;
 function backwardCompat(rawScene) {
     if (rawScene.version < '0.2.1') {
         return {

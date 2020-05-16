@@ -47,6 +47,7 @@ var users_1 = require("./users");
 var dataPath_1 = require("./dataPath");
 var debug_1 = __importDefault(require("debug"));
 var scene_1 = require("./scene");
+var session_1 = require("./session");
 var debug = debug_1.default('sj:server:rest');
 var app = express_1.default();
 function initRestApi() {
@@ -86,8 +87,10 @@ function initRestApi() {
         }); });
         createPostRoute('/api/signup', users_1.signupUser);
         createGetRoute('/api/users/online', users_1.getLoggedInUsers);
-        createPostRoute('/api/scene/save', scene_1.saveScene, false);
-        createGetRoute('/api/scene/load', scene_1.loadScene);
+        createPostRoute('/api/scene/save', scene_1.serveSaveSceneRequest, false);
+        createGetRoute('/api/scene/load', scene_1.serveLoadSceneRequest);
+        createGetRoute('/api/request-invite-link', session_1.getInviteLink);
+        createPostRoute('/api/request-session-entry', session_1.serveSessionEntryRequest);
         // ---------------------------------------------------------------------------
         // route helpers
         // ---------------------------------------------------------------------------

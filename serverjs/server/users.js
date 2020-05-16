@@ -47,9 +47,9 @@ var debug_1 = __importDefault(require("debug"));
 var debug = debug_1.default('sj:server:users');
 var util_1 = require("util");
 var config_2 = require("../config");
+var storage_1 = require("./storage");
 var readdir = util_1.promisify(fs_1.default.readdir);
 var mkdir = util_1.promisify(fs_1.default.mkdir);
-exports.onlineUsers = {};
 /**
  * all existing users.
  */
@@ -72,7 +72,7 @@ function getUsers() {
 }
 exports.getUsers = getUsers;
 function getLoggedInUsers() {
-    return Object.keys(exports.onlineUsers);
+    return Object.keys(storage_1.onlineUsers);
 }
 exports.getLoggedInUsers = getLoggedInUsers;
 function loginUser(params) {
@@ -84,7 +84,6 @@ function loginUser(params) {
                 case 1:
                     users = _a.sent();
                     if (users.includes(params.name)) {
-                        debug('user found.');
                         if (!config_2.allowDuplicateLogins && getLoggedInUsers().includes(params.name)) {
                             debug('user already logged in');
                             return [2 /*return*/, {
@@ -93,7 +92,6 @@ function loginUser(params) {
                                     message: params.name + " already logged in elsewhere",
                                 }];
                         }
-                        debug('logged in.');
                         doLoginUser(params.name);
                         return [2 /*return*/, {
                                 success: true,
@@ -112,11 +110,24 @@ function loginUser(params) {
 }
 exports.loginUser = loginUser;
 function doLoginUser(name) {
-    exports.onlineUsers[name] = {
+    var newSession = session_1.createSession(name);
+    storage_1.sessions[newSession.id] = newSession;
+    storage_1.onlineUsers[name] = {
         name: name,
-        session: session_1.createSession(name),
+        sessionId: newSession.id
     };
+    debug(name + " connected");
+    debug('online users:', Object.keys(storage_1.onlineUsers).length === 0 ? '<none>' : Object.keys(storage_1.onlineUsers).join());
 }
+function doLogoffUser(name) {
+    if (!storage_1.onlineUsers[name])
+        return;
+    session_1.handleLogoffForSession(name, storage_1.onlineUsers[name].sessionId);
+    delete storage_1.onlineUsers[name];
+    debug(name + " disconnected.");
+    debug('online users:', Object.keys(storage_1.onlineUsers).length === 0 ? '<none>' : Object.keys(storage_1.onlineUsers).join());
+}
+exports.doLogoffUser = doLogoffUser;
 function signupUser(params) {
     return __awaiter(this, void 0, void 0, function () {
         var users;
@@ -142,6 +153,7 @@ function signupUser(params) {
                     return [4 /*yield*/, doSignup(params)];
                 case 2:
                     _a.sent();
+                    doLoginUser(params.name);
                     return [2 /*return*/, {
                             success: true,
                             status: 'SignedUp',

@@ -1,5 +1,5 @@
 export const faustModuleNames = [
 'dumbMarimba',
-'lowSquare',
+'filteredSaw',
 'monoDjembe',
 ]

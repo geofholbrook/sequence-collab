@@ -5,7 +5,7 @@ var config_1 = require("./config");
 var serverURL = config_1.local ? 'ws://localhost:8080' : "wss://" + config_1.nodeDropletIP + "/ws";
 function initSocketClient(username) {
     exports.socketClient = new socket_messaging_1.MessageClient(serverURL, {
-        identifier: username
+        identifier: username,
     });
 }
 exports.initSocketClient = initSocketClient;
