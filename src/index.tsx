@@ -153,7 +153,7 @@ class App {
 					break;
 
 				case 'SessionInfo':
-					console.log(message.content);
+					// console.log(message.content);
 					this.store.dispatch<ISetRootPropertyAction>({
 						type: 'SET_ROOT_PROPERTY',
 						propertyName: 'sessionInfo',

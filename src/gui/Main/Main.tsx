@@ -51,7 +51,7 @@ function Main(props: IMainProps) {
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		console.log('MAIN MOUNTING');
+		// console.log('MAIN MOUNTING');
 		const mouseTimer = setInterval(reportMousePosition, 100);
 		return () => {
 			clearInterval(mouseTimer);

@@ -897,11 +897,13 @@ let filteredSawProcessorString = `
 
 const dspName = "filteredSaw";
 
+export { filteredSaw }
+
 // WAP factory or npm package module
-if (typeof module === "undefined") {
-    window.filteredSaw = filteredSaw;
-    window.FaustfilteredSaw = filteredSaw;
-    window[dspName] = filteredSaw;
-} else {
-    module.exports = { filteredSaw };
-}
+// if (typeof module === "undefined") {
+//     window.filteredSaw = filteredSaw;
+//     window.FaustfilteredSaw = filteredSaw;
+//     window[dspName] = filteredSaw;
+// } else {
+//     module.exports = { filteredSaw };
+// }
