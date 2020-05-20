@@ -88,6 +88,6 @@ export function handleLogoffForSession(loggingOffUser: string, sessionId: string
         }
         console.log({after: session})
     } else {
-        session.guests = session.guests.filter(guest => guest === loggingOffUser)
+        session.guests = session.guests.filter(guest => guest !== loggingOffUser)
     }
 }
