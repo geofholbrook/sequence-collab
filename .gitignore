@@ -7,10 +7,12 @@
 
 # testing
 /coverage
+/public/static/wasm
 
 # production
 /build
 /serverjs
+
 
 # misc
 .DS_Store

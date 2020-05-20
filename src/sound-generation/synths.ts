@@ -19,8 +19,6 @@ export const drumSynths: ISynth[] = [
 ];
 
 export const noteSynths: ISynth[] = [
-	{ name: 'bass', fn: playBass },
-	{ name: 'treble', fn: playBass2 },
 	...getFaustSynths()
 ]
 
