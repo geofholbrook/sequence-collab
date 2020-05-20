@@ -29,7 +29,7 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 			/>
 
 			<div className="lane-panel lane-whitespace">
-				<ViewContext.Provider value={viewMode}>
+				<ViewContext.Provider value={[viewMode, setViewMode]}>
 					{props.children /* probably just one element */}
 				</ViewContext.Provider>
 			</div>

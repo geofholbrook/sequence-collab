@@ -27,9 +27,9 @@ export const LaneControls = connect(
 						<td className="lane-whitespace">
 							<div className="lane-whitespace" style={{ display: 'flex' }}>
 								{renderAccordionIcon(
-									props.viewMode!,
-									props.onExpand!,
-									props.onCollapse!,
+									props.viewMode,
+									props.onExpand || (() => {}),
+									props.onCollapse || (() => {}),
 								)}
 								<VolumeKnob
 									initialDb={props.volumeDb}
@@ -70,29 +70,28 @@ export const LaneControls = connect(
 	);
 });
 
+// replace with wrench icon
 function renderAccordionIcon(viewMode: ViewMode, onExpand: () => void, onCollapse: () => void) {
 	switch (viewMode) {
 		case 'Collapsed':
 			return (
 				<Icon
-					fitted
-					style={{ width: 20, height: 30 }}
+					style={{ color: '#444', paddingTop: 3, width: 20, height: 30 }}
 					onClick={onExpand}
-					name="caret right"
+					name="wrench" // "caret right"
 				/>
 			);
 
 		case 'Expanded':
 			return (
 				<Icon
-					fitted
-					style={{ width: 20, height: 30 }}
+					style={{ color: '#444', paddingTop: 3, width: 20, height: 30 }}
 					onClick={onCollapse}
-					name="caret down"
+					name="wrench" // "caret down"
 				/>
 			);
 
 		default:
-			return <div className="lane-whitespace" style={{ width: 20 }} />;
+			return <div className="lane-whitespace" style={{ width: 23 }} />;
 	}
 }

@@ -248,7 +248,7 @@ function Main(props: IMainProps) {
 
 					return (
 						<ViewContext.Consumer>
-							{(viewMode) =>
+							{([viewMode, setViewMode]) =>
 								viewMode === 'Expanded' ? (
 									<DiatonicPianoRoll
 										id={lane.laneId}
@@ -259,7 +259,7 @@ function Main(props: IMainProps) {
 										onCellChange={handlePianoRollCellChange}
 									/>
 								) : (
-									getPreviewForRollLane(rollLane)
+									getPreviewForRollLane(rollLane, () => setViewMode!('Expanded'))
 								)
 							}
 						</ViewContext.Consumer>
