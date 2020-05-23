@@ -92,7 +92,7 @@ function backwardCompat(rawScene: any): IScene {
 			reduxState: {
 				...getStateToSave(initialState),
 				...rawScene.reduxState,
-				masterRhythmTree: initialState.masterRhythmTree,
+				// masterRhythmTree: initialState.masterRhythmTree,
 			},
 			version: currentSceneVersion,
 		}
