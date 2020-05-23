@@ -1,13 +1,10 @@
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
-import { currentSceneVersion, IScene, ISavedState } from '../@types';
+import { currentSceneVersion, IScene, ISavedState, getStateToSave } from '../@types';
 import { AppStore } from '../redux';
 import { initialState } from "../initialState";
 
 export async function saveWorkingScene(store: AppStore) {
-	
-	const stateToSave: ISavedState = {
-		lanes: store.getState().lanes,
-	};
+	const stateToSave = getStateToSave(store.getState())
 
 	store.dispatch({
 		type: 'SET_ROOT_PROPERTY',

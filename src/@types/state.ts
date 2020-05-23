@@ -9,12 +9,14 @@
 import { PropTime, ISession } from "./index";
 import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base";
 import { ILaneData } from "@musicenviro/ui-elements";
+import { IRhythmTree } from "@musicenviro/ui-elements";
 
 export type LaneProperties = 'synthName' | 'loopTimes' | 'muted' | 'volumeDb' | 'color';
 
-export const currentSceneVersion = "0.2.3";
+export const currentSceneVersion = "0.2.4";
 
 export interface ISavedState {
+    masterRhythmTree: IRhythmTree,
     lanes: Array<IDrumLane | IRollLane>;
 }
 
@@ -25,6 +27,13 @@ export interface IReduxState extends ISavedState {
     sessionInfo?: ISession;
     remoteMouse: IPoint | null;
 	saveState: SaveState;
+}
+
+export function getStateToSave(state: IReduxState): ISavedState {
+    return {
+        masterRhythmTree: state.masterRhythmTree,
+        lanes: state.lanes
+    }
 }
 
 export type LaneType = 'SingleNoteLane' | 'DiatonicPianoRoll';
@@ -40,11 +49,13 @@ export interface ILane {
 export interface IDrumLane extends ILane {
     laneType: 'SingleNoteLane',
     color: string;
+    rhythmTree: IRhythmTree;
     loopTimes: PropTime[];
 }
 
 export interface IRollLane extends ILane {
     laneType: 'DiatonicPianoRoll',
+    rhythmTree: IRhythmTree;
     rows: ILaneData[],
     stepRange: IRange<DiatonicStep>;
 	zeroPitch: MidiPitch; // the pitch class of zeroPitch is the key

@@ -7,6 +7,7 @@ export function mapStateToMainProps(state: IReduxState) {
 		},
 		sessionInfo: state.sessionInfo || null,
 		saveState: state.saveState,
+		masterRhythmTree: state.masterRhythmTree,
 		lanes: state.lanes,
 		remoteMouse: state.remoteMouse,
 	};

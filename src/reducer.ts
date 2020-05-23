@@ -10,6 +10,7 @@ import {
 	IReduxLoadStateAction,
 	IReduxSetUserAction,
 	IRotateAction,
+	ISetMasterTreeAction,
 } from './redux';
 import { initialState } from './initialState';
 
@@ -33,6 +34,15 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 					[action.propertyName]: action.value,
 				};
 			}
+
+			case 'SET_MASTER_TREE': {
+				const action = _action as ISetMasterTreeAction;
+				return {
+					...state,
+					masterRhythmTree: action.tree
+				}
+			}
+			
 			case 'SET_CELL': {
 				const action = _action as IReduxSetCellAction;
 				return {

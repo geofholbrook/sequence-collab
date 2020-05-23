@@ -13,8 +13,16 @@ header .session-status .user-list {
     margin-left: 50px;
 }
 
-.top-buttons {
+.main-top-panel {
     margin: auto;
     width: 860px;
     margin-top: 5px;
+}
+
+.main-top-panel .rhythm-tree-editor {
+    margin-left: 260px;
+    margin-right: 50px;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    
 }

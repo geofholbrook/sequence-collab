@@ -54,7 +54,7 @@
     "@babel/core": "7.9.0",
     "@geof/socket-messaging": "^0.5.4",
     "@musicenviro/base": "^0.2.8",
-    "@musicenviro/ui-elements": "^0.5.12",
+    "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
     "@svgr/webpack": "4.3.3",
     "@types/cors": "^2.8.6",
     "@types/debug": "^4.1.5",

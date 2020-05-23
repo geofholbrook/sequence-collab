@@ -1,4 +1,4 @@
-import { makeDefaultLanes } from '@musicenviro/ui-elements';
+import { makeDefaultLanes, IRhythmTree } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
 import { IMessage, ILane, IReduxState, ISavedState, LaneProperties } from './@types';
@@ -11,6 +11,7 @@ export interface IReduxAction {
 		| 'SET_CELL'
 		| 'LOAD_STATE'
 		| 'SET_USER'
+		| 'SET_MASTER_TREE'
 		| 'ADD_LANE'
 		| 'DELETE_LANE'
 		| 'ROTATE'
@@ -27,6 +28,11 @@ export interface ISetRootPropertyAction extends IReduxAction {
 export interface IRotateAction extends IReduxAction {
 	type: 'ROTATE',
 	amount: number
+}
+
+export interface ISetMasterTreeAction extends IReduxAction {
+	type: 'SET_MASTER_TREE',
+	tree: IRhythmTree
 }
 
 export interface IReduxSetCellAction extends IReduxAction {

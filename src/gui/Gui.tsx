@@ -12,6 +12,14 @@ import { connect } from 'react-redux';
 import { IPoint } from '@musicenviro/base';
 import { mapStateToGuiProps, mapDispatchToGuiProps } from './guiMappers';
 
+
+window.addEventListener("keydown", function(e) {
+    // space and arrow keys
+    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+        e.preventDefault();
+    }
+}, false);
+
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
 const initialScreen: Screen = 'Login';

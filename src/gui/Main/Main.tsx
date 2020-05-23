@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
-import { Button, Icon } from 'semantic-ui-react';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
 
@@ -16,19 +15,20 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import { DiatonicPianoRoll, SingleNoteLane } from '@musicenviro/ui-elements';
+import { DiatonicPianoRoll, SingleNoteLane, IRhythmTree } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
 import e from 'express';
 import { requestInviteLink } from '../../client/rest/requests';
 import { SessionStatus } from './SessionStatus';
+import { MainTopPanel } from './MainTopPanel';
 
 export interface IMainProps {
 	userInfo: { name: string };
 	sessionInfo: ISession | null;
 	saveState: SaveState;
-
+	masterRhythmTree: IRhythmTree;
 	lanes: ILane[];
 	remoteMouse: IPoint | null;
 
@@ -47,9 +47,10 @@ export interface IMainProps {
 
 function Main(props: IMainProps) {
 	const mousePosition = useRef<IPoint>({ x: -10, y: -10 });
-	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
+	const [selectedLaneId, setSelectedLaneId] = useState<string>();
+	
 	useEffect(() => {
 		// console.log('MAIN MOUNTING');
 		const mouseTimer = setInterval(reportMousePosition, 100);
@@ -165,38 +166,6 @@ function Main(props: IMainProps) {
 		// }
 	}
 
-	function renderButtons() {
-		return (
-			<div className="top-buttons">
-				<Button icon="trash" floated="left" onClick={handleDeleteButton} />
-				<Button icon circular floated="left" onClick={handleManualAddDrumLane}>
-					<Icon name="plus" color="blue" /> Drum
-				</Button>
-				<Button icon circular floated="left" onClick={handleManualAddDiatonicLane}>
-					<Icon name="plus" color="green" /> Diatonic
-				</Button>
-				<Button icon onClick={props.onStopAudio}>
-					<Icon name="stop" color="red" />
-				</Button>
-				<Button icon onClick={props.onStartAudio}>
-					<Icon name="play" color="green" />
-				</Button>
-
-				<Button icon floated="right" labelPosition="left" onClick={handleInviteButton}>
-					Invite
-					<Icon name="user plus" />
-				</Button>
-
-				<Button icon floated="right" onClick={() => props.rotate(1)}>
-					<Icon name="share" />
-				</Button>
-				<Button icon floated="right" onClick={() => props.rotate(-1)}>
-					<Icon name="reply" />
-				</Button>
-			</div>
-		);
-	}
-
 	async function handleInviteButton() {
 		try {
 			const res = await requestInviteLink(props.userInfo.name);
@@ -302,7 +271,17 @@ function Main(props: IMainProps) {
 					}
 				}}
 			>
-				{renderButtons()}
+				<MainTopPanel 
+					onStart={props.onStartAudio}
+					onStop={props.onStopAudio}
+					onAddDrum={handleManualAddDrumLane}
+					onAddDiatonic={handleManualAddDiatonicLane}
+					onTrash={handleDeleteButton}
+					onInvite={handleInviteButton}
+					onRotateLeft={() => props.rotate(-1)}
+					onRotateRight={() => props.rotate(1)}
+				/>
+
 				{props.lanes.map((lane, index) => renderLane(lane, index))}
 			</div>
 
@@ -335,5 +314,6 @@ function Main(props: IMainProps) {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
+
 
 

@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import {v1 as uuid} from 'uuid'
+import { v1 as uuid } from 'uuid';
 
 import {
 	ISaveSceneParams,
@@ -7,9 +7,8 @@ import {
 	ILoadSceneParams,
 	ILoadSceneResponse,
 	ILane,
+	getStateToSave,
 } from '../@types';
-
-
 
 import { currentSceneVersion, IScene } from '../@types';
 
@@ -24,7 +23,6 @@ const readFile = promisify(fs.readFile);
 
 export function getScenePath(user: string, sceneName: string) {
 	return `/users/${user}/scenes/${sceneName}.scene`;
-
 }
 
 export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
@@ -55,6 +53,8 @@ export async function loadScene(path: string) {
 	const original = JSON.parse(buffer.toString());
 	const scene = backwardCompat(original);
 
+	console.log(scene.reduxState.masterRhythmTree)
+
 	return scene;
 }
 
@@ -79,19 +79,23 @@ export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<I
 	}
 }
 
-
-
 function backwardCompat(rawScene: any): IScene {
 	if (rawScene.version < '0.2.1') {
 		return {
 			name: rawScene.name,
 			version: currentSceneVersion,
-			reduxState: {
-				lanes: initialState.lanes,
-			},
+			reduxState: getStateToSave(initialState),
 		};
 	} else {
-		return rawScene
+		return {
+			...rawScene,
+			reduxState: {
+				...getStateToSave(initialState),
+				...rawScene.reduxState,
+				masterRhythmTree: initialState.masterRhythmTree,
+			},
+			version: currentSceneVersion,
+		}
 
 		// return {
 		// 	...rawScene,
@@ -111,4 +115,3 @@ function backwardCompat(rawScene: any): IScene {
 		// };
 	}
 }
-
