@@ -19,7 +19,7 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 	}
 	
 	if (!noteSynthNames.includes(synthName)) {
-		return <IDrumLane>{
+		return {
 			...synthLaneProps,
 			laneType: 'SingleNoteLane',
 			rhythmTree: tree44,
@@ -28,8 +28,8 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 			color: getColorFromString(synthName)
 		}
 	} else {
-		return <IRollLane>{
-			... synthLaneProps,
+		return {
+			...synthLaneProps,
 			laneType: 'DiatonicPianoRoll',
 			stepRange: defaultStepRange,
 			zeroPitch: 48,

@@ -1,5 +1,5 @@
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
-import { currentSceneVersion, IScene, ISavedState, getStateToSave } from '../@types';
+import { currentSceneVersion, IScene, getStateToSave } from '../@types';
 import { AppStore } from '../redux';
 import { initialState } from "../initialState";
 

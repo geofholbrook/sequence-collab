@@ -3,10 +3,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { GUIConnected } from './gui/Gui';
 import { Provider } from 'react-redux';
-import { createAppStore, ISetRootPropertyAction, IReduxAction, IReduxLoadStateAction, IReduxSetUserAction } from './redux';
+import {
+	createAppStore,
+	ISetRootPropertyAction,
+	IReduxAction,
+	IReduxLoadStateAction,
+	IReduxSetUserAction,
+} from './redux';
 import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
 import { saveInterval } from './config';
-import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse } from './@types';
+import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse, Seconds } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { Scheduler } from './sound-generation/Scheduler/Scheduler';
@@ -16,6 +22,7 @@ import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 import { initSamplers } from './sound-generation/sampler';
 import { requestSessionEntry } from './client/rest/requests';
+import { IRhythmTree, nodeUnitLength } from '@musicenviro/ui-elements';
 
 class App {
 	store = createAppStore();
@@ -46,32 +53,34 @@ class App {
 					onStopAudio={() => this.stopAudio()}
 					onMousePositionUpdate={(pos: IPoint) => this.reportMousePosition(pos)}
 					onLogin={async (username: string) => {
-						
 						this.store.dispatch<IReduxSetUserAction>({
 							type: 'SET_USER',
-							user: username
-						})
+							user: username,
+						});
 
 						if (this.inviteSessionId) {
-							const res = await requestSessionEntry(username, this.inviteSessionId) as IRequestSessionEntryResponse
-							
+							const res = (await requestSessionEntry(
+								username,
+								this.inviteSessionId,
+							)) as IRequestSessionEntryResponse;
+
 							if (res.success) {
 								this.store.dispatch<IReduxLoadStateAction>({
-									type: "LOAD_STATE",
-									state: res.scene!.reduxState
-								})
+									type: 'LOAD_STATE',
+									state: res.scene!.reduxState,
+								});
 							} else {
 								alert(res.message);
-								await loadWorkingScene(this.store)
+								await loadWorkingScene(this.store);
 							}
 						} else {
-							await loadWorkingScene(this.store)
+							await loadWorkingScene(this.store);
 						}
-						
+
 						initSocketClient(username);
 						socketClient.onMessage((message) => this.handleServerMessage(message));
 
-						return true
+						return true;
 					}}
 					inviteSessionId={this.inviteSessionId}
 				/>
@@ -137,7 +146,7 @@ class App {
 		const query = querystring.parse(queryRaw.slice(1)); // remove leading '?' before parse
 
 		if ('invite' in query) {
-			this.inviteSessionId = query.invite as string
+			this.inviteSessionId = query.invite as string;
 		}
 	}
 
@@ -157,8 +166,8 @@ class App {
 					this.store.dispatch<ISetRootPropertyAction>({
 						type: 'SET_ROOT_PROPERTY',
 						propertyName: 'sessionInfo',
-						value: message.content
-					})
+						value: message.content,
+					});
 					break;
 
 				case 'ReduxAction':
@@ -185,9 +194,24 @@ class App {
 			...reduxState.lanes.filter((lane) => !lane.muted).map(getLoopNotesForLane),
 		);
 
+		this.scheduler.loopDuration = calculateLoopLength(
+			reduxState.masterRhythmTree,
+			reduxState.masterTempo,
+		);
 		this.scheduler.setLoop(newLoop);
 	}
 }
 
 const app = new App();
 app.init();
+
+function calculateLoopLength(masterTree: IRhythmTree, masterBPM: number) {
+	// for the purposes of the bpm value, a 'beat' is considered to be the length of the first node
+	// on the top level of the master rhythm tree
+
+	const topUnitLengths = masterTree.nodes.map(nodeUnitLength);
+	const totalUnitLength = topUnitLengths.reduce((sum, n) => sum + n, 0);
+	const beatDuration: Seconds = 60 / masterBPM;
+
+	return (beatDuration / topUnitLengths[0]) * totalUnitLength;
+}

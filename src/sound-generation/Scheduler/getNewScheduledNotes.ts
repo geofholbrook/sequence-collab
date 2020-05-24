@@ -8,7 +8,7 @@ export function getNewScheduledNotes<T>(
 	acTime: Seconds,
 	lookAhead: Seconds,
 	prevHorizon: Seconds,
-	loopLength: Seconds,
+	loopDuration: Seconds,
 ): {
 	schedule: IScheduledNote<T>[];
 	horizon: Seconds;
@@ -19,7 +19,7 @@ export function getNewScheduledNotes<T>(
 	};
 
 	// express range as number of loops
-	const rawPropWindow = { min: win.min / loopLength, max: win.max / loopLength };
+	const rawPropWindow = { min: win.min / loopDuration, max: win.max / loopDuration };
 
 	// translate range so that min falls between 0 and 1
 	const translation = (rawPropWindow.min % 1) - rawPropWindow.min;
@@ -34,7 +34,7 @@ export function getNewScheduledNotes<T>(
 			if (!pos) return null;
 			return {
 				data: note.data,
-				audioContextTime: Math.max(acTime, (pos - translation) * loopLength)
+				audioContextTime: Math.max(acTime, (pos - translation) * loopDuration)
 			};
 		})
 		.filter(Boolean) as IScheduledNote<T>[];

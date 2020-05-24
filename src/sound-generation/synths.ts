@@ -4,7 +4,6 @@ import { ISynth } from '../@types';
 
 import { sampleFiles } from './samples-dir-listing';
 import { Seconds } from '../@types';
-import { playBass, playBass2 } from './bassSynth';
 import { getFaustSynths } from './faust/getFaustSynths';
 
 export const drumSynths: ISynth[] = [

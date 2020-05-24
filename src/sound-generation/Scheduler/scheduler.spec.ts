@@ -12,7 +12,7 @@ describe('getNewScheduledNotes', () => {
 			{ data: 1, loopTime: 0.9 },
 		];
 
-		const loopLength = 10;
+		const loopDuration = 10;
 		const now = 18;
 		const lookAhead = 4;
 		const prevHorizon = 0;
@@ -22,7 +22,7 @@ describe('getNewScheduledNotes', () => {
 			now,
 			lookAhead,
 			prevHorizon,
-			loopLength,
+			loopDuration,
 		).schedule.map((note) => note.audioContextTime);
 
 		expect(result).to.have.length(2).and.to.include(19).and.to.include(21)

@@ -5,7 +5,6 @@ import { PropTime } from '../../@types';
  * @param loopTime
  * @param propWindow window expressed as prop time. if it spans the threshold, max will be greater than 1,
  *                      but min is always 0-1
- * @param loopLength
  */
 export function windowPosition(loopTime: PropTime, propWindow: IRange<PropTime>): PropTime | null {
     const offset = (loopTime - propWindow.min + 1) % 1;

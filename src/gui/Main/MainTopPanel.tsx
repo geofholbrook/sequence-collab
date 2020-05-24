@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Icon, Grid } from 'semantic-ui-react';
+import { Button, Icon, Grid, Input } from 'semantic-ui-react';
 import { RhythmTreeEditor, tree44, IRhythmTree } from '@musicenviro/ui-elements';
 import { connect } from 'react-redux';
 import { IReduxState } from '../../@types';
@@ -18,6 +18,7 @@ interface IMainTopPanelProps {
 	onRotateRight: () => void;
 
 	masterRhythmTree: IRhythmTree;
+	masterTempo: number;
 	onTreeChange: (newTree: IRhythmTree) => void;
 	onTempoChange: (newTempo: number) => void;
 }
@@ -26,6 +27,7 @@ export const MainTopPanel = connect(
 	// map state to props
 	(state: IReduxState) => ({
 		masterRhythmTree: state.masterRhythmTree,
+		masterTempo: state.masterTempo,
 	}),
 
 	// map dispatch to props
@@ -33,19 +35,19 @@ export const MainTopPanel = connect(
 		onTreeChange: (newTree: IRhythmTree) => {
 			const action: ISetMasterTreeAction = {
 				type: 'SET_MASTER_TREE',
-				tree: newTree
-			}
-			dispatch(action)
+				tree: newTree,
+			};
+			dispatch(action);
 		},
 
 		onTempoChange: (newTempo: number) => {
 			const action: ISetRootPropertyAction = {
 				type: 'SET_ROOT_PROPERTY',
 				propertyName: 'masterTempo',
-				value: newTempo
-			}
-			dispatch(action)
-		}
+				value: newTempo,
+			};
+			dispatch(action);
+		},
 	}),
 
 	// component def
@@ -82,6 +84,14 @@ export const MainTopPanel = connect(
 							<Icon name="play" color="green" />
 						</Button>
 
+						<Input
+							label={{ content: 'bpm' }}
+							labelPosition="right"
+							style={{fontSize: "12px", height: 25, width: 50, marginTop: -5}}
+							placeholder={props.masterTempo}
+							onChange={e => props.onTempoChange(parseFloat(e.target.value))}
+						/>
+
 						<Button icon floated="right" labelPosition="left" onClick={props.onInvite}>
 							Invite
 							<Icon name="user plus" />
@@ -111,13 +121,16 @@ export const MainTopPanel = connect(
 				{showRhythmTree && (
 					<div className="rhythm-panel" style={{ display: 'inline-flex' }}>
 						<div style={{ height: 250, width: 330, color: 'white', padding: 20 }}>
-							<p>
-								presets:
-							</p>
-							<Button circular onClick={() => props.onTreeChange(tree_44_16ths)}>4/4 16ths</Button>
-							<Button circular onClick={() => props.onTreeChange(tree_44_triplets)}>4/4 triplets</Button>
-							<Button circular onClick={() => props.onTreeChange(tree_34_16ths)}>3/4 16ths</Button>
-
+							<p>presets:</p>
+							<Button circular onClick={() => props.onTreeChange(tree_44_16ths)}>
+								4/4 16ths
+							</Button>
+							<Button circular onClick={() => props.onTreeChange(tree_44_triplets)}>
+								4/4 triplets
+							</Button>
+							<Button circular onClick={() => props.onTreeChange(tree_34_16ths)}>
+								3/4 16ths
+							</Button>
 						</div>
 						<RhythmTreeEditor
 							initialTree={props.masterRhythmTree}

@@ -24,7 +24,7 @@ export class Scheduler<T> {
 	prevHorizon = 0; // how far we looked ahead on the last iteration
 
 	emitter = new EventEmitter();
-	loopLength = 2; // seconds
+	loopDuration = 2; // seconds
 
 	setAudioContext(ac: AudioContext) {
 		this.ac = ac;
@@ -54,7 +54,7 @@ export class Scheduler<T> {
             this.ac.currentTime,
             lookahead,
 			this.prevHorizon,
-			this.loopLength,
+			this.loopDuration,
             );
         
         this.prevHorizon = horizon
