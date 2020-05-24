@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { IReduxState } from '../../@types';
 import { Dispatch } from 'redux';
 import { IReduxAction } from '../../redux';
+import { tree_44_16ths, tree_44_triplets, tree_34_16ths } from '../../state-helpers/treePresets';
 
 interface IMainTopPanelProps {
 	onTrash: () => void;
@@ -38,7 +39,7 @@ export const MainTopPanel = connect(
 	// component def
 )((props: IMainTopPanelProps) => {
 	const [extraButtonRow, setExtraButtonRow] = React.useState<boolean>(false);
-	const [showRhythmTree, setShowRhythmTree] = React.useState<boolean>(true);
+	const [showRhythmTree, setShowRhythmTree] = React.useState<boolean>(false);
 
 	return (
 		<div className="main-top-panel">
@@ -96,15 +97,24 @@ export const MainTopPanel = connect(
 				)}
 
 				{showRhythmTree && (
-					<RhythmTreeEditor
-						initialTree={props.masterRhythmTree}
-						width={860}
-						height={250}
-						onChange={tree => {
-							props.onTreeChange(tree)
+					<div className="rhythm-panel" style={{ display: 'inline-flex' }}>
+						<div style={{ height: 250, width: 330, color: 'white', padding: 20 }}>
+							<p>
+								presets:
+							</p>
+							<Button circular onClick={() => props.onTreeChange(tree_44_16ths)}>4/4 16ths</Button>
+							<Button circular onClick={() => props.onTreeChange(tree_44_triplets)}>4/4 triplets</Button>
+							<Button circular onClick={() => props.onTreeChange(tree_34_16ths)}>3/4 16ths</Button>
 
-						}}
-					/>
+						</div>
+						<RhythmTreeEditor
+							initialTree={props.masterRhythmTree}
+							height={250}
+							onChange={(tree) => {
+								props.onTreeChange(tree);
+							}}
+						/>
+					</div>
 				)}
 			</Grid>
 		</div>

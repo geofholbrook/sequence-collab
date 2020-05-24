@@ -19,7 +19,6 @@ import { DiatonicPianoRoll, SingleNoteLane, IRhythmTree, getRhythmPoints } from 
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
-import e from 'express';
 import { requestInviteLink } from '../../client/rest/requests';
 import { SessionStatus } from './SessionStatus';
 import { MainTopPanel } from './MainTopPanel';

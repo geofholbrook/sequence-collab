@@ -19,10 +19,15 @@ header .session-status .user-list {
     margin-top: 5px;
 }
 
-.main-top-panel .rhythm-tree-editor {
-    margin-left: 260px;
-    margin-right: 50px;
-    margin-top: -10px;
-    margin-bottom: 15px;
-    
+.main-top-panel .rhythm-panel {
+    width: 860px;
+    height: 250px;
+    padding: 0px;
+    margin-left: 15px;
+    margin-top: -5px;
+    margin-bottom: 20px;
+}
+
+.main-top-panel .rhythm-panel Button {
+    margin: 10px;
 }
