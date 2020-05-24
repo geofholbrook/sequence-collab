@@ -15,7 +15,7 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import { DiatonicPianoRoll, SingleNoteLane, IRhythmTree } from '@musicenviro/ui-elements';
+import { DiatonicPianoRoll, SingleNoteLane, IRhythmTree, getRhythmPoints } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
@@ -23,6 +23,7 @@ import e from 'express';
 import { requestInviteLink } from '../../client/rest/requests';
 import { SessionStatus } from './SessionStatus';
 import { MainTopPanel } from './MainTopPanel';
+import { setLaneTree } from '../../state-helpers/setLaneTree';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -107,7 +108,8 @@ function Main(props: IMainProps) {
 	}
 
 	function handleManualAddDrumLane() {
-		props.addLane(newLaneForSynth(getNextSynth()), selectedLaneId);
+		const newLane = setLaneTree(newLaneForSynth(getNextSynth()), props.masterRhythmTree)
+		props.addLane(newLane, selectedLaneId);
 
 		function getNextSynth(): string {
 			const prevDrumSynthName = drumSelected();
@@ -244,6 +246,7 @@ function Main(props: IMainProps) {
 							width={630}
 							height={30}
 							notes={drumLane.notes.map(note => note.treePointIndex)}
+							tree={drumLane.rhythmTree}
 							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
 							noteColor={drumLane.color}
 						/>

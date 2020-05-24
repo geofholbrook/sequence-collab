@@ -1,4 +1,4 @@
-import { modifyLaneCell } from '@musicenviro/ui-elements';
+import { modifyLaneCell, getRhythmPoints } from '@musicenviro/ui-elements';
 import { IReduxState, IRollLane, IDrumLane, ILane } from './@types';
 import {
 	IReduxAction,
@@ -13,6 +13,7 @@ import {
 	ISetMasterTreeAction,
 } from './redux';
 import { initialState } from './initialState';
+import { setLaneTree } from './state-helpers/setLaneTree';
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined
@@ -37,9 +38,16 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 
 			case 'SET_MASTER_TREE': {
 				const action = _action as ISetMasterTreeAction;
+				
 				return {
 					...state,
-					masterRhythmTree: action.tree
+					masterRhythmTree: action.tree,
+
+					// for now we're just setting the tree for all drum lanes to the master tree
+					lanes: state.lanes.map(lane => {
+						if (lane.laneType === 'DiatonicPianoRoll') return lane
+						return setLaneTree(lane, action.tree)
+					})
 				}
 			}
 			
@@ -152,7 +160,7 @@ function rotateLane(_lane: ILane, amount: number): IRollLane | IDrumLane {
 			return {
 				...lane,
 				notes: lane.notes.map(note => ({
-					treePointIndex: (note.treePointIndex + amount) % lane.treeLoopTimes.length
+					treePointIndex: (note.treePointIndex + amount + lane.treeLoopTimes.length) % lane.treeLoopTimes.length
 				})),
 			};
 		}
