@@ -8,6 +8,9 @@ import {
 	ILoadSceneResponse,
 	ILane,
 	getStateToSave,
+	IReduxState,
+	IDrumLane,
+	PropTime,
 } from '../@types';
 
 import { currentSceneVersion, IScene } from '../@types';
@@ -17,6 +20,7 @@ import { storageRoot } from './dataPath';
 import { promisify } from 'util';
 
 import { initialState } from '../initialState';
+import { tree44, getRhythmPoints } from '@musicenviro/ui-elements';
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
@@ -86,6 +90,32 @@ function backwardCompat(rawScene: any): IScene {
 			version: currentSceneVersion,
 			reduxState: getStateToSave(initialState),
 		};
+	} else if (rawScene.version < '0.3') {
+		return {
+			...rawScene,
+			reduxState: {
+				...getStateToSave(initialState),
+				...rawScene.reduxState,
+				lanes: (rawScene.reduxState as IReduxState).lanes.map(lane => {
+					const drumLane = lane as IDrumLane & { loopTimes: PropTime[] }
+					if (lane.laneType === 'SingleNoteLane') {
+						// convert from an assumed-4/4 16th note grid with prop times
+						const result: IDrumLane = {
+							rhythmTree: tree44,
+							...lane,
+							treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),
+							notes: drumLane.loopTimes.map(time => ({
+								treePointIndex: time * 16
+							}))
+						}
+						return result
+					} else {
+						return lane
+					}
+				})
+			},
+			version: currentSceneVersion,
+		}
 	} else {
 		return {
 			...rawScene,

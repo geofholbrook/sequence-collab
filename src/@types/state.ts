@@ -11,9 +11,9 @@ import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base
 import { ILaneData } from "@musicenviro/ui-elements";
 import { IRhythmTree } from "@musicenviro/ui-elements";
 
-export type LaneProperties = 'synthName' | 'loopTimes' | 'muted' | 'volumeDb' | 'color';
+export type LaneProperties = 'synthName' | 'notes' | 'muted' | 'volumeDb' | 'color';
 
-export const currentSceneVersion = "0.2.4";
+export const currentSceneVersion = "0.3";
 
 export interface ISavedState {
     masterRhythmTree: IRhythmTree,
@@ -46,11 +46,17 @@ export interface ILane {
     muted: boolean;
 }
 
+export interface INote {
+    treePointIndex: number
+    // room for other properties
+}
+
 export interface IDrumLane extends ILane {
     laneType: 'SingleNoteLane',
     color: string;
     rhythmTree: IRhythmTree;
-    loopTimes: PropTime[];
+    treeLoopTimes: PropTime[];
+    notes: INote[];
 }
 
 export interface IRollLane extends ILane {

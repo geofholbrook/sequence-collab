@@ -7,12 +7,12 @@ export function getLoopNotesForLane(lane: ILane) {
 	switch (lane.laneType) {
 		case 'SingleNoteLane': {
 			const drumLane = lane as IDrumLane;
-			return drumLane.loopTimes.map((loopTime) => ({
+			return drumLane.notes.map(note => ({
 				data: {
 					synthName: lane.synthName,
 					args: [lane.volumeDb],
 				},
-				loopTime,
+				loopTime: drumLane.treeLoopTimes[note.treePointIndex],
 			}));
 		}
 

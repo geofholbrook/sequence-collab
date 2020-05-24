@@ -2,7 +2,7 @@ import { v1 as uuid } from 'uuid'
 
 import { getColorFromString } from '../gui/Main/colors';
 import { IDrumLane, IRollLane } from '../@types';
-import { makeDefaultLanes } from '@musicenviro/ui-elements';
+import { makeDefaultLanes, getRhythmPoints } from '@musicenviro/ui-elements';
 import { noteSynthNames } from '../sound-generation/noteSynthNames';
 import { tree44 } from '@musicenviro/ui-elements';
 
@@ -22,7 +22,9 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 		return <IDrumLane>{
 			...synthLaneProps,
 			laneType: 'SingleNoteLane',
-			loopTimes: [],
+			rhythmTree: tree44,
+			treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),
+			notes: [],
 			color: getColorFromString(synthName)
 		}
 	} else {

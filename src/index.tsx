@@ -19,7 +19,7 @@ import { requestSessionEntry } from './client/rest/requests';
 
 class App {
 	store = createAppStore();
-	saveTimer = setInterval(() => saveWorkingScene(this.store), saveInterval);
+	saveTimer = saveInterval && setInterval(() => saveWorkingScene(this.store), saveInterval);
 
 	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;

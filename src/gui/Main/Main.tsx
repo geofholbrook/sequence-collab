@@ -3,7 +3,7 @@ import { Beforeunload } from 'react-beforeunload';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
 
-import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties, ISession } from '../../@types';
+import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties, ISession, INote } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
@@ -96,7 +96,9 @@ function Main(props: IMainProps) {
 	}
 
 	function handleManualNoteChange(laneId: string, notes: number[]) {
-		props.setLaneProperty(laneId, 'loopTimes', notes);
+		props.setLaneProperty(laneId, 'notes', notes.map((note):INote => ({
+			treePointIndex: note
+		})));
 	}
 
 	function handleManualInstrumentChange(laneId: string, synthName: string) {
@@ -241,7 +243,7 @@ function Main(props: IMainProps) {
 						<SingleNoteLane
 							width={630}
 							height={30}
-							notes={drumLane.loopTimes}
+							notes={drumLane.notes.map(note => note.treePointIndex)}
 							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
 							noteColor={drumLane.color}
 						/>

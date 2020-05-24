@@ -151,7 +151,9 @@ function rotateLane(_lane: ILane, amount: number): IRollLane | IDrumLane {
 			const lane = _lane as IDrumLane;
 			return {
 				...lane,
-				loopTimes: lane.loopTimes.map((time) => (time + amount / 16 + 1) % 1),
+				notes: lane.notes.map(note => ({
+					treePointIndex: (note.treePointIndex + amount) % lane.treeLoopTimes.length
+				})),
 			};
 		}
 
