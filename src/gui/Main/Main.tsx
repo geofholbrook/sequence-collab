@@ -3,7 +3,15 @@ import { Beforeunload } from 'react-beforeunload';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
 
-import { ILane, SaveState, IRollLane, IDrumLane, LaneProperties, ISession, INote } from '../../@types';
+import {
+	ILane,
+	SaveState,
+	IRollLane,
+	IDrumLane,
+	LaneProperties,
+	ISession,
+	INote,
+} from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
@@ -15,7 +23,12 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import { DiatonicPianoRoll, SingleNoteLane, IRhythmTree, getRhythmPoints } from '@musicenviro/ui-elements';
+import {
+	DiatonicPianoRoll,
+	SingleNoteLane,
+	IRhythmTree,
+	getRhythmPoints,
+} from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
@@ -50,6 +63,8 @@ function Main(props: IMainProps) {
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
+
+	const { onMousePositionUpdate } = props
 	
 	useEffect(() => {
 		// console.log('MAIN MOUNTING');
@@ -57,7 +72,17 @@ function Main(props: IMainProps) {
 		return () => {
 			clearInterval(mouseTimer);
 		};
-	}, [reportMousePosition]);
+
+		function reportMousePosition() {
+			if (!contentDivRef.current) return;
+
+			// report position relative to content div
+			const rect = contentDivRef.current.getBoundingClientRect();
+			const topLeft = { x: rect.left, y: rect.top };
+
+			onMousePositionUpdate(subtractPoints(mousePosition.current, topLeft));
+		}
+	}, [onMousePositionUpdate]);
 
 	function findLane(id: string) {
 		return props.lanes.find((lane) => lane.laneId === id);
@@ -68,8 +93,9 @@ function Main(props: IMainProps) {
 	}
 
 	useEffect(() => {
-		if (props.lanes.length > 0 && selectedLaneId && !findLane(selectedLaneId))
+		if (props.lanes.length > 0 && (!selectedLaneId || !findLane(selectedLaneId))) {
 			setSelectedLaneId(props.lanes[0].laneId);
+		}
 	}, [props.lanes]);
 
 	const setCell = props.setCell;
@@ -85,20 +111,16 @@ function Main(props: IMainProps) {
 		mousePosition.current = { x: event.clientX, y: event.clientY };
 	}
 
-	function reportMousePosition() {
-		if (!contentDivRef.current) return;
-
-		// report position relative to content div
-		const rect = contentDivRef.current.getBoundingClientRect();
-		const topLeft = { x: rect.left, y: rect.top };
-
-		props.onMousePositionUpdate(subtractPoints(mousePosition.current, topLeft));
-	}
-
 	function handleManualNoteChange(laneId: string, notes: number[]) {
-		props.setLaneProperty(laneId, 'notes', notes.map((note):INote => ({
-			treePointIndex: note
-		})));
+		props.setLaneProperty(
+			laneId,
+			'notes',
+			notes.map(
+				(note): INote => ({
+					treePointIndex: note,
+				}),
+			),
+		);
 	}
 
 	function handleManualInstrumentChange(laneId: string, synthName: string) {
@@ -107,7 +129,7 @@ function Main(props: IMainProps) {
 	}
 
 	function handleManualAddDrumLane() {
-		const newLane = setLaneTree(newLaneForSynth(getNextSynth()), props.masterRhythmTree)
+		const newLane = setLaneTree(newLaneForSynth(getNextSynth()), props.masterRhythmTree);
 		props.addLane(newLane, selectedLaneId);
 
 		function getNextSynth(): string {
@@ -244,7 +266,7 @@ function Main(props: IMainProps) {
 						<SingleNoteLane
 							width={630}
 							height={30}
-							notes={drumLane.notes.map(note => note.treePointIndex)}
+							notes={drumLane.notes.map((note) => note.treePointIndex)}
 							tree={drumLane.rhythmTree}
 							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
 							noteColor={drumLane.color}
@@ -275,7 +297,7 @@ function Main(props: IMainProps) {
 					}
 				}}
 			>
-				<MainTopPanel 
+				<MainTopPanel
 					onStart={props.onStartAudio}
 					onStop={props.onStopAudio}
 					onAddDrum={handleManualAddDrumLane}
@@ -318,6 +340,3 @@ function Main(props: IMainProps) {
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
-
-
-

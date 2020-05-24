@@ -4,7 +4,7 @@ import { RhythmTreeEditor, tree44, IRhythmTree } from '@musicenviro/ui-elements'
 import { connect } from 'react-redux';
 import { IReduxState } from '../../@types';
 import { Dispatch } from 'redux';
-import { IReduxAction } from '../../redux';
+import { IReduxAction, ISetMasterTreeAction, ISetRootPropertyAction } from '../../redux';
 import { tree_44_16ths, tree_44_triplets, tree_34_16ths } from '../../state-helpers/treePresets';
 
 interface IMainTopPanelProps {
@@ -19,6 +19,7 @@ interface IMainTopPanelProps {
 
 	masterRhythmTree: IRhythmTree;
 	onTreeChange: (newTree: IRhythmTree) => void;
+	onTempoChange: (newTempo: number) => void;
 }
 
 export const MainTopPanel = connect(
@@ -29,11 +30,22 @@ export const MainTopPanel = connect(
 
 	// map dispatch to props
 	(dispatch: Dispatch<IReduxAction>) => ({
-		onTreeChange: (tree: IRhythmTree) =>
-			dispatch({
+		onTreeChange: (newTree: IRhythmTree) => {
+			const action: ISetMasterTreeAction = {
 				type: 'SET_MASTER_TREE',
-				tree,
-			}),
+				tree: newTree
+			}
+			dispatch(action)
+		},
+
+		onTempoChange: (newTempo: number) => {
+			const action: ISetRootPropertyAction = {
+				type: 'SET_ROOT_PROPERTY',
+				propertyName: 'masterTempo',
+				value: newTempo
+			}
+			dispatch(action)
+		}
 	}),
 
 	// component def

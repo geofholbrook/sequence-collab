@@ -13,10 +13,11 @@ import { IRhythmTree } from "@musicenviro/ui-elements";
 
 export type LaneProperties = 'synthName' | 'notes' | 'muted' | 'volumeDb' | 'color';
 
-export const currentSceneVersion = "0.3";
+export const currentSceneVersion = "0.3.1";
 
 export interface ISavedState {
     masterRhythmTree: IRhythmTree,
+    masterTempo: number,
     lanes: Array<IDrumLane | IRollLane>;
 }
 
@@ -32,6 +33,7 @@ export interface IReduxState extends ISavedState {
 export function getStateToSave(state: IReduxState): ISavedState {
     return {
         masterRhythmTree: state.masterRhythmTree,
+        masterTempo: state.masterTempo,
         lanes: state.lanes
     }
 }

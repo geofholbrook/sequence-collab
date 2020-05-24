@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 /*
 Code generated with Faust version 2.23.6

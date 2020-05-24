@@ -21,7 +21,7 @@ export interface IReduxAction {
 
 export interface ISetRootPropertyAction extends IReduxAction {
 	type: 'SET_ROOT_PROPERTY';
-	propertyName: 'remoteMouse' | 'saveState' | 'sessionInfo';
+	propertyName: 'remoteMouse' | 'saveState' | 'sessionInfo' | 'masterTempo';
 	value: any;
 }
 

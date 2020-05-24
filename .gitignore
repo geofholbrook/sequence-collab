@@ -7,11 +7,14 @@
 
 # testing
 /coverage
-/public/static/wasm
 
 # production
 /build
 /serverjs
+
+# generated files
+/public/static/wasm
+/src/sound-generation/faust/workletnodes
 
 
 # misc

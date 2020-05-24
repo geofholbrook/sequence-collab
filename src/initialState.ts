@@ -6,6 +6,6 @@ export const initialState: IReduxState = {
 	saveState: 'Clean',
 	remoteMouse: null,
 	masterRhythmTree: tree44,
-	lanes: [
-	],
+	masterTempo: 120,
+	lanes: [],
 };
