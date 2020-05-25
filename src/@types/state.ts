@@ -69,9 +69,9 @@ export interface IPianoRollLane extends IVoiceLane {
 	mode: Mode;
 }
 
-export interface IScene {
+export interface IScene<TSavedState = ISavedState> {
     version: string;
     name: string;
-    reduxState: ISavedState;  // of course, very unsatisfactory, to be redesigned
+    reduxState: TSavedState;  // of course, very unsatisfactory, to be redesigned
 }
 

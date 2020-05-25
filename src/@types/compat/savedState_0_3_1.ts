@@ -1,5 +1,5 @@
 
-export interface ISavedState {
+export interface ISavedState_0_3_1 {
     masterRhythmTree: IRhythmTree,
     masterTempo: number,
     lanes: Array<IDrumLane | IRollLane>;
