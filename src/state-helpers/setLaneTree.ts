@@ -28,8 +28,6 @@ export function setLaneTree(_lane: IDrumLane | IRollLane, tree: IRhythmTree): ID
 
             const unique = _.uniqBy(quantized, n => n.treePointIndex)
 
-            console.log({unique})
-
             return {
                 ...lane,
                 rhythmTree: tree,
