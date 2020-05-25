@@ -8,7 +8,7 @@
 
 import { PropTime, ISession } from "./index";
 import { IRange, DiatonicStep, IPoint, MidiPitch, Mode } from "@musicenviro/base";
-import { ILaneData } from "@musicenviro/ui-elements";
+import { INote } from "@musicenviro/ui-elements";
 import { IRhythmTree } from "@musicenviro/ui-elements";
 
 export type LaneProperties = 'synthName' | 'notes' | 'muted' | 'volumeDb' | 'color';
@@ -18,8 +18,10 @@ export const currentSceneVersion = "0.3.1";
 export interface ISavedState {
     masterRhythmTree: IRhythmTree,
     masterTempo: number,
-    lanes: Array<IDrumLane | IRollLane>;
+    lanes: AnyLane[];
 }
+
+export type AnyLane = ISingleNoteLane | IPianoRollLane
 
 export type SaveState = 'Clean' | 'Dirty' | 'WaitingForSave';
 
@@ -38,7 +40,7 @@ export function getStateToSave(state: IReduxState): ISavedState {
     }
 }
 
-export type LaneType = 'SingleNoteLane' | 'DiatonicPianoRoll';
+export type LaneType = 'SingleNoteLane' | 'PianoRoll';
 
 export interface ILane {
     laneId: string; // 0.2.3 adds this.
@@ -46,25 +48,22 @@ export interface ILane {
     synthName: string;
     volumeDb: number; // db
     muted: boolean;
-}
-
-export interface INote {
-    treePointIndex: number
-    // room for other properties
-}
-
-export interface IDrumLane extends ILane {
-    laneType: 'SingleNoteLane',
     color: string;
+}
+
+export interface IVoiceLane extends ILane {
     rhythmTree: IRhythmTree;
     treeLoopTimes: PropTime[];
     notes: INote[];
 }
 
-export interface IRollLane extends ILane {
-    laneType: 'DiatonicPianoRoll',
-    rhythmTree: IRhythmTree;
-    rows: ILaneData[],
+export interface ISingleNoteLane extends IVoiceLane {
+    laneType: 'SingleNoteLane',
+}
+
+export interface IPianoRollLane extends IVoiceLane {
+    laneType: 'PianoRoll',
+    
     stepRange: IRange<DiatonicStep>;
 	zeroPitch: MidiPitch; // the pitch class of zeroPitch is the key
 	mode: Mode;

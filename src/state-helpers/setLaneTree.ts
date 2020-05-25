@@ -1,12 +1,13 @@
 
 import _ from 'lodash'
-import { ILane, IDrumLane, IRollLane } from "../@types";
 import { IRhythmTree, getRhythmPoints } from "@musicenviro/ui-elements";
+import { AnyLane } from '../@types';
 
-export function setLaneTree(_lane: IDrumLane | IRollLane, tree: IRhythmTree): IDrumLane | IRollLane { 
-    switch (_lane.laneType) {
-        case 'SingleNoteLane': {
-            const lane = _lane as IDrumLane
+export function setLaneTree(lane: AnyLane, tree: IRhythmTree): AnyLane { 
+    switch (lane.laneType) {
+        case 'SingleNoteLane': 
+        case 'PianoRoll': 
+        {
             const prevTreeLoopTimes = lane.treeLoopTimes
             const newTreeLoopTimes = getRhythmPoints(tree).map(p => p.position)
 
@@ -22,11 +23,12 @@ export function setLaneTree(_lane: IDrumLane | IRollLane, tree: IRhythmTree): ID
                 }
 
                 return {
+                    ...note,
                     treePointIndex
                 }
             })
 
-            const unique = _.uniqBy(quantized, n => n.treePointIndex)
+            const unique = _.uniqBy(quantized, n => n.treePointIndex * 100 + (n.step || 0))
 
             return {
                 ...lane,
@@ -37,6 +39,6 @@ export function setLaneTree(_lane: IDrumLane | IRollLane, tree: IRhythmTree): ID
         }
 
         default: 
-            return _lane   
+            return lane   
     }
 }

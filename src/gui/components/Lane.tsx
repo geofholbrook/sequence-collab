@@ -7,7 +7,7 @@ import { ViewContext } from './ViewContext';
 export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 	const [viewMode, setViewMode] = useState<ViewMode>('None');
 
-	useEffect(() => setViewMode(props.laneType === 'DiatonicPianoRoll' ? 'Collapsed' : 'None'), [
+	useEffect(() => setViewMode(props.laneType === 'PianoRoll' ? 'Collapsed' : 'None'), [
 		props.laneType,
 	]);
 
@@ -38,7 +38,7 @@ export const Lane: React.FunctionComponent<ILaneProps> = (props) => {
 
 	function getSpecificClass() {
 		switch (props.laneType) {
-			case 'DiatonicPianoRoll':
+			case 'PianoRoll':
 				return 'roll-lane';
 
 			case 'SingleNoteLane':

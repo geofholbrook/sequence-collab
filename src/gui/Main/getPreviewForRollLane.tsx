@@ -1,23 +1,16 @@
 import React from 'react';
-import { IRollLane } from '../../@types';
 import { CellGridPreview, ISimpleCell } from '@musicenviro/ui-elements';
+import { IPianoRollLane } from '../../@types';
 
-export function getPreviewForRollLane(lane: IRollLane, onClick?: () => void) {
-	const cells: ISimpleCell[] = [];
-	const numRows = 16; // canned for now
+export function getPreviewForRollLane(lane: IPianoRollLane, onClick?: () => void) {
+	const numRows = lane.treeLoopTimes.length;
 	const numColumns = lane.stepRange.max - lane.stepRange.min + 1;
 
-	lane.rows.forEach((row, ci) =>
-		row.cells.forEach((cell, ri) => {
-			if (cell.active) {
-				cells.push({
-					row: ri,
-					column: numColumns - 1 - ci,
-					color: 'blue',
-				});
-			}
-		}),
-	);
+	const cells: ISimpleCell[] = lane.notes.map((note) => ({
+		row: note.step || 0,
+		column: note.treePointIndex,
+		color: 'blue',
+	}));
 
 	return (
 		<div onClick={onClick}>
@@ -28,7 +21,6 @@ export function getPreviewForRollLane(lane: IRollLane, onClick?: () => void) {
 				numRows={numRows}
 				numColumns={numColumns}
 			/>
-			
 		</div>
 	);
 }

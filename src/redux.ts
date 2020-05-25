@@ -1,7 +1,7 @@
 import { makeDefaultLanes, IRhythmTree } from '@musicenviro/ui-elements';
 import { createStore, Dispatch, Store } from 'redux';
 import { socketClient } from './socketClient';
-import { IMessage, ILane, IReduxState, ISavedState, LaneProperties } from './@types';
+import { IMessage, ILane, IReduxState, ISavedState, LaneProperties, AnyLane } from './@types';
 import { reducer } from './reducer';
 import { initialState } from './initialState';
 
@@ -55,7 +55,7 @@ export interface IReduxSetUserAction extends IReduxAction {
 
 export interface IAddLaneAction extends IReduxAction {
 	type: 'ADD_LANE';
-	lane: ILane;
+	lane: AnyLane;
 	after?: string;
 }
 

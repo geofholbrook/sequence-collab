@@ -9,7 +9,7 @@ import {
 	ILane,
 	getStateToSave,
 	IReduxState,
-	IDrumLane,
+	ISingleNoteLane,
 	PropTime,
 } from '../@types';
 
@@ -97,10 +97,10 @@ function backwardCompat(rawScene: any): IScene {
 				...getStateToSave(initialState),
 				...rawScene.reduxState,
 				lanes: (rawScene.reduxState as IReduxState).lanes.map(lane => {
-					const drumLane = lane as IDrumLane & { loopTimes: PropTime[] }
+					const drumLane = lane as ISingleNoteLane & { loopTimes: PropTime[] }
 					if (lane.laneType === 'SingleNoteLane') {
 						// convert from an assumed-4/4 16th note grid with prop times
-						const result: IDrumLane = {
+						const result: ISingleNoteLane = {
 							rhythmTree: tree44,
 							...lane,
 							treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),

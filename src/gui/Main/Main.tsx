@@ -6,11 +6,11 @@ import { IPoint, subtractPoints } from '@musicenviro/base';
 import {
 	ILane,
 	SaveState,
-	IRollLane,
-	IDrumLane,
 	LaneProperties,
 	ISession,
-	INote,
+	IPianoRollLane,
+	AnyLane,
+	ISingleNoteLane,
 } from '../../@types';
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
@@ -24,10 +24,10 @@ import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
 import {
-	DiatonicPianoRoll,
 	SingleNoteLane,
 	IRhythmTree,
-	getRhythmPoints,
+	INote,
+	PianoRoll,
 } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
@@ -42,7 +42,7 @@ export interface IMainProps {
 	sessionInfo: ISession | null;
 	saveState: SaveState;
 	masterRhythmTree: IRhythmTree;
-	lanes: ILane[];
+	lanes: AnyLane[];
 	remoteMouse: IPoint | null;
 
 	// callbacks
@@ -207,8 +207,8 @@ function Main(props: IMainProps) {
 		}
 	}
 
-	function renderLane(lane: ILane, laneIndex: number) {
-		const availableInstruments = (lane.laneType === 'DiatonicPianoRoll'
+	function renderLane(lane: AnyLane, laneIndex: number) {
+		const availableInstruments = (lane.laneType === 'PianoRoll'
 			? noteSynths
 			: drumSynths
 		).map((synth) => synth.name);
@@ -237,20 +237,20 @@ function Main(props: IMainProps) {
 
 		function getInnerComponent() {
 			switch (lane.laneType) {
-				case 'DiatonicPianoRoll': {
-					const rollLane = lane as IRollLane;
+				case 'PianoRoll': {
+					const rollLane = lane as IPianoRollLane;
 
 					return (
 						<ViewContext.Consumer>
 							{([viewMode, setViewMode]) =>
 								viewMode === 'Expanded' ? (
-									<DiatonicPianoRoll
-										id={lane.laneId}
+									<PianoRoll
 										width={584}
 										height={300}
-										stepRange={rollLane.stepRange}
-										initialLanes={rollLane.rows}
-										onCellChange={handlePianoRollCellChange}
+										stepRange={lane.stepRange}
+										zeroPitch={lane.zeroPitch}
+										initialNotes={rollLane.notes}
+										tree={lane.rhythmTree}
 									/>
 								) : (
 									getPreviewForRollLane(rollLane, () => setViewMode!('Expanded'))
@@ -261,15 +261,14 @@ function Main(props: IMainProps) {
 				}
 
 				case 'SingleNoteLane': {
-					const drumLane = lane as IDrumLane;
 					return (
 						<SingleNoteLane
 							width={630}
 							height={30}
-							notes={drumLane.notes.map((note) => note.treePointIndex)}
-							tree={drumLane.rhythmTree}
+							notes={lane.notes.map((note) => note.treePointIndex)}
+							tree={lane.rhythmTree}
 							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
-							noteColor={drumLane.color}
+							noteColor={lane.color}
 						/>
 					);
 				}

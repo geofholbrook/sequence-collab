@@ -1,14 +1,14 @@
 import { v1 as uuid } from 'uuid'
 
 import { getColorFromString } from '../gui/Main/colors';
-import { IDrumLane, IRollLane } from '../@types';
 import { makeDefaultLanes, getRhythmPoints } from '@musicenviro/ui-elements';
 import { noteSynthNames } from '../sound-generation/noteSynthNames';
 import { tree44 } from '@musicenviro/ui-elements';
+import { AnyLane } from '../@types';
 
 const defaultStepRange = { min: -3, max: 14 };
 
-export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
+export function newLaneForSynth(synthName: string): AnyLane {
 	
 	const synthLaneProps = {
 		laneId: uuid(),
@@ -30,11 +30,14 @@ export function newLaneForSynth(synthName: string): IDrumLane | IRollLane {
 	} else {
 		return {
 			...synthLaneProps,
-			laneType: 'DiatonicPianoRoll',
+			rhythmTree: tree44,
+			treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),
+			notes: [],
+			color: getColorFromString(synthName),
+			laneType: 'PianoRoll',
 			stepRange: defaultStepRange,
 			zeroPitch: 48,
 			mode: 'Dorian',
-			rows: makeDefaultLanes(defaultStepRange),
 		}
 	}
 }

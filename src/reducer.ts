@@ -1,5 +1,5 @@
 import { modifyLaneCell, getRhythmPoints } from '@musicenviro/ui-elements';
-import { IReduxState, IRollLane, IDrumLane, ILane } from './@types';
+import { IReduxState, IVoiceLane, ISingleNoteLane, AnyLane } from './@types';
 import {
 	IReduxAction,
 	ISetRootPropertyAction,
@@ -47,36 +47,36 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 
 					// for now we're just setting the tree for all drum lanes to the master tree
 					lanes: state.lanes.map(lane => {
-						if (lane.laneType === 'DiatonicPianoRoll') return lane
 						return setLaneTree(lane, action.tree)
 					})
 				}
 			}
 			
-			case 'SET_CELL': {
-				const action = _action as IReduxSetCellAction;
-				return {
-					...state,
-					lanes: state.lanes.map((lane) => {
-						if (lane.laneId !== action.laneId) return lane;
-						if (lane.laneType !== 'DiatonicPianoRoll') {
-							throw new Error(`SET_CELL called on lane of type ${lane.laneType}`);
-						}
+			// case 'SET_CELL': {
+			// 	const action = _action as IReduxSetCellAction;
+			// 	return {
+			// 		...state,
+			// 		lanes: state.lanes.map((lane) => {
+			// 			if (lane.laneId !== action.laneId) return lane;
+			// 			if (lane.laneType !== 'PianoRoll') {
+			// 				throw new Error(`SET_CELL called on lane of type ${lane.laneType}`);
+			// 			}
 
-						const rollLane = lane as IRollLane;
+			// 			const rollLane = lane as IRollLane;
 
-						return {
-							...rollLane,
-							rows: modifyLaneCell(
-								rollLane.rows,
-								action.rowIndex,
-								action.cellIndex,
-								action.active,
-							),
-						};
-					}),
-				};
-			}
+			// 			return {
+			// 				...rollLane,
+			// 				rows: modifyLaneCell(
+			// 					rollLane.rows,
+			// 					action.rowIndex,
+			// 					action.cellIndex,
+			// 					action.active,
+			// 				),
+			// 			};
+			// 		}),
+			// 	};
+			// }
+
 			case 'ADD_LANE': {
 				const action = _action as IAddLaneAction;
 
@@ -88,7 +88,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 					...state,
 					lanes: [
 						...state.lanes.slice(0, insertIndex),
-						action.lane as IDrumLane,
+						action.lane,
 						...state.lanes.slice(insertIndex),
 					].sort((a, b) => a.laneType.localeCompare(b.laneType)),
 				};
@@ -143,30 +143,17 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 	}
 }
 
-function rotateLane(_lane: ILane, amount: number): IRollLane | IDrumLane {
-	const splitIndex = (-amount + 16) % 16;
-	switch (_lane.laneType) {
-		case 'DiatonicPianoRoll': {
-			const lane = _lane as IRollLane;
-			return {
-				...lane,
-				rows: lane.rows.map((row) => ({
-					...row,
-					cells: [...row.cells.slice(splitIndex), ...row.cells.slice(0, splitIndex)],
-				})),
-			};
-		}
-
-		case 'SingleNoteLane': {
-			const lane = _lane as IDrumLane;
+function rotateLane(lane: AnyLane, amount: number): AnyLane {
+	switch (lane.laneType) {
+			case 'PianoRoll': 
+			case 'SingleNoteLane': 
 			return {
 				...lane,
 				notes: lane.notes.map(note => ({
 					treePointIndex: (note.treePointIndex + amount + lane.treeLoopTimes.length) % lane.treeLoopTimes.length
 				})),
 			};
-		}
-
+		
 		default:
 			throw new Error('unknown lane type');
 	}
