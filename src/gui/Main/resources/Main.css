@@ -43,10 +43,10 @@ header .session-status .user-list {
 
     text-align: right;
 
-    background-color: lightgray
 }
-/* 
-.button-footer .close-button {
-    position: absolute;
-    right: 0px;
-} */
+
+
+.item.selected {
+
+    background-color: lightyellow
+}

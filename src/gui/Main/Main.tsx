@@ -1,7 +1,9 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
+import { connect } from 'react-redux';
 
 import { IPoint, subtractPoints } from '@musicenviro/base';
+import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
 
 import {
 	ILane,
@@ -10,8 +12,8 @@ import {
 	ISession,
 	IPianoRollLane,
 	AnyLane,
-	ISingleNoteLane,
 } from '../../@types';
+
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
@@ -19,20 +21,21 @@ import { local, cycleDrumSynthsWhenAdding } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './resources/Main.css';
-import { connect } from 'react-redux';
+
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
+
+import { MainTopPanel } from './MainTopPanel';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
-import { getPreviewForRollLane } from './getPreviewForRollLane';
+import { SessionStatus } from './SessionStatus';
 import { ViewContext } from '../components/ViewContext';
+import { FileModal } from './FileModal';
+
+
+import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
 import { requestInviteLink } from '../../client/rest/requests';
-import { SessionStatus } from './SessionStatus';
-import { MainTopPanel } from './MainTopPanel';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
-import ReactModal from 'react-modal';
-import { FileModal } from './FileModal';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -340,6 +343,10 @@ function Main(props: IMainProps) {
 			<FileModal 
 				isOpen={showFileModal}
 				onClose={() => setShowFileModal(false)}
+				files={[
+					{name: "temp.scene", version: "0.4.1", createdStamp: 1590509834674, lastUpdatedStamp: 1590509834674},
+					{name: "keep.scene", version: "0.4.1", createdStamp: 1590509234674, lastUpdatedStamp: 1590509234674}
+				]}
 				/>
 		</div>
 	);

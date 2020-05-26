@@ -41,7 +41,7 @@ header {
 	padding-left: 15px;
 }
 
-.content {
+.Screen .content {
 	line-height: 30px;
 	background-color: rgb(92, 92, 92);
 	position: absolute;
