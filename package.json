@@ -53,7 +53,7 @@
   "dependencies": {
     "@babel/core": "7.9.0",
     "@geof/socket-messaging": "^0.5.4",
-    "@musicenviro/base": "^0.2.8",
+    "@musicenviro/base": "^0.2.10",
     "@musicenviro/ui-elements": "file:../musicenviro__ui-elements",
     "@svgr/webpack": "4.3.3",
     "@types/cors": "^2.8.6",

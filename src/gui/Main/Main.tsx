@@ -23,12 +23,7 @@ import { connect } from 'react-redux';
 import { mapStateToMainProps } from './mapStateToMainProps';
 import { mapDispatchToMainProps } from './mapDispatchToMainProps';
 import { SaveStateDisplay } from './SaveStateDisplay';
-import {
-	SingleNoteLane,
-	IRhythmTree,
-	INote,
-	PianoRoll,
-} from '@musicenviro/ui-elements';
+import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { ViewContext } from '../components/ViewContext';
 import { getColorFromString } from './colors';
@@ -64,8 +59,8 @@ function Main(props: IMainProps) {
 
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 
-	const { onMousePositionUpdate } = props
-	
+	const { onMousePositionUpdate } = props;
+
 	useEffect(() => {
 		// console.log('MAIN MOUNTING');
 		const mouseTimer = setInterval(reportMousePosition, 100);
@@ -98,20 +93,11 @@ function Main(props: IMainProps) {
 		}
 	}, [props.lanes]);
 
-	const setCell = props.setCell;
-
-	const handlePianoRollCellChange = useCallback(
-		(id: string, rowIndex: number, cellIndex: number, active: boolean) => {
-			setCell(id, rowIndex, cellIndex, active);
-		},
-		[setCell],
-	);
-
 	function handleMouseMove(event: React.MouseEvent) {
 		mousePosition.current = { x: event.clientX, y: event.clientY };
 	}
 
-	function handleManualNoteChange(laneId: string, notes: number[]) {
+	function handleDrumNoteChange(laneId: string, notes: number[]) {
 		props.setLaneProperty(
 			laneId,
 			'notes',
@@ -121,6 +107,10 @@ function Main(props: IMainProps) {
 				}),
 			),
 		);
+	}
+
+	function handleRollNoteChange(laneId: string, notes: INote[]) {
+		props.setLaneProperty(laneId, 'notes', notes);
 	}
 
 	function handleManualInstrumentChange(laneId: string, synthName: string) {
@@ -208,10 +198,9 @@ function Main(props: IMainProps) {
 	}
 
 	function renderLane(lane: AnyLane, laneIndex: number) {
-		const availableInstruments = (lane.laneType === 'PianoRoll'
-			? noteSynths
-			: drumSynths
-		).map((synth) => synth.name);
+		const availableInstruments = (lane.laneType === 'PianoRoll' ? noteSynths : drumSynths).map(
+			(synth) => synth.name,
+		);
 
 		return (
 			<Lane
@@ -251,6 +240,10 @@ function Main(props: IMainProps) {
 										zeroPitch={lane.zeroPitch}
 										initialNotes={rollLane.notes}
 										tree={lane.rhythmTree}
+										onChange={(notes) => {
+											console.log('roll change');
+											handleRollNoteChange(lane.laneId, notes);
+										}}
 									/>
 								) : (
 									getPreviewForRollLane(rollLane, () => setViewMode!('Expanded'))
@@ -267,7 +260,7 @@ function Main(props: IMainProps) {
 							height={30}
 							notes={lane.notes.map((note) => note.treePointIndex)}
 							tree={lane.rhythmTree}
-							onChange={(notes) => handleManualNoteChange(lane.laneId, notes)}
+							onChange={(notes) => handleDrumNoteChange(lane.laneId, notes)}
 							noteColor={lane.color}
 						/>
 					);
