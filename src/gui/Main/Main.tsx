@@ -146,7 +146,8 @@ function Main(props: IMainProps) {
 	}
 
 	function handleManualAddDiatonicLane() {
-		props.addLane(newLaneForSynth(noteSynths[0].name));
+		const newLane = setLaneTree(newLaneForSynth(noteSynths[0].name), props.masterRhythmTree);
+		props.addLane(newLane);
 	}
 
 	function handleDeleteButton() {
