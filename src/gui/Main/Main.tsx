@@ -31,6 +31,8 @@ import { requestInviteLink } from '../../client/rest/requests';
 import { SessionStatus } from './SessionStatus';
 import { MainTopPanel } from './MainTopPanel';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
+import ReactModal from 'react-modal';
+import { FileModal } from './FileModal';
 
 export interface IMainProps {
 	userInfo: { name: string };
@@ -58,6 +60,7 @@ function Main(props: IMainProps) {
 	const contentDivRef = useRef<HTMLDivElement>(null);
 
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
+	const [showFileModal, setShowFileModal] = useState<boolean>(false);
 
 	const { onMousePositionUpdate } = props;
 
@@ -198,6 +201,10 @@ function Main(props: IMainProps) {
 		}
 	}
 
+	function handleFileButton() {
+		setShowFileModal(!showFileModal);
+	}
+
 	function renderLane(lane: AnyLane, laneIndex: number) {
 		const availableInstruments = (lane.laneType === 'PianoRoll' ? noteSynths : drumSynths).map(
 			(synth) => synth.name,
@@ -297,6 +304,7 @@ function Main(props: IMainProps) {
 					onAddDiatonic={handleManualAddDiatonicLane}
 					onTrash={handleDeleteButton}
 					onInvite={handleInviteButton}
+					onFileButton={() => setShowFileModal(true)}
 					onRotateLeft={() => props.rotate(-1)}
 					onRotateRight={() => props.rotate(1)}
 				/>
@@ -328,8 +336,15 @@ function Main(props: IMainProps) {
 			{!local && props.saveState !== 'Clean' && (
 				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
 			)}
+
+			<FileModal 
+				isOpen={showFileModal}
+				onClose={() => setShowFileModal(false)}
+				/>
 		</div>
 	);
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
+
+

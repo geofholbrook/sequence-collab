@@ -55,12 +55,3 @@ header {
 	/* bottom: 0px; */
 	/* overflow: hidden; */
 }
-
-footer {
-	background-color: cornflowerblue;
-	position: absolute;
-	bottom: 0px;
-	height: 50px;
-	left: 0px;
-	right: 0px;
-}
