@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
 import { connect } from 'react-redux';
 
-import { IPoint, subtractPoints } from '@musicenviro/base';
+import { IPoint, subtractPoints, consoleDeleteMe, showJSON } from '@musicenviro/base';
 import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
 
 import {
@@ -34,7 +34,7 @@ import { FileModal } from './FileModal';
 
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
-import { requestInviteLink } from '../../client/rest/requests';
+import { requestInviteLink, requestFileListForUser } from '../../client/rest/requests';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
 
 export interface IMainProps {
@@ -204,8 +204,8 @@ function Main(props: IMainProps) {
 		}
 	}
 
-	function handleFileButton() {
-		setShowFileModal(!showFileModal);
+	async function handleFileButton() {
+		setShowFileModal(true);
 	}
 
 	function renderLane(lane: AnyLane, laneIndex: number) {
@@ -307,7 +307,7 @@ function Main(props: IMainProps) {
 					onAddDiatonic={handleManualAddDiatonicLane}
 					onTrash={handleDeleteButton}
 					onInvite={handleInviteButton}
-					onFileButton={() => setShowFileModal(true)}
+					onFileButton={handleFileButton}
 					onRotateLeft={() => props.rotate(-1)}
 					onRotateRight={() => props.rotate(1)}
 				/>
@@ -343,10 +343,7 @@ function Main(props: IMainProps) {
 			<FileModal 
 				isOpen={showFileModal}
 				onClose={() => setShowFileModal(false)}
-				files={[
-					{name: "temp.scene", version: "0.4.1", createdStamp: 1590509834674, lastUpdatedStamp: 1590509834674},
-					{name: "keep.scene", version: "0.4.1", createdStamp: 1590509234674, lastUpdatedStamp: 1590509234674}
-				]}
+				username={props.userInfo.name}
 				/>
 		</div>
 	);

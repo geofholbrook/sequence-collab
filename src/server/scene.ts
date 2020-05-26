@@ -57,8 +57,6 @@ export async function loadScene(path: string) {
 	const original = JSON.parse(buffer.toString());
 	const scene = backwardCompat(original);
 
-	console.log(scene.reduxState.masterRhythmTree)
-
 	return scene;
 }
 

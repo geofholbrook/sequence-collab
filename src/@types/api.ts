@@ -1,4 +1,5 @@
 import { IScene } from "./state";
+import { IFileDescription } from ".";
 
 export interface ICreateUserParams {
     name: string;
@@ -67,4 +68,14 @@ export interface IRequestSessionEntryResponse {
     success: boolean;
     message: string;
     scene?: IScene;
+}
+
+export interface IFileListQuery {
+    username: string;
+}
+
+export interface IFileListResponse {
+    success: boolean;
+    message: string;
+    fileList?: IFileDescription[];
 }

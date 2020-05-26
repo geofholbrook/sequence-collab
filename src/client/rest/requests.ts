@@ -1,5 +1,5 @@
 import superagent from 'superagent';
-import { ILoginResponse, ISignupResponse, IRequestInviteLinkResponse, IRequestSessionEntryResponse } from "../../@types";
+import { ILoginResponse, ISignupResponse, IRequestInviteLinkResponse, IRequestSessionEntryResponse, IFileListResponse } from "../../@types";
 import { local, nodeDropletIP } from '../../config';
 
 const apiURL = local ? 'http://localhost:4040/api' : `https://${nodeDropletIP}/api`;
@@ -12,10 +12,14 @@ export async function requestSignup(name: string) {
 	return doJsonPost<ISignupResponse>('/signup', { name })
 }
 
-export async function requestOnlineusers(): Promise<string[]> {
-	const res = await doJsonGet('/users/online')
-	return res as string[]
+export  function requestOnlineusers(): Promise<string[]> {
+	return doJsonGet<string[]>('/users/online')
 }
+
+export function requestFileListForUser(username: string): Promise<IFileListResponse> {
+	return doJsonGet<IFileListResponse>('/scene/ls', {username})
+}
+
 
 export async function requestInviteLink(hostUsername: string): Promise<IRequestInviteLinkResponse> {
 	const res = await doJsonGet('/request-invite-link', { hostUsername })
@@ -43,7 +47,7 @@ export async function doJsonPost<T>(path: string, payload: object): Promise<T> {
 	});
 }
 
-export async function doJsonGet(path: string, query: object = {}) {
+export async function doJsonGet<T>(path: string, query: object = {}): Promise<T> {
 	return new Promise((resolve, reject) => {
 		superagent
 			.get(apiURL + path)

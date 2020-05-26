@@ -2,7 +2,7 @@ import fs from 'fs';
 import bodyParser from 'body-parser';
 import express from 'express';
 import cors from 'cors';
-import { getUsersSync, loginUser, signupUser, getLoggedInUsers } from './users';
+import { getUsersSync, loginUser, signupUser, getLoggedInUsers, getFileListForUser } from './users';
 import { storageRoot } from './dataPath';
 import { ILoginParams } from "../@types";
 
@@ -44,7 +44,8 @@ export function initRestApi(): Promise<Express.Application> {
 
 		createPostRoute('/api/signup', signupUser);
 		createGetRoute('/api/users/online', getLoggedInUsers)
-
+		
+		createGetRoute('/api/scene/ls', getFileListForUser)
 		createPostRoute('/api/scene/save', serveSaveSceneRequest, false);
 		createGetRoute('/api/scene/load', serveLoadSceneRequest);
 

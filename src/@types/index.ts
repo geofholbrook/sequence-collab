@@ -31,3 +31,10 @@ export interface IOnlineUser {
     name: string;
     sessionId: string;
 }
+
+export interface IFileDescription {
+    name: string;
+    version: string;
+    createdStamp: Timestamp;
+    lastUpdatedStamp: Timestamp;
+}
