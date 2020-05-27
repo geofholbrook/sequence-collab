@@ -2,25 +2,28 @@ import React, { useState } from 'react';
 import Modal, { Styles } from 'react-modal';
 import { Button, List, Image, Header } from 'semantic-ui-react';
 import FileIcon from './resources/iconmonstr-party-21-240.png';
-import { Timestamp } from '@musicenviro/base';
 import { IFileDescription } from '../../@types';
 import { requestFileListForUser } from '../../client/rest/requests';
 
+import relativeDate from 'relative-date';
+
 Modal.setAppElement('#root');
 
-interface IFileModelProps {
+interface IFileModalProps {
 	isOpen: boolean;
 	username: string;
 	onClose: () => void;
+	onOpenFile: (filename: string) => void
 }
 
-const defaultProps: Required<IFileModelProps> = {
+const defaultProps: Required<IFileModalProps> = {
 	isOpen: false,
 	username: '',
 	onClose: () => {},
+	onOpenFile: (filename: string) => {}
 };
 
-export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
+export const FileModal: React.FunctionComponent<IFileModalProps> = (props) => {
 	const [selectedFile, setSelectedFile] = useState<string>();
 	const [fileList, setFileList] = useState<IFileDescription[]>([]);
 	const [serverError, setServerError] = useState<string>();
@@ -37,6 +40,7 @@ export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
 
 	async function handleAfterOpen() {
 		const res = await requestFileListForUser(props.username);
+
 		if (res.success) {
 			setFileList(res.fileList!);
 		} else {
@@ -44,15 +48,32 @@ export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
 		}
 	}
 
+	function handleOpenButton() {
+		alert('not implemented');
+	}
+	function handleTrashButton() {
+		alert('not implemented');
+	}
+	function handleNewFileButton() {
+		alert('not implemented');
+	}
+
 	return (
 		<Modal isOpen={props.isOpen} style={style} onAfterOpen={handleAfterOpen}>
-			
 			<div className="button-header">
-				<Button className="close-button" onClick={props.onClose}>
-					Close
-				</Button>
+				
+				<Button.Group basic className="file-modal-buttons">
+					<Button icon="trash" onClick={handleTrashButton} />
+					<Button icon="folder open outline" onClick={handleOpenButton} />
+					<Button icon="file" onClick={handleNewFileButton} />
+					
+				</Button.Group>
+				
+					<Button primary onClick={props.onClose}>
+						Close
+					</Button>
 			</div>
-			
+
 			<Header>Saved Scenes</Header>
 
 			{serverError ? (
@@ -61,7 +82,6 @@ export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
 					<p>{serverError}</p>
 				</div>
 			) : (
-				
 				<List celled>
 					{fileList.map((file) => {
 						return (
@@ -69,12 +89,15 @@ export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
 								key={file.name}
 								className={selectedFile === file.name ? 'selected' : ''}
 								onClick={() => setSelectedFile(file.name)}
+								onDoubleClick={() => props.onOpenFile(file.name)}
 							>
 								<Image avatar src={FileIcon} />
 								<List.Content>
 									<List.Header>{file.name}</List.Header>
-									&emsp; created: &nbsp;{' '}
-									{new Date(file.createdStamp).toLocaleString()}
+									&emsp; created{' '}
+									{relativeDate(file.createdStamp).toLocaleString()}
+									&emsp; modified{' '}
+									{relativeDate(file.lastUpdatedStamp).toLocaleString()}
 									&emsp; version: &nbsp; {file.version}
 								</List.Content>
 							</List.Item>
@@ -82,8 +105,6 @@ export const FileModal: React.FunctionComponent<IFileModelProps> = (props) => {
 					})}
 				</List>
 			)}
-
-
 		</Modal>
 	);
 };

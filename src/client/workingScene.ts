@@ -1,7 +1,8 @@
 import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
-import { currentSceneVersion, IScene, getStateToSave } from '../@types';
+import { IScene, getStateToSave } from '../@types';
 import { AppStore } from '../redux';
 import { initialState } from "../initialState";
+import { currentVersion } from '../server/compat';
 
 export async function saveWorkingScene(store: AppStore) {
 	const stateToSave = getStateToSave(store.getState())
@@ -13,8 +14,8 @@ export async function saveWorkingScene(store: AppStore) {
 	});
 
 	const res = await saveSceneToServer(store.getState().user, {
-		version: currentSceneVersion,
-		name: 'temp',
+		version: currentVersion,
+		name: store.getState().currentSceneName,
 		reduxState: stateToSave,
 	});
 
@@ -30,7 +31,7 @@ export async function saveWorkingScene(store: AppStore) {
 export async function loadWorkingScene(store: AppStore) {
 	const username = store.getState().user;
 	console.log('loadWorkingScene', username)
-	const res = await loadSceneFromServer(username, 'temp');
+	const res = await loadSceneFromServer(username, 'Untitled.scene');
 
 	if (res.success) {
 		const scene = res.scene as IScene;

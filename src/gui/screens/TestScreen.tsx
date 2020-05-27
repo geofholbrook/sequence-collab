@@ -4,7 +4,7 @@ import { loadSceneFromServer } from '../../client/rest/scene';
 
 export function TestRequests() {
 	async function loadWorkingScene() {
-        const res = await loadSceneFromServer('geof', 'temp')
+        const res = await loadSceneFromServer('geof', 'Untitled.scene')
         console.log(res)
     }
     

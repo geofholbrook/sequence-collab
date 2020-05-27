@@ -19,7 +19,7 @@ export function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {
 				type: 'SET_USER',
 				user: username,
 			});
-			const res = await loadSceneFromServer(username, 'temp');
+			const res = await loadSceneFromServer(username, 'Untitled.scene');
 			if (res.success) {
 				const scene = res.scene!;
 				dispatch({

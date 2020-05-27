@@ -38,3 +38,8 @@ export interface IFileDescription {
     createdStamp: Timestamp;
     lastUpdatedStamp: Timestamp;
 }
+
+
+// -----------------------------------------------------------------------------
+// some definite typing
+// -----------------------------------------------------------------------------

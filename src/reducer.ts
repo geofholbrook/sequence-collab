@@ -1,9 +1,7 @@
-import { modifyLaneCell, getRhythmPoints } from '@musicenviro/ui-elements';
-import { IReduxState, IVoiceLane, ISingleNoteLane, AnyLane } from './@types';
+import { IReduxState, AnyLane } from './@types';
 import {
 	IReduxAction,
 	ISetRootPropertyAction,
-	IReduxSetCellAction,
 	IAddLaneAction,
 	IDeleteLaneAction,
 	ISetLanePropertyAction,
@@ -14,7 +12,6 @@ import {
 } from './redux';
 import { initialState } from './initialState';
 import { setLaneTree } from './state-helpers/setLaneTree';
-import { consoleDeleteMe } from '@musicenviro/base';
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined
@@ -128,6 +125,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				return {
 					...state,
 					...action.state,
+					currentSceneName: action.sceneName || 'Untitled.scene'
 				};
 			}
 			case 'SET_USER': {

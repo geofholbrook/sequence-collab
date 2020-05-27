@@ -1,47 +1,65 @@
-import { ILane, LaneProperties } from '../../@types';
+import { LaneProperties, IScene, AnyLane } from '../../@types';
+
 import { Dispatch } from 'redux';
-import { IReduxAction, IReduxSetCellAction } from '../../redux';
+
+import {
+	IReduxAction,
+	IReduxLoadStateAction,
+	IAddLaneAction,
+	IDeleteLaneAction,
+	ISetLanePropertyAction,
+	IRotateAction,
+} from '../../redux';
 
 export function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {
 	return {
-		setCell: (laneId: string, rowIndex: number, cellIndex: number, active: boolean) =>
-			dispatch<IReduxSetCellAction>({
-				type: 'SET_CELL',
-				broadcast: true,
-				rowIndex,
-				laneId,
-				cellIndex,
-				active,
-			}),
-		addLane: (lane: ILane, after?: string) =>
-			dispatch({
+		onSuccessfulFileOpen: (scene: IScene) => {
+			const action: IReduxLoadStateAction = {
+				type: 'LOAD_STATE',
+				broadcast: false,
+				state: scene.reduxState,
+				sceneName: scene.name,
+			};
+			dispatch(action);
+		},
+
+		addLane: (lane: AnyLane, after?: string) => {
+			const action: IAddLaneAction = {
 				type: 'ADD_LANE',
 				broadcast: true,
 				lane,
-				after
-			}),
-		deleteLane: (laneId: string) =>
-			dispatch({
+				after,
+			};
+			dispatch(action);
+		},
+
+		deleteLane: (laneId: string) => {
+			const action: IDeleteLaneAction = {
 				type: 'DELETE_LANE',
 				broadcast: true,
 				laneId,
-			}),
-		setLaneProperty: (
-			laneId: string,
-			property: LaneProperties,
-			value: any,
-		) =>
-			dispatch({
+			};
+			dispatch(action);
+		},
+
+		setLaneProperty: (laneId: string, property: LaneProperties, value: any) => {
+			const action: ISetLanePropertyAction = {
 				type: 'SET_LANE_PROPERTY',
 				broadcast: true,
 				laneId,
 				property,
 				value,
-			}),
-		rotate: (amount: number) => dispatch({
-			type: 'ROTATE',
-			broadcast: true,
-			amount
-		})
+			};
+			dispatch(action);
+		},
+
+		rotate: (amount: number) => {
+			const action: IRotateAction = {
+				type: 'ROTATE',
+				broadcast: true,
+				amount,
+			};
+			dispatch(action);
+		},
 	};
 }

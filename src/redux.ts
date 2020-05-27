@@ -46,6 +46,7 @@ export interface IReduxSetCellAction extends IReduxAction {
 export interface IReduxLoadStateAction extends IReduxAction {
 	type: 'LOAD_STATE';
 	state: ISavedState;
+	sceneName?: string;
 }
 
 export interface IReduxSetUserAction extends IReduxAction {

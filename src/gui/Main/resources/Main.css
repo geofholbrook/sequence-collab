@@ -47,6 +47,6 @@ header .session-status .user-list {
 
 
 .item.selected {
-
-    background-color: lightyellow
+    background-color: lightblue;
+    /* color: white; */
 }

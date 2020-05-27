@@ -1,5 +1,5 @@
 import { ISavedState_0_3_1, IRollLane } from "../@types/compat/savedState_0_3_1"
-import { IScene, getStateToSave, IReduxState, ISingleNoteLane, PropTime, currentSceneVersion } from "../@types";
+import { IScene, getStateToSave, IReduxState, ISingleNoteLane, PropTime } from "../@types";
 import { initialState } from "../initialState";
 import { tree44, getRhythmPoints, INote, ILaneData } from "@musicenviro/ui-elements";
 import { getColorFromString } from "../gui/Main/colors";
@@ -17,12 +17,12 @@ const versionHistory = [
     }
 ]
 
-export function convertOldScene(rawScene: any): IScene {
+export function backwardCompat(rawScene: any): IScene {
     if (rawScene.version < '0.2.1') {
         // fuck it, it's trash.
         return {
 			name: rawScene.name,
-            version: "0.3.1",
+            version: currentVersion,
 			reduxState: getStateToSave(initialState),
 		};
 	} 
@@ -31,11 +31,11 @@ export function convertOldScene(rawScene: any): IScene {
 
         // if the scene is older than 0.3.1, use the old backwardCompat function
         // we hadn't done serial single-version bumping yet
-        return convertOldScene(convertTo_0_3_1(rawScene))
+        return backwardCompat(convertTo_0_3_1(rawScene))
     }
 
     switch (rawScene.version) {
-        case "0.3.1": return convertOldScene(convertTo_0_4_0(rawScene as IScene<ISavedState_0_3_1>))
+        case "0.3.1": return backwardCompat(convertTo_0_4_0(rawScene as IScene<ISavedState_0_3_1>))
         case "0.4.0": return rawScene as IScene;
         default: throw new Error("can't handle this version")
     }
@@ -121,7 +121,7 @@ function convertTo_0_3_1(rawScene: any): IScene<ISavedState_0_3_1> {
 					}
 				})
 			},
-			version: currentSceneVersion,
+			version: "0.3.1",
 		}
 	} else {
 		return {
@@ -131,7 +131,7 @@ function convertTo_0_3_1(rawScene: any): IScene<ISavedState_0_3_1> {
 				...rawScene.reduxState,
 				// masterRhythmTree: initialState.masterRhythmTree,
 			},
-			version: currentSceneVersion,
+			version: "0.3.1",
 		}
 
 	}

@@ -12,6 +12,7 @@ import {
 	ISession,
 	IPianoRollLane,
 	AnyLane,
+	IScene,
 } from '../../@types';
 
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
@@ -36,9 +37,10 @@ import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
 import { requestInviteLink, requestFileListForUser } from '../../client/rest/requests';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
+import { loadSceneFromServer } from '../../client/rest/scene';
 
 export interface IMainProps {
-	userInfo: { name: string };
+	userInfo: { name: string, currentSceneName: string };
 	sessionInfo: ISession | null;
 	saveState: SaveState;
 	masterRhythmTree: IRhythmTree;
@@ -51,11 +53,11 @@ export interface IMainProps {
 	onMousePositionUpdate: (point: IPoint) => void;
 
 	// dispatch mappings
-	setCell: (laneId: string, rowIndex: number, cellIndex: number, active: boolean) => void;
-	addLane: (lane: ILane, after?: string) => void;
+	addLane: (lane: AnyLane, after?: string) => void;
 	deleteLane: (laneId: string) => void;
 	setLaneProperty: (laneId: string, property: LaneProperties, value: any) => void;
 	rotate: (amount: number) => void;
+	onSuccessfulFileOpen: (scene: IScene) => void;
 }
 
 function Main(props: IMainProps) {
@@ -208,6 +210,20 @@ function Main(props: IMainProps) {
 		setShowFileModal(true);
 	}
 
+	async function handleFileModalOpen(fileName: string) {
+		if (props.saveState === 'Clean') {
+			consoleDeleteMe('ok')
+
+			const res = await loadSceneFromServer(props.userInfo.name, fileName)
+			if (res.success) {
+				props.onSuccessfulFileOpen(res.scene!)
+				setShowFileModal(false)
+			} else {
+				console.log(res)
+			}
+		}
+	}
+
 	function renderLane(lane: AnyLane, laneIndex: number) {
 		const availableInstruments = (lane.laneType === 'PianoRoll' ? noteSynths : drumSynths).map(
 			(synth) => synth.name,
@@ -287,12 +303,14 @@ function Main(props: IMainProps) {
 		<div className="Screen MainScreen" onMouseMove={handleMouseMove}>
 			<header>
 				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
-				<SessionStatus sessionInfo={props.sessionInfo} user={props.userInfo.name} />
-				<SaveStateDisplay saveState={props.saveState} />
+				&emsp; editing scene: <span style={{ color: 'lightgreen' }}>{props.userInfo.currentSceneName}</span>
+				&emsp; <SessionStatus sessionInfo={props.sessionInfo} user={props.userInfo.name} />
+				&emsp; <SaveStateDisplay saveState={props.saveState} />
+				
 			</header>
 
 			<div
-				className="content foo"
+				className="content"
 				ref={contentDivRef}
 				onClick={(e) => {
 					if ((e.target as HTMLElement).className.split(' ').includes('content')) {
@@ -343,6 +361,7 @@ function Main(props: IMainProps) {
 			<FileModal 
 				isOpen={showFileModal}
 				onClose={() => setShowFileModal(false)}
+				onOpenFile={handleFileModalOpen}
 				username={props.userInfo.name}
 				/>
 		</div>

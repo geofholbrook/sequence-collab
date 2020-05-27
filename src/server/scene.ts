@@ -1,32 +1,23 @@
 import * as fs from 'fs';
-import { v1 as uuid } from 'uuid';
 
 import {
 	ISaveSceneParams,
 	ISaveSceneResponse,
 	ILoadSceneParams,
 	ILoadSceneResponse,
-	ILane,
-	getStateToSave,
-	IReduxState,
-	ISingleNoteLane,
-	PropTime,
 } from '../@types';
 
-import { currentSceneVersion, IScene } from '../@types';
-
+import { IScene } from '../@types';
 import { storageRoot } from './dataPath';
-
 import { promisify } from 'util';
 
-import { initialState } from '../initialState';
-import { tree44, getRhythmPoints } from '@musicenviro/ui-elements';
+import { backwardCompat } from './compat';
 
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
 export function getScenePath(user: string, sceneName: string) {
-	return `/users/${user}/scenes/${sceneName}.scene`;
+	return `/users/${user}/scenes/${sceneName}`;
 }
 
 export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
@@ -78,68 +69,5 @@ export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<I
 			message: e.message,
 			scene: null,
 		};
-	}
-}
-
-function backwardCompat(rawScene: any): IScene {
-	if (rawScene.version < '0.2.1') {
-		return {
-			name: rawScene.name,
-			version: currentSceneVersion,
-			reduxState: getStateToSave(initialState),
-		};
-	} else if (rawScene.version < '0.3') {
-		return {
-			...rawScene,
-			reduxState: {
-				...getStateToSave(initialState),
-				...rawScene.reduxState,
-				lanes: (rawScene.reduxState as IReduxState).lanes.map(lane => {
-					const drumLane = lane as ISingleNoteLane & { loopTimes: PropTime[] }
-					if (lane.laneType === 'SingleNoteLane') {
-						// convert from an assumed-4/4 16th note grid with prop times
-						const result: ISingleNoteLane = {
-							rhythmTree: tree44,
-							...lane,
-							treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),
-							notes: drumLane.loopTimes.map(time => ({
-								treePointIndex: time * 16
-							}))
-						}
-						return result
-					} else {
-						return lane
-					}
-				})
-			},
-			version: currentSceneVersion,
-		}
-	} else {
-		return {
-			...rawScene,
-			reduxState: {
-				...getStateToSave(initialState),
-				...rawScene.reduxState,
-				// masterRhythmTree: initialState.masterRhythmTree,
-			},
-			version: currentSceneVersion,
-		}
-
-		// return {
-		// 	...rawScene,
-		// 	lanes: rawScene.lanes.map((lane:any) => !!lane.laneId ? lane : {
-		// 		...lane,
-		// 		laneId: uuid()
-		// 	})
-		// }
-
-		// this doesn't work
-		// return {
-		// 	...rawScene,
-		// 	reduxState: {
-		// 		...rawScene.reduxState,
-		// 		lanes: rawScene.lanes.map((lane: any) => laneBackwardCompat(lane, rawScene.version)),
-		// 	},
-		// };
 	}
 }
