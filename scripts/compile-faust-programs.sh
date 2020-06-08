@@ -24,7 +24,7 @@ for file in ${FAUSTDIR}/dsp-files/*.dsp; do
 
     # generate files (use environment variable to use modified CODE_WRAPPER (template) files)
     FAUSTARCH="${FAUSTDIR}/modified-arch-files" faust2wasm -worklet $file
-    sed -i '1s/^/\/* eslint-disable *\/ \n/' ${MODULENAME}.js
+    # sed -i '1s/^/\/* eslint-disable *\/ \n/' ${MODULENAME}.js
     echo '/* eslint-disable */' | cat - ${MODULENAME}.js > tempworkletnode.js && mv tempworkletnode.js ${MODULENAME}.js
 
     # put them in their places
