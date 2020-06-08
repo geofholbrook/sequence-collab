@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
 import { connect } from 'react-redux';
 
-import { IPoint, subtractPoints, consoleDeleteMe, showJSON } from '@musicenviro/base';
+import { IPoint, subtractPoints } from '@musicenviro/base';
 import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
 
 import {
@@ -32,15 +32,15 @@ import { SessionStatus } from './SessionStatus';
 import { ViewContext } from '../components/ViewContext';
 import { FileModal } from './FileModal';
 
-
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
 import { requestInviteLink, requestFileListForUser } from '../../client/rest/requests';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
-import { loadSceneFromServer } from '../../client/rest/scene';
+import { loadSceneFromServer, saveSceneToServer } from '../../client/rest/scene';
+import { SaveAsModal } from './SaveAsModal';
 
 export interface IMainProps {
-	userInfo: { name: string, currentSceneName: string };
+	userInfo: { name: string; currentSceneName: string };
 	sessionInfo: ISession | null;
 	saveState: SaveState;
 	masterRhythmTree: IRhythmTree;
@@ -51,6 +51,7 @@ export interface IMainProps {
 	onStartAudio: () => void;
 	onStopAudio: () => void;
 	onMousePositionUpdate: (point: IPoint) => void;
+	onSaveAs: (filename: string) => void;
 
 	// dispatch mappings
 	addLane: (lane: AnyLane, after?: string) => void;
@@ -66,6 +67,7 @@ function Main(props: IMainProps) {
 
 	const [selectedLaneId, setSelectedLaneId] = useState<string>();
 	const [showFileModal, setShowFileModal] = useState<boolean>(false);
+	const [showSaveAsModal, setShowSaveAsModel] = useState<boolean>(false);
 
 	const { onMousePositionUpdate } = props;
 
@@ -206,20 +208,22 @@ function Main(props: IMainProps) {
 		}
 	}
 
-	async function handleFileButton() {
+	async function handleOpenButton() {
 		setShowFileModal(true);
+	}
+
+	async function handleSaveButton() {
+		setShowSaveAsModel(true);
 	}
 
 	async function handleFileModalOpen(fileName: string) {
 		if (props.saveState === 'Clean') {
-			consoleDeleteMe('ok')
-
-			const res = await loadSceneFromServer(props.userInfo.name, fileName)
+			const res = await loadSceneFromServer(props.userInfo.name, fileName);
 			if (res.success) {
-				props.onSuccessfulFileOpen(res.scene!)
-				setShowFileModal(false)
+				props.onSuccessfulFileOpen(res.scene!);
+				setShowFileModal(false);
 			} else {
-				console.log(res)
+				console.log(res);
 			}
 		}
 	}
@@ -303,10 +307,10 @@ function Main(props: IMainProps) {
 		<div className="Screen MainScreen" onMouseMove={handleMouseMove}>
 			<header>
 				logged in as <span style={{ color: 'lightblue' }}>{props.userInfo.name}</span>
-				&emsp; editing scene: <span style={{ color: 'lightgreen' }}>{props.userInfo.currentSceneName}</span>
+				&emsp; editing scene:{' '}
+				<span style={{ color: 'lightgreen' }}>{props.userInfo.currentSceneName}</span>
 				&emsp; <SessionStatus sessionInfo={props.sessionInfo} user={props.userInfo.name} />
 				&emsp; <SaveStateDisplay saveState={props.saveState} />
-				
 			</header>
 
 			<div
@@ -325,7 +329,8 @@ function Main(props: IMainProps) {
 					onAddDiatonic={handleManualAddDiatonicLane}
 					onTrash={handleDeleteButton}
 					onInvite={handleInviteButton}
-					onFileButton={handleFileButton}
+					onOpenButton={handleOpenButton}
+					onSaveButton={handleSaveButton}
 					onRotateLeft={() => props.rotate(-1)}
 					onRotateRight={() => props.rotate(1)}
 				/>
@@ -358,16 +363,24 @@ function Main(props: IMainProps) {
 				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
 			)}
 
-			<FileModal 
+			<FileModal
 				isOpen={showFileModal}
 				onClose={() => setShowFileModal(false)}
 				onOpenFile={handleFileModalOpen}
 				username={props.userInfo.name}
-				/>
+			/>
+
+			<SaveAsModal
+				isOpen={showSaveAsModal}
+				onCancel={() => setShowSaveAsModel(false)}
+				onSubmit={async (filename) => {
+					setShowSaveAsModel(false)
+					props.onSaveAs(filename)
+				}}
+				initialFileName="foo"
+			/>
 		</div>
 	);
 }
 
 export const MainConnected = connect(mapStateToMainProps, mapDispatchToMainProps)(Main);
-
-

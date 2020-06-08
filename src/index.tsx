@@ -12,7 +12,7 @@ import {
 } from './redux';
 import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
 import { saveInterval } from './config';
-import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse, Seconds } from './@types';
+import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse, Seconds, getStateToSave } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { Scheduler } from './sound-generation/Scheduler/Scheduler';
@@ -23,6 +23,7 @@ import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 import { initSamplers } from './sound-generation/sampler';
 import { requestSessionEntry } from './client/rest/requests';
 import { IRhythmTree, nodeUnitLength } from '@musicenviro/ui-elements';
+import { saveSceneToServer } from './client/rest/scene';
 
 class App {
 	store = createAppStore();
@@ -82,6 +83,9 @@ class App {
 
 						return true;
 					}}
+
+					onSaveAs={filename => this.handleSaveAs(filename)}
+
 					inviteSessionId={this.inviteSessionId}
 				/>
 			</Provider>,
@@ -138,6 +142,17 @@ class App {
 			propertyName: 'saveState',
 			value: state,
 		});
+	}
+
+	async handleSaveAs(filename: string) {
+		const action: ISetRootPropertyAction = {
+			type: 'SET_ROOT_PROPERTY',
+			propertyName: 'currentSceneName',
+			value: filename,
+		}
+		
+		this.store.dispatch(action);
+		saveWorkingScene(this.store)
 	}
 
 	checkForInviteLink() {

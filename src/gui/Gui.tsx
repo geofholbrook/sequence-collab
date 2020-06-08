@@ -35,6 +35,7 @@ interface IGuiProps {
 	onStopAudio: () => void;
 	onMousePositionUpdate: (position: IPoint) => void;
 	onLogin: (username: string) => Promise<boolean>;
+	onSaveAs: (filename: string) => void;
 
 	// dispatch mappings
 	setUser: (username: string) => void;
@@ -79,6 +80,7 @@ export function GUI(props: IGuiProps) {
 						onStartAudio={() => props.onStartAudio()}
 						onStopAudio={() => props.onStopAudio()}
 						onMousePositionUpdate={props.onMousePositionUpdate}
+						onSaveAs={props.onSaveAs}
 					/>
 				);
 

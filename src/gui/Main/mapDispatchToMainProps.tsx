@@ -9,6 +9,7 @@ import {
 	IDeleteLaneAction,
 	ISetLanePropertyAction,
 	IRotateAction,
+	ISetRootPropertyAction,
 } from '../../redux';
 
 export function mapDispatchToMainProps(dispatch: Dispatch<IReduxAction>) {

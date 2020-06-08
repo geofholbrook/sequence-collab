@@ -9,10 +9,10 @@ import {
 
 import { IScene } from '../@types';
 import { storageRoot } from './dataPath';
-import { promisify } from 'util';
 
 import { backwardCompat } from './compat';
 
+import { promisify } from 'util';
 const writeFile = promisify(fs.writeFile);
 const readFile = promisify(fs.readFile);
 
@@ -40,11 +40,11 @@ export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<I
 }
 
 export async function saveScene(path: string, scene: IScene) {
-	return writeFile(storageRoot + path, JSON.stringify(scene, null, 4));
+	return fs.promises.writeFile(storageRoot + path, JSON.stringify(scene, null, 4));
 }
 
 export async function loadScene(path: string) {
-	const buffer = await readFile(storageRoot + path);
+	const buffer = await fs.promises.readFile(storageRoot + path);
 	const original = JSON.parse(buffer.toString());
 	const scene = backwardCompat(original);
 

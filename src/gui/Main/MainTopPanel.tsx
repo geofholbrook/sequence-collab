@@ -6,7 +6,6 @@ import { IReduxState } from '../../@types';
 import { Dispatch } from 'redux';
 import { IReduxAction, ISetMasterTreeAction, ISetRootPropertyAction } from '../../redux';
 import { tree_44_16ths, tree_44_triplets, tree_34_16ths } from '../../state-helpers/treePresets';
-import { consoleDeleteMe } from '@musicenviro/base';
 
 interface IMainTopPanelProps {
 	onTrash: () => void;
@@ -17,7 +16,8 @@ interface IMainTopPanelProps {
 	onRotateLeft: () => void;
 	onRotateRight: () => void;
 	onInvite: () => void;
-	onFileButton: () => void;
+	onSaveButton: () => void;
+	onOpenButton: () => void;
 
 	masterRhythmTree: IRhythmTree;
 	masterTempo: number;
@@ -94,8 +94,11 @@ export const MainTopPanel = connect(
 							onChange={e => props.onTempoChange(parseFloat(e.target.value))}
 						/>
 
-						<Button icon floated="right" onClick={props.onFileButton}>
+						<Button icon floated="right" onClick={props.onSaveButton}>
 							<Icon name="save" />
+						</Button>
+						<Button icon floated="right" onClick={props.onOpenButton}>
+							<Icon name="folder open outline" />
 						</Button>
 
 						<Button icon floated="right" labelPosition="left" onClick={props.onInvite}>
