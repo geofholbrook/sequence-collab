@@ -31,7 +31,7 @@ export async function saveWorkingScene(store: AppStore) {
 export async function loadWorkingScene(store: AppStore) {
 	const username = store.getState().user;
 	console.log('loadWorkingScene', username)
-	const res = await loadSceneFromServer(username, 'Untitled.scene');
+	const res = await loadSceneFromServer(username, 'Untitled');
 
 	if (res.success) {
 		const scene = res.scene as IScene;

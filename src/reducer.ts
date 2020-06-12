@@ -125,7 +125,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				return {
 					...state,
 					...action.state,
-					currentSceneName: action.sceneName || 'Untitled.scene'
+					currentSceneName: action.sceneName || 'Untitled'
 				};
 			}
 			case 'SET_USER': {

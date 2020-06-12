@@ -106,12 +106,12 @@ export const MainTopPanel = connect(
 							<Icon name="user plus" />
 						</Button>
 
-						<Button icon floated="right" onClick={props.onRotateRight}>
+						{/* <Button icon floated="right" onClick={props.onRotateRight}>
 							<Icon name="share" />
 						</Button>
 						<Button icon floated="right" onClick={props.onRotateLeft}>
 							<Icon name="reply" />
-						</Button>
+						</Button> */}
 					</Grid.Column>
 				</Grid.Row>
 

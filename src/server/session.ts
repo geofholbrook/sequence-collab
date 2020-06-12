@@ -55,7 +55,7 @@ export async function serveSessionEntryRequest(params: IRequestSessionEntryParam
     // for now just load the most recently saved temp session.
     // TODO: should tell the host that a user is joining, so it can freeze the interface and deliver the current state.
     
-    const hostScene = await loadScene(getScenePath(onlineUsers[session.host].name, 'Untitled.scene'))
+    const hostScene = await loadScene(getScenePath(onlineUsers[session.host].name, 'Untitled'))
     if (!hostScene) {
         return {
             success: false,
