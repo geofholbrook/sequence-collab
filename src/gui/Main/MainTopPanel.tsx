@@ -89,8 +89,8 @@ export const MainTopPanel = connect(
 						<Input
 							label={{ content: 'bpm' }}
 							labelPosition="right"
-							style={{fontSize: "12px", height: 25, width: 50, marginTop: -5}}
-							placeholder={props.masterTempo}
+							style={{fontSize: "12px", height: 25, width: 60, marginTop: -5}}
+							value={props.masterTempo}
 							onChange={e => props.onTempoChange(parseFloat(e.target.value))}
 						/>
 

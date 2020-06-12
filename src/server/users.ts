@@ -18,7 +18,7 @@ import Debug from 'debug';
 const debug = Debug('sj:server:users');
 
 import { promisify } from 'util';
-import { allowDuplicateLogins } from '../config';
+import { allowDuplicateLogins, workingFileName } from '../config';
 import { onlineUsers, sessions } from './storage';
 
 import util from 'util'
@@ -56,6 +56,10 @@ export async function getFileListForUser(params: IFileListQuery): Promise<IFileL
 
 		while (dir.length > 0) {
 			const filename = dir.pop()
+			if (filename === workingFileName) {
+				continue				
+			}
+
 			const filepath = path + '/' + filename;
 			const stats = await stat(filepath)
 

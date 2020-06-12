@@ -4,7 +4,7 @@ export function mapStateToMainProps(state: IReduxState) {
 	return {
 		userInfo: {
 			name: state.user,
-			currentSceneName: state.currentSceneName
+			currentSceneName: state.sceneName
 		},
 		sessionInfo: state.sessionInfo || null,
 		saveState: state.saveState,

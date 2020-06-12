@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal, { Styles } from 'react-modal';
 import { Button, Input, Form } from 'semantic-ui-react';
 
@@ -26,6 +26,8 @@ interface ISaveAsModalProps {
 export const SaveAsModal: React.FunctionComponent<ISaveAsModalProps> = (props) => {
 	const [fileName, setFileName] = useState<string>(props.initialFileName);
 
+	useEffect(() => setFileName(props.initialFileName), [props.initialFileName]);
+
 	return (
 		<Modal isOpen={props.isOpen} style={customStyles}>
 			<h3>save as:</h3>
@@ -35,7 +37,7 @@ export const SaveAsModal: React.FunctionComponent<ISaveAsModalProps> = (props) =
 					Cancel
 				</Button>
 
-				<Button primary floated="right" type="submit">
+				<Button primary floated="right" type="submit" disabled={fileName.trim().length === 0}>
 					Ok
 				</Button>
 			</Form>

@@ -10,8 +10,8 @@ import {
 	IReduxLoadStateAction,
 	IReduxSetUserAction,
 } from './redux';
-import { saveWorkingScene, loadWorkingScene } from './client/workingScene';
-import { saveInterval } from './config';
+import { saveScene, loadWorkingScene } from './client/workingScene';
+import { saveInterval, workingFileName } from './config';
 import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse, Seconds, getStateToSave } from './@types';
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
@@ -23,11 +23,10 @@ import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 import { initSamplers } from './sound-generation/sampler';
 import { requestSessionEntry } from './client/rest/requests';
 import { IRhythmTree, nodeUnitLength } from '@musicenviro/ui-elements';
-import { saveSceneToServer } from './client/rest/scene';
 
 class App {
 	store = createAppStore();
-	saveTimer = saveInterval && setInterval(() => saveWorkingScene(this.store), saveInterval);
+	saveTimer = saveInterval && setInterval(() => saveScene(this.store, workingFileName), saveInterval);
 
 	scheduler = new Scheduler<ISynthNote>();
 	ac!: AudioContext;
@@ -152,7 +151,7 @@ class App {
 		}
 		
 		this.store.dispatch(action);
-		saveWorkingScene(this.store)
+		saveScene(this.store, action.value)
 	}
 
 	checkForInviteLink() {

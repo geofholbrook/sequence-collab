@@ -30,6 +30,7 @@ export interface ISignupResponse {
 export interface ISaveSceneParams {
     user: string;
     scene: IScene;
+    filename: string;
 }
 export interface ISaveSceneResponse {
     success: boolean;

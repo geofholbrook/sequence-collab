@@ -21,7 +21,7 @@ export function getScenePath(user: string, sceneName: string) {
 }
 
 export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
-	const path = getScenePath(params.user, params.scene.name);
+	const path = getScenePath(params.user, params.filename);
 
 	try {
 		await saveScene(path, params.scene);

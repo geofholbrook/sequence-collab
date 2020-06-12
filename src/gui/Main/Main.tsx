@@ -18,7 +18,7 @@ import {
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
-import { local, cycleDrumSynthsWhenAdding } from '../../config';
+import { local, cycleDrumSynthsWhenAdding, untitledSceneName } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './resources/Main.css';
@@ -374,10 +374,14 @@ function Main(props: IMainProps) {
 				isOpen={showSaveAsModal}
 				onCancel={() => setShowSaveAsModel(false)}
 				onSubmit={async (filename) => {
-					setShowSaveAsModel(false)
-					props.onSaveAs(filename)
+					setShowSaveAsModel(false);
+					props.onSaveAs(filename);
 				}}
-				initialFileName="foo"
+				initialFileName={
+					props.userInfo.currentSceneName === untitledSceneName
+						? ''
+						: props.userInfo.currentSceneName
+				}
 			/>
 		</div>
 	);

@@ -1,13 +1,10 @@
 import { IScene } from "../../@types";
 import { doJsonPost, doJsonGet } from "./requests";
-import { ISaveSceneResponse, ILoadSceneResponse } from "../../@types/api";
+import { ISaveSceneResponse, ILoadSceneResponse, ISaveSceneParams } from "../../@types/api";
 
 
-export async function saveSceneToServer(user: string, scene: IScene): Promise<ISaveSceneResponse> {
-    const res = await doJsonPost('/scene/save', {
-        user,
-        scene
-    })
+export async function saveSceneToServer(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
+    const res = await doJsonPost('/scene/save', params)
     return res as ISaveSceneResponse;
 }
 

@@ -14,6 +14,7 @@ import { IRhythmTree } from "@musicenviro/ui-elements";
 export type LaneProperties = 'synthName' | 'notes' | 'muted' | 'volumeDb' | 'color';
 
 export interface ISavedState {
+    sceneName: string;
     masterRhythmTree: IRhythmTree,
     masterTempo: number,
     lanes: AnyLane[];
@@ -25,7 +26,6 @@ export type SaveState = 'Clean' | 'Dirty' | 'WaitingForSave';
 
 export interface IReduxState extends ISavedState {
     user: string;
-    currentSceneName: string;
     sessionInfo?: ISession;
     remoteMouse: IPoint | null;
 	saveState: SaveState;
@@ -33,6 +33,7 @@ export interface IReduxState extends ISavedState {
 
 export function getStateToSave(state: IReduxState): ISavedState {
     return {
+        sceneName: state.sceneName,
         masterRhythmTree: state.masterRhythmTree,
         masterTempo: state.masterTempo,
         lanes: state.lanes

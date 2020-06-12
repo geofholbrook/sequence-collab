@@ -3,8 +3,9 @@ import { IScene, getStateToSave, IReduxState, ISingleNoteLane, PropTime } from "
 import { initialState } from "../initialState";
 import { tree44, getRhythmPoints, INote, ILaneData } from "@musicenviro/ui-elements";
 import { getColorFromString } from "../gui/Main/colors";
+import { ISavedState_0_4_0 } from "../@types/compat/savedState_0_4_0";
 
-export const currentVersion = '0.4.0'
+export const currentVersion = '0.4.1'
 
 const versionHistory = [
     {
@@ -36,12 +37,24 @@ export function backwardCompat(rawScene: any): IScene {
 
     switch (rawScene.version) {
         case "0.3.1": return backwardCompat(convertTo_0_4_0(rawScene as IScene<ISavedState_0_3_1>))
-        case "0.4.0": return rawScene as IScene;
+        case "0.4.0": return backwardCompat(convertTo_0_4_1(rawScene as IScene<ISavedState_0_4_0>))
+        case "0.4.1": return rawScene as IScene;
         default: throw new Error("can't handle this version")
     }
 }
 
-function convertTo_0_4_0(rawScene: IScene<ISavedState_0_3_1>): IScene {
+function convertTo_0_4_1(rawScene: IScene<ISavedState_0_4_0>): IScene {
+    return {
+        name: rawScene.name,
+        version: '0.4.1',
+        reduxState: {
+            ...rawScene.reduxState,
+            sceneName: rawScene.name
+        }
+    }
+}
+
+function convertTo_0_4_0(rawScene: IScene<ISavedState_0_3_1>): IScene<ISavedState_0_4_0> {
     const reduxState = rawScene.reduxState
     
     return {
@@ -108,7 +121,7 @@ function convertTo_0_3_1(rawScene: any): IScene<ISavedState_0_3_1> {
 					if (lane.laneType === 'SingleNoteLane') {
 						// convert from an assumed-4/4 16th note grid with prop times
 						const result: ISingleNoteLane = {
-							rhythmTree: tree44,
+							// rhythmTree: tree44,
 							...lane,
 							treeLoopTimes: getRhythmPoints(tree44).map(p => p.position),
 							notes: drumLane.loopTimes.map(time => ({
