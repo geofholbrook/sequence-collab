@@ -1,7 +1,5 @@
 import fs from 'fs';
-import bodyParser from 'body-parser';
-import express from 'express';
-import cors from 'cors';
+
 import { getUsersSync, loginUser, signupUser, getLoggedInUsers, getFileListForUser } from './users';
 import { storageRoot } from './dataPath';
 import { ILoginParams } from "../@types";
@@ -10,15 +8,16 @@ import Debug from 'debug'
 import { serveSaveSceneRequest, serveLoadSceneRequest } from './scene';
 import { getInviteLink, serveSessionEntryRequest } from './session';
 
+import { createExpressApp } from 'restful-bridge'
+
 const debug = Debug('sj:server:rest')
 
-const app = express();
+import { Express } from "express"
+const app = createExpressApp() as Express; // need to fix this type in the package
+
 
 export function initRestApi(): Promise<Express.Application> {
 	return new Promise((resolve) => {
-		app.use(bodyParser.urlencoded({ extended: true }));
-		app.use(bodyParser.json());
-		app.use(cors());
 
 		if (!fs.existsSync(storageRoot)) {
 			fs.mkdirSync(storageRoot);
