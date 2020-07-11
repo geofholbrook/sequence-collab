@@ -1,82 +1,64 @@
-import { IScene } from "./state";
-import { IFileDescription } from ".";
+import { IScene } from './state';
+import { IFileDescription } from '.';
 
-export interface ICreateUserParams {
-    name: string;
-}
-export interface ICreateUserResponse {
-    success: boolean;
-    message: string;
+export interface IStatusResponse<T> {
+	success: boolean;
+	message: string;
+	status: T;
 }
 
-export interface ILoginParams {
-    name: string;
-}
-export interface ILoginResponse {
-    success: boolean;
-    status: 'LoggedIn' | 'UnknownUser' | 'LoginRefused';
-    message: string;
-}
+export type IFetchResponse<T, U> = IStatusResponse<T> & Partial<U>;
 
-export interface ISignupParams {
-    name: string;
-}
-export interface ISignupResponse {
-    success: boolean;
-    status: 'SignedUp' | 'UserExists' | 'SignupRefused';
-    message: string;
-}
+export type ILoginResponse = IStatusResponse<'LoggedIn' | 'UnknownUser' | 'LoginRefused'>;
+export type ISignupResponse = IStatusResponse<'SignedUp' | 'UserExists' | 'SignupRefused'>;
 
 export interface ISaveSceneParams {
-    user: string;
-    scene: IScene;
-    filename: string;
+	user: string;
+	scene: IScene;
+	filename: string;
 }
-export interface ISaveSceneResponse {
-    success: boolean;
-    status: 'Saved' | 'NotSaved';
-    message: string;
-}
+export type ISaveSceneResponse = IStatusResponse<'Saved' | 'NotSaved'>;
 
 export interface ILoadSceneParams {
-    user: string;
-    sceneName: string;
+	user: string;
+	sceneName: string;
 }
-export interface ILoadSceneResponse {
-    success: boolean;
-    status: 'Loaded' | 'NotLoaded';
-    message: string;
-    scene: IScene | null
-}
+
+export type ILoadSceneResponse = IFetchResponse<
+	'Loaded' | 'NotLoaded',
+	{
+		scene: IScene;
+	}
+>;
 
 export interface IRequestInviteLinkParams {
-    hostUsername: string
+	hostUsername: string;
 }
 
-export interface IRequestInviteLinkResponse {
-    success: boolean;
-    status: 'ValidLink' | 'NoLinkGenerated';
-    message: string;
-    link?: string;
-}
+export type IRequestInviteLinkResponse = IFetchResponse<
+	'ValidLink' | 'NoLinkGenerated',
+	{
+		link: string;
+	}
+>;
 
 export interface IRequestSessionEntryParams {
-    guest: string;
-    sessionId: string;
+	guest: string;
+	sessionId: string;
 }
 
 export interface IRequestSessionEntryResponse {
-    success: boolean;
-    message: string;
-    scene?: IScene;
+	success: boolean;
+	message: string;
+	scene?: IScene;
 }
 
 export interface IFileListQuery {
-    username: string;
+	username: string;
 }
 
 export interface IFileListResponse {
-    success: boolean;
-    message: string;
-    fileList?: IFileDescription[];
+	success: boolean;
+	message: string;
+	fileList?: IFileDescription[];
 }

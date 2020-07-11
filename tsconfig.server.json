@@ -19,7 +19,8 @@
       "outDir": "./serverjs",
     },
     "files": [
-      "src/server/index.ts"
+      "src/server/index.ts",
+      "src/bridge.ts"
     ]
   }
   

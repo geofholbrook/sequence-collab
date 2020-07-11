@@ -10,11 +10,7 @@ import {
 import { IScene } from '../@types';
 import { storageRoot } from './dataPath';
 
-import { backwardCompat } from './compat';
-
-import { promisify } from 'util';
-const writeFile = promisify(fs.writeFile);
-const readFile = promisify(fs.readFile);
+import { backwardCompat } from '../compat';
 
 export function getScenePath(user: string, sceneName: string) {
 	return `/users/${user}/scenes/${sceneName}`;
@@ -66,8 +62,7 @@ export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<I
 		return {
 			success: false,
 			status: 'NotLoaded',
-			message: e.message,
-			scene: null,
+			message: e.message
 		};
 	}
 }

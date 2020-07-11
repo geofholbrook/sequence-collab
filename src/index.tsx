@@ -21,7 +21,7 @@ import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
 import { initSamplers } from './sound-generation/sampler';
-import { requestSessionEntry } from './client/rest/requests';
+import { requestSessionEntry } from './bridge';
 import { IRhythmTree, nodeUnitLength } from '@musicenviro/ui-elements';
 
 class App {
@@ -60,8 +60,8 @@ class App {
 
 						if (this.inviteSessionId) {
 							const res = (await requestSessionEntry(
-								username,
-								this.inviteSessionId,
+								{ guest: username,
+								  sessionId: this.inviteSessionId }
 							)) as IRequestSessionEntryResponse;
 
 							if (res.success) {

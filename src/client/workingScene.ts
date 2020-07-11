@@ -2,7 +2,7 @@ import { saveSceneToServer, loadSceneFromServer } from './rest/scene';
 import { IScene, getStateToSave } from '../@types';
 import { AppStore } from '../redux';
 import { initialState } from "../initialState";
-import { currentVersion } from '../server/compat';
+import { currentVersion } from '../compat';
 import { workingFileName } from '../config';
 
 export async function saveScene(store: AppStore, filename: string) {

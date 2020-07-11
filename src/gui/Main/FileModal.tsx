@@ -3,9 +3,9 @@ import Modal, { Styles } from 'react-modal';
 import { Button, List, Image, Header } from 'semantic-ui-react';
 import FileIcon from './resources/iconmonstr-party-21-240.png';
 import { IFileDescription } from '../../@types';
-import { requestFileListForUser } from '../../client/rest/requests';
 
 import relativeDate from 'relative-date';
+import { fetchFileList } from '../../bridge';
 
 Modal.setAppElement('#root');
 
@@ -39,7 +39,7 @@ export const FileModal: React.FunctionComponent<IFileModalProps> = (props) => {
 	};
 
 	async function handleAfterOpen() {
-		const res = await requestFileListForUser(props.username);
+		const res = await fetchFileList({username: props.username});
 
 		if (res.success) {
 			setFileList(res.fileList!);

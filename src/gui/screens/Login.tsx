@@ -1,6 +1,6 @@
 import * as React from 'react';
 import './Login.css';
-import { requestLogin, requestSignup } from '../../client/rest/requests';
+import { requestLogin, requestSignup } from '../../bridge';
 
 export function Login(props: { 
 	onLogin: (username: string) => void;
@@ -24,7 +24,7 @@ export function Login(props: {
 		if (username === '') {
 			setUsernameRequired(true);
 		} else {
-			const res = await requestLogin(username);
+			const res = await requestLogin({name: username});
 
 			if (res.success) {
 				props.onLogin(username);
@@ -40,7 +40,7 @@ export function Login(props: {
 			setUsernameRequired(true);
 		} else {
 			setUsernameRequired(false);
-			const res = await requestSignup(username);
+			const res = await requestSignup({name: username});
 			if (res.success) {
 				props.onSignup(username)
 			} else {

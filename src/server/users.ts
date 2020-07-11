@@ -1,10 +1,6 @@
 import fs from 'fs';
 import {
-	ICreateUserParams,
-	ICreateUserResponse,
 	ILoginResponse,
-	ILoginParams,
-	ISignupParams,
 	ISignupResponse,
 	IFileListResponse,
 	IFileListQuery,
@@ -15,7 +11,6 @@ import { createSession, handleLogoffForSession } from './session';
 import { maxUsers } from './config';
 
 import Debug from 'debug';
-const debug = Debug('sj:server:users');
 
 import { promisify } from 'util';
 import { allowDuplicateLogins, workingFileName } from '../config';
@@ -23,9 +18,9 @@ import { onlineUsers, sessions } from './storage';
 
 import util from 'util'
 import * as cp from 'child_process'
+
 const exec = util.promisify(cp.exec);
-
-
+const debug = Debug('sj:server:users');
 
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
@@ -47,7 +42,9 @@ export function getLoggedInUsers() {
 	return Object.keys(onlineUsers);
 }
 
-export async function getFileListForUser(params: IFileListQuery): Promise<IFileListResponse> {
+export async function getFileListForUser(params: {
+	username: string;
+}): Promise<IFileListResponse> {
 	try {
 		const path = storageRoot + '/users/' + params.username + '/scenes';
 		const dir = await readdir(path);
@@ -88,7 +85,7 @@ export async function getFileListForUser(params: IFileListQuery): Promise<IFileL
 	}
 }
 
-export async function loginUser(params: ILoginParams): Promise<ILoginResponse> {
+export async function loginUser(params: {name: string}): Promise<ILoginResponse> {
 	const users = await getUsers();
 
 	if (users.includes(params.name)) {
@@ -144,7 +141,7 @@ export function doLogoffUser(name: string) {
 	);
 }
 
-export async function signupUser(params: ISignupParams): Promise<ISignupResponse> {
+export async function signupUser(params: {name: string}): Promise<ISignupResponse> {
 	const users = await getUsers();
 	if (users.length >= maxUsers) {
 		return {
@@ -162,7 +159,7 @@ export async function signupUser(params: ISignupParams): Promise<ISignupResponse
 		};
 	}
 
-	await doSignup(params);
+	await doSignup(params.name);
 	doLoginUser(params.name);
 
 	return {
@@ -172,7 +169,7 @@ export async function signupUser(params: ISignupParams): Promise<ISignupResponse
 	};
 }
 
-async function doSignup(params: ISignupParams) {
-	await mkdir(storageRoot + '/users/' + params.name);
-	await mkdir(storageRoot + '/users/' + params.name + '/scenes');
+async function doSignup(name: string) {
+	await mkdir(storageRoot + '/users/' + name);
+	await mkdir(storageRoot + '/users/' + name + '/scenes');
 }

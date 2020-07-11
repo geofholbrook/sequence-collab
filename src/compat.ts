@@ -1,9 +1,9 @@
-import { ISavedState_0_3_1, IRollLane } from "../@types/compat/savedState_0_3_1"
-import { IScene, getStateToSave, IReduxState, ISingleNoteLane, PropTime } from "../@types";
-import { initialState } from "../initialState";
+import { ISavedState_0_3_1, IRollLane } from "./@types/compat/savedState_0_3_1"
+import { IScene, getStateToSave, IReduxState, ISingleNoteLane, PropTime } from "./@types";
+import { initialState } from "./initialState";
 import { tree44, getRhythmPoints, INote, ILaneData } from "@musicenviro/ui-elements";
-import { getColorFromString } from "../gui/Main/colors";
-import { ISavedState_0_4_0 } from "../@types/compat/savedState_0_4_0";
+import { getColorFromString } from "./gui/Main/colors";
+import { ISavedState_0_4_0 } from "./@types/compat/savedState_0_4_0";
 
 export const currentVersion = '0.4.1'
 

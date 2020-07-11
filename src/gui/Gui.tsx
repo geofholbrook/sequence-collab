@@ -3,7 +3,7 @@ import { MainConnected } from './Main/Main';
 import { Login } from './screens/Login';
 import { Test } from './screens/Test';
 import { TestRequests } from './screens/TestScreen';
-import { requestLogin, requestOnlineusers } from '../client/rest/requests';
+import { requestLogin } from '../bridge';
 
 import { local, skipLoginForLocal } from '../config';
 
@@ -11,6 +11,7 @@ import './appearance/Display.css';
 import { connect } from 'react-redux';
 import { IPoint } from '@musicenviro/base';
 import { mapStateToGuiProps, mapDispatchToGuiProps } from './guiMappers';
+import { fetchOnlineUsers } from '../bridge';
 
 
 window.addEventListener("keydown", function(e) {
@@ -51,10 +52,10 @@ export function GUI(props: IGuiProps) {
 
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
 			(async () => {
-				const onlineUsers = await requestOnlineusers()
+				const onlineUsers = await fetchOnlineUsers()
 				const devUsername = onlineUsers.includes('dev') ? 'dev2' : 'dev'
 
-				const res = await requestLogin(devUsername);
+				const res = await requestLogin({name: devUsername});
 
 				if (res.success) {
 					setUser(devUsername);

@@ -34,9 +34,9 @@ import { FileModal } from './FileModal';
 
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
-import { requestInviteLink, requestFileListForUser } from '../../client/rest/requests';
+import { fetchInviteLink } from '../../bridge';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
-import { loadSceneFromServer, saveSceneToServer } from '../../client/rest/scene';
+import { loadSceneFromServer } from '../../client/rest/scene';
 import { SaveAsModal } from './SaveAsModal';
 
 export interface IMainProps {
@@ -194,7 +194,7 @@ function Main(props: IMainProps) {
 
 	async function handleInviteButton() {
 		try {
-			const res = await requestInviteLink(props.userInfo.name);
+			const res = await fetchInviteLink({ hostUsername: props.userInfo.name });
 			if (!res.success) throw new Error(res.message);
 			console.log(res);
 
