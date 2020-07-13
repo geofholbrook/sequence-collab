@@ -45,9 +45,9 @@ export async function doSaveScene(path: string, scene: IScene) {
 
 export async function serveLoadSceneRequest(params: {
 	user: string;
-	sceneName: string;
+	fileName: string;
 }): Promise<ILoadSceneResponse> {
-	const path = getScenePath(params.user, params.sceneName);
+	const path = getScenePath(params.user, params.fileName);
 	try {
 		const scene = await doLoadScene(path);
 

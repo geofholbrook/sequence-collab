@@ -35,9 +35,8 @@ import { FileModal } from './FileModal';
 
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
-import { fetchInviteLink, signalLogout, requestSave } from '../../bridge';
+import { fetchInviteLink, signalLogout, requestSave, requestLoad } from '../../bridge';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
-import { loadSceneFromServer } from '../../client/rest/scene';
 import { SaveAsModal } from './SaveAsModal';
 import { useBeforeunload } from '../hooks/beforeunload';
 
@@ -238,7 +237,7 @@ function Main(props: IMainProps) {
 
 	async function handleFileModalOpen(fileName: string) {
 		if (props.saveState === 'Clean') {
-			const res = await loadSceneFromServer(props.userInfo.name, fileName);
+			const res = await requestLoad({user: props.userInfo.name, fileName: fileName});
 			if (res.success) {
 				props.onSuccessfulFileOpen(res.scene!);
 				setShowFileModal(false);

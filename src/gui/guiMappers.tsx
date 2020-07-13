@@ -1,7 +1,8 @@
 import { IReduxAction } from '../redux';
 import { Dispatch } from 'redux';
 import { IReduxState } from '../@types';
-import { loadSceneFromServer } from '../client/rest/scene';
+import { workingFileName } from '../config';
+import { requestLoad } from '../bridge';
 
 export function mapStateToGuiProps(state: IReduxState) {
 	return {
@@ -19,7 +20,7 @@ export function mapDispatchToGuiProps(dispatch: Dispatch<IReduxAction>) {
 				type: 'SET_USER',
 				user: username,
 			});
-			const res = await loadSceneFromServer(username, 'Untitled');
+			const res = await requestLoad({user: username, fileName: workingFileName});
 			if (res.success) {
 				const scene = res.scene!;
 				dispatch({

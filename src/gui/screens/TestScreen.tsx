@@ -1,10 +1,11 @@
 import * as React from 'react'
-import { loadSceneFromServer } from '../../client/rest/scene';
+import { workingFileName } from '../../config';
+import { requestLoad } from '../../bridge';
 // import { doJsonPost } from '../client/requests';
 
 export function TestRequests() {
 	async function loadWorkingScene() {
-        const res = await loadSceneFromServer('geof', 'Untitled')
+        const res = await requestLoad({user: 'dev', fileName: workingFileName})
         console.log(res)
     }
     

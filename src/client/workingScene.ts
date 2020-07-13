@@ -38,7 +38,7 @@ export async function saveScene(store: AppStore, filename: string): Promise<ISav
 
 export async function loadWorkingScene(store: AppStore) {
 	const username = store.getState().user;
-	const res = await requestLoad({ user: username, sceneName: workingFileName});
+	const res = await requestLoad({ user: username, fileName: workingFileName});
 
 	if (res.success) {
 		const scene = res.scene as IScene;
