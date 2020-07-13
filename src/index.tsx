@@ -62,7 +62,7 @@ class App {
 							const res = (await requestSessionEntry(
 								{ guest: username,
 								  sessionId: this.inviteSessionId }
-							)) as IRequestSessionEntryResponse;
+							));
 
 							if (res.success) {
 								this.store.dispatch<IReduxLoadStateAction>({
@@ -151,7 +151,7 @@ class App {
 		}
 		
 		this.store.dispatch(action);
-		saveScene(this.store, action.value)
+		return saveScene(this.store, action.value)
 	}
 
 	checkForInviteLink() {

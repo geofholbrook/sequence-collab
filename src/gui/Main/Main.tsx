@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Beforeunload } from 'react-beforeunload';
 import { connect } from 'react-redux';
 
-import { IPoint, subtractPoints } from '@musicenviro/base';
+import { IPoint, subtractPoints, consoleDeleteMe } from '@musicenviro/base';
 import { SingleNoteLane, IRhythmTree, INote, PianoRoll } from '@musicenviro/ui-elements';
 
 import {
@@ -13,12 +13,13 @@ import {
 	IPianoRollLane,
 	AnyLane,
 	IScene,
+	ISaveSceneResponse,
 } from '../../@types';
 
 import { drumSynths, noteSynths } from '../../sound-generation/synths';
 import { newLaneForSynth } from '../../state-helpers/newLaneForSynth';
 import { Lane } from '../components/Lane';
-import { local, cycleDrumSynthsWhenAdding, untitledSceneName } from '../../config';
+import { local, cycleDrumSynthsWhenAdding, untitledSceneName, workingFileName } from '../../config';
 
 import Cursor from './resources/cursor_PNG99.png';
 import './resources/Main.css';
@@ -34,10 +35,11 @@ import { FileModal } from './FileModal';
 
 import { getPreviewForRollLane } from './getPreviewForRollLane';
 import { getColorFromString } from './colors';
-import { fetchInviteLink } from '../../bridge';
+import { fetchInviteLink, signalLogout, requestSave } from '../../bridge';
 import { setLaneTree } from '../../state-helpers/setLaneTree';
 import { loadSceneFromServer } from '../../client/rest/scene';
 import { SaveAsModal } from './SaveAsModal';
+import { useBeforeunload } from '../hooks/beforeunload';
 
 export interface IMainProps {
 	userInfo: { name: string; currentSceneName: string };
@@ -51,7 +53,7 @@ export interface IMainProps {
 	onStartAudio: () => void;
 	onStopAudio: () => void;
 	onMousePositionUpdate: (point: IPoint) => void;
-	onSaveAs: (filename: string) => void;
+	onSaveAs: (filename: string) => Promise<ISaveSceneResponse>;
 
 	// dispatch mappings
 	addLane: (lane: AnyLane, after?: string) => void;
@@ -70,6 +72,24 @@ function Main(props: IMainProps) {
 	const [showSaveAsModal, setShowSaveAsModel] = useState<boolean>(false);
 
 	const { onMousePositionUpdate } = props;
+
+	useEffect(() => {
+		window.onbeforeunload = async function(evt: BeforeUnloadEvent) {
+			signalLogout({ name: props.userInfo.name });
+			props.onSaveAs(workingFileName);
+			delete evt.returnValue
+		}
+	})
+	
+	// useBeforeunload(async evt => {
+	// 	consoleDeleteMe('onBeforeUnload');
+	// 	if (res.success) {
+	// 	} else {
+	// 		alert("unable to save scene")
+	// 	}
+	// 	alert("unable to save scene")
+	// 	evt.preventDefault();
+	// });
 
 	useEffect(() => {
 		// console.log('MAIN MOUNTING');
@@ -357,10 +377,6 @@ function Main(props: IMainProps) {
 						width: 20,
 					}}
 				/>
-			)}
-
-			{!local && props.saveState !== 'Clean' && (
-				<Beforeunload onBeforeunload={() => "This message doesn't seem to appear"} />
 			)}
 
 			<FileModal

@@ -3,8 +3,8 @@ import {
 	ILoginResponse,
 	ISignupResponse,
 	IFileListResponse,
-	IFileListQuery,
 	IFileDescription,
+	IStatusResponse,
 } from '../@types';
 import { storageRoot } from './dataPath';
 import { createSession, handleLogoffForSession } from './session';
@@ -16,15 +16,15 @@ import { promisify } from 'util';
 import { allowDuplicateLogins, workingFileName } from '../config';
 import { onlineUsers, sessions } from './storage';
 
-import util from 'util'
-import * as cp from 'child_process'
+import util from 'util';
+import * as cp from 'child_process';
 
 const exec = util.promisify(cp.exec);
 const debug = Debug('sj:server:users');
 
 const readdir = promisify(fs.readdir);
 const mkdir = promisify(fs.mkdir);
-const stat = promisify(fs.stat)
+const stat = promisify(fs.stat);
 
 /**
  * all existing users.
@@ -42,36 +42,34 @@ export function getLoggedInUsers() {
 	return Object.keys(onlineUsers);
 }
 
-export async function getFileListForUser(params: {
-	username: string;
-}): Promise<IFileListResponse> {
+export async function getFileListForUser(params: { username: string }): Promise<IFileListResponse> {
 	try {
 		const path = storageRoot + '/users/' + params.username + '/scenes';
 		const dir = await readdir(path);
-		
-		const descriptions: IFileDescription[] = []
+
+		const descriptions: IFileDescription[] = [];
 
 		while (dir.length > 0) {
-			const filename = dir.pop()
+			const filename = dir.pop();
 			if (filename === workingFileName) {
-				continue				
+				continue;
 			}
 
 			const filepath = path + '/' + filename;
-			const stats = await stat(filepath)
+			const stats = await stat(filepath);
 
 			// first line that contains the word "version" ex. '    "version": "0.3.1",'
 			const { stdout, stderr } = await exec(`grep -m 1 "version" ${filepath}`);
 			const version = stdout.split('"')[3];
-			
+
 			descriptions.push({
 				name: filename!,
 				version,
 				createdStamp: stats.birthtimeMs,
-				lastUpdatedStamp: stats.ctimeMs
-			})
+				lastUpdatedStamp: stats.ctimeMs,
+			});
 		}
-	
+
 		return {
 			success: true,
 			message: 'in dev',
@@ -85,7 +83,7 @@ export async function getFileListForUser(params: {
 	}
 }
 
-export async function loginUser(params: {name: string}): Promise<ILoginResponse> {
+export async function loginUser(params: { name: string }): Promise<ILoginResponse> {
 	const users = await getUsers();
 
 	if (users.includes(params.name)) {
@@ -129,7 +127,36 @@ function doLoginUser(name: string) {
 	);
 }
 
-export function doLogoffUser(name: string) {
+export async function logoutUser(params: {
+	name: string;
+}): Promise<IStatusResponse<'UnknownUser' | 'AlreadyLoggedOut' | 'LogoutSuccessful'>> {
+	const users = await getUsers();
+
+	if (!users.includes(params.name))
+		return {
+			success: false,
+			status: 'UnknownUser',
+			message: `no user named ${params.name}`,
+		};
+
+	if (!getLoggedInUsers().includes(params.name)) {
+		debug('user already logged out');
+		return {
+			success: false,
+			status: 'AlreadyLoggedOut',
+			message: `${params.name} already logged out`,
+		};
+	}
+
+	doLogoutUser(params.name);
+	return {
+		success: true,
+		status: 'LogoutSuccessful',
+		message: `${params.name} successfully logged out`,
+	};
+}
+
+export function doLogoutUser(name: string) {
 	if (!onlineUsers[name]) return;
 	handleLogoffForSession(name, onlineUsers[name].sessionId);
 	delete onlineUsers[name];
@@ -141,7 +168,7 @@ export function doLogoffUser(name: string) {
 	);
 }
 
-export async function signupUser(params: {name: string}): Promise<ISignupResponse> {
+export async function signupUser(params: { name: string }): Promise<ISignupResponse> {
 	const users = await getUsers();
 	if (users.length >= maxUsers) {
 		return {

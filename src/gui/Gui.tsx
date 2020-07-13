@@ -12,14 +12,18 @@ import { connect } from 'react-redux';
 import { IPoint } from '@musicenviro/base';
 import { mapStateToGuiProps, mapDispatchToGuiProps } from './guiMappers';
 import { fetchOnlineUsers } from '../bridge';
+import { ISaveSceneResponse } from '../@types';
 
-
-window.addEventListener("keydown", function(e) {
-    // space and arrow keys
-    if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-        e.preventDefault();
-    }
-}, false);
+window.addEventListener(
+	'keydown',
+	function (e) {
+		// space and arrow keys
+		if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+			e.preventDefault();
+		}
+	},
+	false,
+);
 
 type Screen = 'Login' | 'Main' | 'Test' | 'TestScreen';
 
@@ -36,7 +40,7 @@ interface IGuiProps {
 	onStopAudio: () => void;
 	onMousePositionUpdate: (position: IPoint) => void;
 	onLogin: (username: string) => Promise<boolean>;
-	onSaveAs: (filename: string) => void;
+	onSaveAs: (filename: string) => Promise<ISaveSceneResponse>;
 
 	// dispatch mappings
 	setUser: (username: string) => void;
@@ -44,22 +48,22 @@ interface IGuiProps {
 
 export function GUI(props: IGuiProps) {
 	const [screen, setScreen] = React.useState<Screen>(initialScreen);
-	const setUser = props.setUser
-	const onLogin = props.onLogin
+	const setUser = props.setUser;
+	const onLogin = props.onLogin;
 
 	React.useEffect(() => {
 		console.log('GUI MOUNTING');
 
 		if (local && skipLoginForLocal && initialScreen === 'Login') {
 			(async () => {
-				const onlineUsers = await fetchOnlineUsers()
-				const devUsername = onlineUsers.includes('dev') ? 'dev2' : 'dev'
+				const onlineUsers = await fetchOnlineUsers();
+				const devUsername = onlineUsers.includes('dev') ? 'dev2' : 'dev';
 
-				const res = await requestLogin({name: devUsername});
+				const res = await requestLogin({ name: devUsername });
 
 				if (res.success) {
 					setUser(devUsername);
-					onLogin(devUsername).then()
+					onLogin(devUsername).then();
 					setScreen('Main');
 				}
 			})();

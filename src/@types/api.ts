@@ -11,18 +11,7 @@ export type IFetchResponse<T, U> = IStatusResponse<T> & Partial<U>;
 
 export type ILoginResponse = IStatusResponse<'LoggedIn' | 'UnknownUser' | 'LoginRefused'>;
 export type ISignupResponse = IStatusResponse<'SignedUp' | 'UserExists' | 'SignupRefused'>;
-
-export interface ISaveSceneParams {
-	user: string;
-	scene: IScene;
-	filename: string;
-}
 export type ISaveSceneResponse = IStatusResponse<'Saved' | 'NotSaved'>;
-
-export interface ILoadSceneParams {
-	user: string;
-	sceneName: string;
-}
 
 export type ILoadSceneResponse = IFetchResponse<
 	'Loaded' | 'NotLoaded',
@@ -31,10 +20,6 @@ export type ILoadSceneResponse = IFetchResponse<
 	}
 >;
 
-export interface IRequestInviteLinkParams {
-	hostUsername: string;
-}
-
 export type IRequestInviteLinkResponse = IFetchResponse<
 	'ValidLink' | 'NoLinkGenerated',
 	{
@@ -42,19 +27,10 @@ export type IRequestInviteLinkResponse = IFetchResponse<
 	}
 >;
 
-export interface IRequestSessionEntryParams {
-	guest: string;
-	sessionId: string;
-}
-
 export interface IRequestSessionEntryResponse {
 	success: boolean;
 	message: string;
 	scene?: IScene;
-}
-
-export interface IFileListQuery {
-	username: string;
 }
 
 export interface IFileListResponse {

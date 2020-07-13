@@ -1,9 +1,7 @@
 import * as fs from 'fs';
 
 import {
-	ISaveSceneParams,
 	ISaveSceneResponse,
-	ILoadSceneParams,
 	ILoadSceneResponse,
 } from '../@types';
 
@@ -16,11 +14,15 @@ export function getScenePath(user: string, sceneName: string) {
 	return `/users/${user}/scenes/${sceneName}`;
 }
 
-export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<ISaveSceneResponse> {
+export async function serveSaveSceneRequest(params: {
+	user: string;
+	scene: IScene;
+	filename: string;
+}): Promise<ISaveSceneResponse> {
 	const path = getScenePath(params.user, params.filename);
 
 	try {
-		await saveScene(path, params.scene);
+		await doSaveScene(path, params.scene);
 		return {
 			success: true,
 			status: 'Saved',
@@ -35,22 +37,19 @@ export async function serveSaveSceneRequest(params: ISaveSceneParams): Promise<I
 	}
 }
 
-export async function saveScene(path: string, scene: IScene) {
+export async function doSaveScene(path: string, scene: IScene) {
 	return fs.promises.writeFile(storageRoot + path, JSON.stringify(scene, null, 4));
 }
 
-export async function loadScene(path: string) {
-	const buffer = await fs.promises.readFile(storageRoot + path);
-	const original = JSON.parse(buffer.toString());
-	const scene = backwardCompat(original);
 
-	return scene;
-}
 
-export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<ILoadSceneResponse> {
+export async function serveLoadSceneRequest(params: {
+	user: string;
+	sceneName: string;
+}): Promise<ILoadSceneResponse> {
 	const path = getScenePath(params.user, params.sceneName);
 	try {
-		const scene = await loadScene(path);
+		const scene = await doLoadScene(path);
 
 		return {
 			success: true,
@@ -62,7 +61,14 @@ export async function serveLoadSceneRequest(params: ILoadSceneParams): Promise<I
 		return {
 			success: false,
 			status: 'NotLoaded',
-			message: e.message
+			message: e.message,
 		};
 	}
+}
+
+export async function doLoadScene(path: string) {
+	const buffer = await fs.promises.readFile(storageRoot + path);
+	const original = JSON.parse(buffer.toString());
+	const scene = backwardCompat(original);
+	return scene;
 }

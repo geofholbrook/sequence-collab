@@ -33,7 +33,7 @@ export const bridge = new RestfulBridge({
 /**
  * get online users
  */
-export const [fetchOnlineUsers, addOnlineUsersRoute] = bridge.createRoute(
+export const [fetchOnlineUsers] = bridge.createRoute(
 	'GET',
 	'/users/online',
 	users?.getLoggedInUsers,
@@ -42,16 +42,25 @@ export const [fetchOnlineUsers, addOnlineUsersRoute] = bridge.createRoute(
 /**
  * login
  */
-export const [requestLogin, addRequestLoginRoute] = bridge.createRoute(
+export const [requestLogin] = bridge.createRoute(
 	'POST',
 	'/login',
 	users?.loginUser,
 );
 
 /**
+ * login
+ */
+export const [signalLogout] = bridge.createRoute(
+	'POST',
+	'/logout',
+	users?.logoutUser
+)
+
+/**
  * signup
  */
-export const [requestSignup, addRequestSignupRoute] = bridge.createRoute(
+export const [requestSignup] = bridge.createRoute(
 	'POST',
 	'/signup',
 	users?.signupUser,
@@ -60,7 +69,7 @@ export const [requestSignup, addRequestSignupRoute] = bridge.createRoute(
 /**
  * get scene list
  */
-export const [fetchFileList, addFileListRoute] = bridge.createRoute(
+export const [fetchFileList] = bridge.createRoute(
 	'GET',
 	'/scene/ls',
 	users?.getFileListForUser,
@@ -69,7 +78,7 @@ export const [fetchFileList, addFileListRoute] = bridge.createRoute(
 /**
  * save scene
  */
-export const [requestSave, addSaveRoute] = bridge.createRoute(
+export const [requestSave] = bridge.createRoute(
 	'POST',
 	'/scene/save',
 	scene?.serveSaveSceneRequest,
@@ -78,7 +87,7 @@ export const [requestSave, addSaveRoute] = bridge.createRoute(
 /**
  * load scene
  */
-export const [requestLoad, addLoadRoute] = bridge.createRoute(
+export const [requestLoad] = bridge.createRoute(
 	'GET',
 	'/scene/load',
 	scene?.serveLoadSceneRequest,
@@ -87,7 +96,7 @@ export const [requestLoad, addLoadRoute] = bridge.createRoute(
 /**
  * get invite link
  */
-export const [fetchInviteLink, addInviteLinkRoute] = bridge.createRoute(
+export const [fetchInviteLink] = bridge.createRoute(
 	'GET',
 	'/request-invite-link',
 	session?.getInviteLink,
@@ -96,7 +105,7 @@ export const [fetchInviteLink, addInviteLinkRoute] = bridge.createRoute(
 /**
  * request session entry
  */
-export const [requestSessionEntry, addSessionEntryRoute] = bridge.createRoute(
+export const [requestSessionEntry] = bridge.createRoute(
 	'POST',
 	'/request-session-entry',
 	session?.serveSessionEntryRequest,

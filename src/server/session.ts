@@ -1,14 +1,12 @@
+import { v1 as uuid } from 'uuid';
 import {
 	ISession,
 	IRequestInviteLinkResponse,
-	IRequestInviteLinkParams,
-	IRequestSessionEntryParams,
 	IRequestSessionEntryResponse,
 } from '../@types';
-import { v1 as uuid } from 'uuid';
-import { onlineUsers, sessions } from './storage';
 
-import { loadScene, getScenePath } from './scene';
+import { onlineUsers, sessions } from './storage';
+import { doLoadScene, getScenePath } from './scene';
 
 import Debug from 'debug';
 const debug = Debug('sj:server');
@@ -65,7 +63,7 @@ export async function serveSessionEntryRequest(params: {
 	// for now just load the most recently saved temp session.
 	// TODO: should tell the host that a user is joining, so it can freeze the interface and deliver the current state.
 
-	const hostScene = await loadScene(getScenePath(onlineUsers[session.host].name, 'Untitled'));
+	const hostScene = await doLoadScene(getScenePath(onlineUsers[session.host].name, 'Untitled'));
 	if (!hostScene) {
 		return {
 			success: false,
@@ -88,15 +86,12 @@ export function handleLogoffForSession(loggingOffUser: string, sessionId: string
 
 	const session = sessions[sessionId];
 	if (session.host === loggingOffUser) {
-		console.log(session);
-
 		if (session.guests.length === 0) {
 			delete sessions[sessionId];
 		} else {
 			// if host leaves, make one of the guests the host
 			session.host = session.guests.shift()!;
 		}
-		console.log({ after: session });
 	} else {
 		session.guests = session.guests.filter((guest) => guest !== loggingOffUser);
 	}

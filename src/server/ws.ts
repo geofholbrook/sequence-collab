@@ -1,6 +1,6 @@
 import { MessageServer } from "@geof/socket-messaging";
 import { IMessage, ISession } from "../@types";
-import { doLogoffUser } from "./users"
+import { logoutUser } from "./users"
 import { onlineUsers, sessions } from "./storage";
 
 import Debug from 'debug'
@@ -10,7 +10,6 @@ let websocketServer: MessageServer<IMessage>;
 
 export function initWSApi() {
 	// TODO make this async
-	
 	websocketServer = new MessageServer<IMessage>({});
 	
 	websocketServer.onMessage(msg => {
@@ -25,7 +24,7 @@ export function initWSApi() {
 	});
 	
 	websocketServer.onConnectionClosed((id: string) => {
-		doLogoffUser(id)
+		// logoutUser({name: id})
 	})
 
 	setInterval(() => 

@@ -8,7 +8,7 @@ console.log(`local = ${local}`)
 
 export const skipLoginForLocal = true;
 
-export const saveInterval = 5000;
+export const saveInterval = 15000;
 
 export const workingFileName = ".tmp"
 export const untitledSceneName = "Untitled"
