@@ -16,7 +16,7 @@ import { IMessage, ISynthNote, SaveState, IRequestSessionEntryResponse, Seconds,
 import { socketClient, initSocketClient } from './socketClient';
 import _ from 'lodash';
 import { Scheduler } from './sound-generation/Scheduler/Scheduler';
-import { IPoint, enableUseWatch } from '@musicenviro/base';
+import { IPoint, enableUseWatch, consoleDeleteMe } from '@musicenviro/base';
 import { synths, callSynth } from './sound-generation/synths';
 import * as Tone from 'tone';
 import { getLoopNotesForLane } from './sound-generation/getLoopNotesForLane';
@@ -144,9 +144,10 @@ class App {
 	}
 
 	async handleSaveAs(filename: string) {
+		consoleDeleteMe('handleSaveAs', filename)
 		const action: ISetRootPropertyAction = {
 			type: 'SET_ROOT_PROPERTY',
-			propertyName: 'currentSceneName',
+			propertyName: 'sceneName',
 			value: filename,
 		}
 		

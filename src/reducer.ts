@@ -12,6 +12,7 @@ import {
 } from './redux';
 import { initialState } from './initialState';
 import { setLaneTree } from './state-helpers/setLaneTree';
+import { consoleDeleteMe } from '@musicenviro/base';
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined
@@ -28,7 +29,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 		switch (_action.type) {
 			case 'SET_ROOT_PROPERTY': {
 				const action = _action as ISetRootPropertyAction;
-
+				if (action.propertyName !== "sessionInfo") consoleDeleteMe(action)
 				return {
 					...state,
 					[action.propertyName]: action.value,
