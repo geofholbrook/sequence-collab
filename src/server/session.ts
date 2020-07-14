@@ -9,6 +9,7 @@ import { onlineUsers, sessions } from './storage';
 import { doLoadScene, getScenePath } from './scene';
 
 import Debug from 'debug';
+import { workingFileName } from '../config';
 const debug = Debug('sj:server');
 
 export function createSession(hostUsername: string): ISession {
@@ -63,7 +64,7 @@ export async function serveSessionEntryRequest(params: {
 	// for now just load the most recently saved temp session.
 	// TODO: should tell the host that a user is joining, so it can freeze the interface and deliver the current state.
 
-	const hostScene = await doLoadScene(getScenePath(onlineUsers[session.host].name, 'Untitled'));
+	const hostScene = await doLoadScene(getScenePath(onlineUsers[session.host].name, workingFileName));
 	if (!hostScene) {
 		return {
 			success: false,

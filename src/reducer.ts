@@ -13,6 +13,7 @@ import {
 import { initialState } from './initialState';
 import { setLaneTree } from './state-helpers/setLaneTree';
 import { consoleDeleteMe } from '@musicenviro/base';
+import { untitledSceneName } from './config';
 
 // typescript was a little tricky here.
 // 1. state in reducer must allow undefined
@@ -126,7 +127,7 @@ export function reducer(_state: IReduxState | undefined, _action: IReduxAction):
 				return {
 					...state,
 					...action.state,
-					sceneName: action.sceneName || 'Untitled'
+					sceneName: action.sceneName || untitledSceneName
 				};
 			}
 			case 'SET_USER': {
